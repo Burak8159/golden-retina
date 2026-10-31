@@ -2,7 +2,7 @@ project:
   name: Golden Retina
   version: paper_v1_feasibility_A0_A2
   created: 2026-10-01
-  status: BLOCKED_FOR_REAL_METRICS_UNTIL_MFIDDR_PRESENT
+  status: MFIDDR_ACCESS_RECEIVED; PATIENT_DISJOINT_TRAINING_AND_HELD_OUT_EVALUATION
 
 dataset:
   name: MFIDDR
@@ -15,8 +15,8 @@ dataset:
   status_output: results/A0_access_schema_status.json
   official_source: https://github.com/mfiddr/MFIDDR
   access_note: >
-    Public repository provides sample structure, MIT-licensed repository code, and a Google Docs access link
-    for the full dataset. Full image access must be obtained and documented before real metrics are reported.
+    Full data access was received for this run. Dataset images, labels, manifests, predictions, and checkpoints
+    remain outside the public repository; consult the aggregate run report for the bounded results and provenance.
   fields:
     F1: macula_centered
     F2: optic_disc_centered
@@ -30,6 +30,14 @@ dataset:
       "03": F3
       "04": F4
     left:
+      # The archive has 26 left-eye rows using 01-04 instead of the documented
+      # 05-08 sequence. A visual audit of a complete four-field example showed
+      # the same F1-F4 anatomy/order, so accept these as observed aliases and
+      # report the exception in the dataset audit.
+      "01": F1
+      "02": F2
+      "03": F3
+      "04": F4
       "05": F1
       "06": F2
       "07": F3

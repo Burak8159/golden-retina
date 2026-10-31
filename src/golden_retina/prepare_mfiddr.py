@@ -121,7 +121,12 @@ def main() -> None:
         )
         raise SystemExit(f"A0 BLOCKED: MFIDDR files are not present locally. See {status_output}")
 
-    code_map = cfg["dataset"]["filename_field_codes"]
+    # The lightweight YAML reader may parse quoted numeric keys such as "01"
+    # as integers; normalize them back to the two-digit filename codes.
+    code_map = {
+        str(eye): {str(code).zfill(2): str(field) for code, field in mapping.items()}
+        for eye, mapping in cfg["dataset"]["filename_field_codes"].items()
+    }
     records = []
     records.extend(load_split(root / cfg["dataset"]["train_csv"], root / cfg["dataset"]["train_images"], "official_train", code_map))
     records.extend(load_split(root / cfg["dataset"]["test_csv"], root / cfg["dataset"]["test_images"], "official_test", code_map))

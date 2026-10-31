@@ -12,6 +12,7 @@ import csv
 import json
 import math
 import random
+import time
 from pathlib import Path
 from typing import Any
 
@@ -28,6 +29,8 @@ from golden_retina.train_quality_gated_autonomy import (
     masked_cross_entropy,
     read_rows,
     select_policy,
+    select_accuracy_policy,
+    select_accuracy_floor_sensitivity_policy,
 )
 
 
@@ -38,6 +41,7 @@ class EyeBags(Dataset):
         transform: Any,
         root: Path,
         lesion_presence: dict[str, tuple[int, int, int, int]] | None = None,
+        pad_to_views: int = 2,
     ) -> None:
         grouped: dict[str, dict[str, Any]] = {}
         for row in rows:
@@ -65,12 +69,30 @@ class EyeBags(Dataset):
         self.transform = transform
         self.root = root
         self.lesion_presence = lesion_presence or {}
+        # MFIDDR provides up to four same-eye fields. Pad to the largest bag
+        # in a split so minibatches are rectangular; the mask marks real views.
+        self.max_views = max(pad_to_views, max((len(bag["views"]) for bag in grouped.values()), default=0))
+        if self.max_views != pad_to_views:
+            raise ValueError(f"A bag contains more than the configured {pad_to_views} views")
         for bag in grouped.values():
             if bag["source_dataset"] in {"drtid_paired", "deepdrid_paired"}:
                 fields = {view[0] for view in bag["views"]}
                 if fields != {"macula", "optic_disc"}:
                     raise ValueError(f"Incomplete DRTiD pair {bag['eye_id']}: {sorted(fields)}")
                 bag["views"].sort(key=lambda view: (view[0] != "macula", view[2]))
+            elif bag["source_dataset"] == "mfiddr_paired":
+                field_order = {
+                    "F1": 0,
+                    "F2": 1,
+                    "F3": 2,
+                    "F4": 3,
+                }
+                fields = [view[0] for view in bag["views"]]
+                if not fields or any(field not in field_order for field in fields):
+                    raise ValueError(f"Unexpected MFIDDR fields for {bag['eye_id']}: {fields}")
+                if len(fields) != len(set(fields)):
+                    raise ValueError(f"Duplicate MFIDDR field for {bag['eye_id']}: {fields}")
+                bag["views"].sort(key=lambda view: (field_order[view[0]], view[2]))
             elif len(bag["views"]) != 1:
                 raise ValueError(f"Expected one DDR image for {bag['eye_id']}")
             targets = (
@@ -104,9 +126,9 @@ class EyeBags(Dataset):
             with Image.open(path) as image:
                 tensors.append(self.transform(image.convert("RGB")))
             ids.append(image_id)
-        mask = torch.zeros(2, dtype=torch.bool)
+        mask = torch.zeros(self.max_views, dtype=torch.bool)
         mask[: len(tensors)] = True
-        if len(tensors) == 1:
+        while len(tensors) < self.max_views:
             tensors.append(tensors[0].clone())
             ids.append(ids[0])
         return (
@@ -135,6 +157,7 @@ class MixedViewModel(nn.Module):
         risk_pooling: str = "fused",
         risk_pool_temperature: float = 0.25,
         lesion_presence_classes: int = 0,
+        max_views: int = 2,
     ) -> None:
         super().__init__()
         import timm
@@ -143,6 +166,9 @@ class MixedViewModel(nn.Module):
             raise ValueError(f"Unsupported risk pooling: {risk_pooling}")
         if risk_pool_temperature <= 0:
             raise ValueError("risk_pool_temperature must be positive")
+        if max_views < 2:
+            raise ValueError("max_views must be at least two")
+        self.max_views = max_views
         self.preserve_pretrained_risk = preserve_pretrained_risk
         self.risk_pooling = risk_pooling
         self.risk_pool_temperature = float(risk_pool_temperature)
@@ -150,8 +176,9 @@ class MixedViewModel(nn.Module):
             model_name, pretrained=pretrained, num_classes=1 if preserve_pretrained_risk else 0, global_pool="avg"
         )
         width = int(self.encoder.num_features)
-        self.grade_head = nn.Sequential(nn.Linear(width * 3, width), nn.GELU(), nn.Dropout(0.2), nn.Linear(width, 5))
-        self.risk_head = nn.Sequential(nn.Linear(width * 3, width), nn.GELU(), nn.Dropout(0.2), nn.Linear(width, 1))
+        fusion_width = width * 3 + (max_views if max_views > 2 else 0)
+        self.grade_head = nn.Sequential(nn.Linear(fusion_width, width), nn.GELU(), nn.Dropout(0.2), nn.Linear(width, 5))
+        self.risk_head = nn.Sequential(nn.Linear(fusion_width, width), nn.GELU(), nn.Dropout(0.2), nn.Linear(width, 1))
         self.view_risk_head = (
             nn.Sequential(nn.Linear(width, width // 2), nn.GELU(), nn.Dropout(0.2), nn.Linear(width // 2, 1))
             if risk_pooling not in {"fused", "ordinal_attention_residual"}
@@ -176,9 +203,9 @@ class MixedViewModel(nn.Module):
         self.encoder_frozen = False
         if self.view_risk_head is not None:
             self.risk_head.requires_grad_(False)
-        self.quality_head = nn.Sequential(nn.Linear(width * 3, width // 2), nn.GELU(), nn.Dropout(0.2), nn.Linear(width // 2, 1))
+        self.quality_head = nn.Sequential(nn.Linear(fusion_width, width // 2), nn.GELU(), nn.Dropout(0.2), nn.Linear(width // 2, 1))
         self.lesion_head = (
-            nn.Sequential(nn.Linear(width * 3, width // 2), nn.GELU(), nn.Dropout(0.2), nn.Linear(width // 2, lesion_presence_classes))
+            nn.Sequential(nn.Linear(fusion_width, width // 2), nn.GELU(), nn.Dropout(0.2), nn.Linear(width // 2, lesion_presence_classes))
             if lesion_presence_classes > 0
             else None
         )
@@ -248,20 +275,40 @@ class MixedViewModel(nn.Module):
 
     def forward(self, images: torch.Tensor, view_mask: torch.Tensor, return_auxiliary: bool = False):
         batch, views, channels, height, width = images.shape
+        if views != self.max_views or view_mask.shape != (batch, views):
+            raise ValueError(f"Expected {self.max_views} padded views and a matching mask, got {views}")
         flat_images = images.reshape(batch * views, channels, height, width)
+        valid_indices = view_mask.reshape(-1).nonzero(as_tuple=False).squeeze(1)
+        if valid_indices.numel() == 0:
+            raise ValueError("Every eye bag must contain at least one observed view")
+        observed_images = flat_images.index_select(0, valid_indices)
         if self.preserve_pretrained_risk:
-            encoded = self.encoder.forward_features(flat_images)
-            flat_features = self.encoder.forward_head(encoded, pre_logits=True)
-            pretrained_logits = self.encoder.forward_head(encoded).reshape(batch, views, -1).squeeze(-1)
+            encoded = self.encoder.forward_features(observed_images)
+            observed_features = self.encoder.forward_head(encoded, pre_logits=True)
+            observed_logits = self.encoder.forward_head(encoded).squeeze(-1)
         else:
-            flat_features = self.encoder(flat_images)
+            observed_features = self.encoder(observed_images)
+            observed_logits = None
+        feature_width = int(observed_features.shape[-1])
+        flat_features = observed_features.new_zeros((batch * views, feature_width)).index_copy(
+            0, valid_indices, observed_features
+        )
+        if observed_logits is not None:
+            flat_logits = observed_logits.new_zeros(batch * views).index_copy(
+                0, valid_indices, observed_logits
+            )
+            pretrained_logits = flat_logits.reshape(batch, views)
+        else:
             pretrained_logits = None
         features = flat_features.reshape(batch, views, -1)
         mask = view_mask.unsqueeze(-1).to(features.dtype)
         mean = (features * mask).sum(dim=1) / mask.sum(dim=1).clamp_min(1.0)
         maximum = features.masked_fill(~view_mask.unsqueeze(-1), torch.finfo(features.dtype).min).max(dim=1).values
         difference = torch.abs(features[:, 0] - features[:, 1]) * (view_mask[:, 1] & view_mask[:, 0]).unsqueeze(-1)
-        fused = torch.cat((mean, maximum, difference), dim=1)
+        fused_parts = (mean, maximum, difference)
+        if self.max_views > 2:
+            fused_parts = (*fused_parts, view_mask.to(features.dtype))
+        fused = torch.cat(fused_parts, dim=1)
         grade_logits = self.grade_head(fused)
         if self.risk_pooling == "ordinal_attention_residual":
             attention_logits = self.view_attention_head(features).squeeze(-1)
@@ -448,15 +495,20 @@ class HardBoundaryPairBatchSampler(Sampler[list[int]]):
         self.grade_zero = [i for (source, grade), values in self.groups.items() if grade == 0 for i in values]
         self.grade_severe = [i for (source, grade), values in self.groups.items() if grade in (3, 4) for i in values]
         self.ungradable = [i for (source, grade), values in self.groups.items() if grade == 5 for i in values]
-        if not self.grade_zero or not self.grade_severe or not self.ungradable:
-            raise ValueError("Hard-boundary sampler requires grade-0, grade-3/4, and grade-5 controls")
+        if not self.grade_zero or not self.grade_severe:
+            raise ValueError("Hard-boundary sampler requires grade-0 and grade-3/4 training controls")
 
     def __iter__(self):
         rng = random.Random(self.seed + self.epoch)
         self.epoch += 1
         for step in range(self.batches_per_epoch):
             if step % 10 == 8:
-                yield [rng.choice(self.ungradable), rng.choice(self.grade_zero)]
+                if self.ungradable:
+                    yield [rng.choice(self.ungradable), rng.choice(self.grade_zero)]
+                else:
+                    # Some datasets do not label image gradability. Keep an
+                    # in-domain severity control instead of inventing grade-5 labels.
+                    yield [rng.choice(self.grade_zero), rng.choice(self.grade_severe)]
             elif step % 10 == 9:
                 yield [rng.choice(self.grade_zero), rng.choice(self.grade_severe)]
             else:
@@ -580,17 +632,30 @@ class LesionBalancedBatchSampler(Sampler[list[int]]):
         return self.batches_per_epoch
 
 
-def predictions(model: nn.Module, loader: DataLoader, device: torch.device) -> dict[str, np.ndarray]:
+def predictions(
+    model: nn.Module,
+    loader: DataLoader,
+    device: torch.device,
+    view_budget: int | None = None,
+) -> dict[str, np.ndarray]:
     model.eval()
     columns: dict[str, list[Any]] = {
         key: []
-        for key in ("grade", "referable", "quality_known", "ungradable", "risk", "ordinal_risk", "max_grade_margin", "grade_boundary_margin", "quality", "eye_id", "patient_id", "source_dataset", "image_ids")
+        for key in ("grade", "grade_prediction", "referable", "quality_known", "ungradable", "risk", "ordinal_risk", "max_grade_margin", "grade_boundary_margin", "quality", "eye_id", "patient_id", "source_dataset", "image_ids")
     }
     with torch.inference_mode():
         for images, mask, grade, referable, quality_known, ungradable, eye_id, patient_id, source, image_ids, _, _ in loader:
-            grade_logits, risk, quality = model(images.to(device), mask.to(device))
+            images = images.to(device)
+            mask = mask.to(device)
+            if view_budget is not None:
+                if not 1 <= view_budget <= images.shape[1]:
+                    raise ValueError(f"view_budget must be in 1..{images.shape[1]}")
+                mask = mask.clone()
+                mask[:, view_budget:] = False
+            grade_logits, risk, quality = model(images, mask)
             values = {
                 "grade": grade.numpy(),
+                "grade_prediction": grade_logits.float().argmax(dim=1).cpu().numpy(),
                 "referable": referable.numpy(),
                 "quality_known": quality_known.numpy(),
                 "ungradable": ungradable.numpy(),
@@ -621,19 +686,60 @@ def filter_prediction_sources(
 
 
 def select_filtered_policy(
-    scores: dict[str, np.ndarray], sources: list[str] | None, score_key: str = "risk"
+    scores: dict[str, np.ndarray],
+    sources: list[str] | None,
+    score_key: str = "risk",
+    patient_level: bool = False,
+    objective: str = "zero_miss_specificity",
+    minimum_accuracy: float = 0.90,
 ) -> tuple[dict[str, np.ndarray], dict[str, Any]]:
     filtered = filter_prediction_sources(scores, sources)
-    policy = select_policy(
-        {
+    if patient_level:
+        filtered = aggregate_predictions_by_patient(filtered)
+    policy_input = {
             "grade": filtered["grade"],
             "risk": filtered[score_key],
             "quality": filtered["quality"],
             "quality_known": filtered["quality_known"],
             "ungradable": filtered["ungradable"],
         }
-    )
+    if objective == "accuracy":
+        policy = select_accuracy_policy(policy_input)
+    elif objective == "accuracy_floor_sensitivity":
+        policy = select_accuracy_floor_sensitivity_policy(policy_input, minimum_accuracy)
+    elif objective == "zero_miss_specificity":
+        policy = select_policy(policy_input)
+    else:
+        raise ValueError(f"Unsupported policy objective: {objective}")
     return filtered, policy
+
+
+def aggregate_predictions_by_patient(scores: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
+    """Collapse both eyes to the patient screening decision without splitting patients."""
+    patient_ids = scores["patient_id"].astype(str)
+    unique_ids = list(dict.fromkeys(patient_ids.tolist()))
+    grouped = [np.flatnonzero(patient_ids == patient) for patient in unique_ids]
+    result: dict[str, np.ndarray] = {}
+    for key, values in scores.items():
+        if key in {"patient_id", "eye_id", "image_ids"}:
+            continue
+        if key == "grade":
+            result[key] = np.asarray([values[idx].astype(int).max() for idx in grouped])
+        elif key in {"referable", "ungradable", "quality_known"}:
+            result[key] = np.asarray([values[idx].astype(int).max() for idx in grouped])
+        elif key == "source_dataset":
+            for idx in grouped:
+                if len(set(values[idx].astype(str).tolist())) != 1:
+                    raise ValueError("A patient appears in multiple source datasets")
+            result[key] = np.asarray([values[idx[0]] for idx in grouped])
+        else:
+            result[key] = np.asarray([values[idx].astype(float).max() for idx in grouped])
+    result["patient_id"] = np.asarray(unique_ids)
+    result["eye_id"] = np.asarray(unique_ids)
+    result["image_ids"] = np.asarray(["|".join(scores["image_ids"][idx].astype(str)) for idx in grouped])
+    # The patient DR label is referable when either eye is grade 2 or worse.
+    result["referable"] = ((result["grade"] >= 2) & (result["grade"] <= 4)).astype(int)
+    return result
 
 
 def ordinal_referable_score(grade_logits: torch.Tensor) -> torch.Tensor:
@@ -705,6 +811,8 @@ def manifest_view_counts(rows: list[dict[str, Any]]) -> dict[str, int]:
         "eyes": len(per_eye),
         "one_view": sum(count == 1 for count in per_eye.values()),
         "two_view": sum(count == 2 for count in per_eye.values()),
+        "three_view": sum(count == 3 for count in per_eye.values()),
+        "four_view": sum(count == 4 for count in per_eye.values()),
     }
 
 
@@ -737,7 +845,7 @@ def write_predictions(
     referred = (scores[score_key].astype(float) >= float(policy["risk_threshold"])) | (
         scores["quality"].astype(float) >= float(policy["quality_threshold"])
     )
-    keys = ["eye_id", "patient_id", "source_dataset", "grade", "referable", "quality_known", "ungradable", "risk", "ordinal_risk", "max_grade_margin", "grade_boundary_margin", "quality"]
+    keys = ["eye_id", "patient_id", "source_dataset", "grade", "grade_prediction", "referable", "quality_known", "ungradable", "risk", "ordinal_risk", "max_grade_margin", "grade_boundary_margin", "quality"]
     with path.open("w", encoding="utf-8", newline="") as stream:
         writer = csv.DictWriter(stream, fieldnames=["split", *keys, "image_ids", "refer_action"])
         writer.writeheader()
@@ -768,6 +876,12 @@ def main() -> None:
     parser.add_argument("--risk-pool-temperature", type=float, default=0.25)
     parser.add_argument("--selection-score", choices=("risk", "ordinal_risk", "max_grade_margin", "grade_boundary_margin"), default="risk",
                         help="Validation score used to select the checkpoint and zero-miss policy.")
+    parser.add_argument("--selection-objective", choices=("accuracy", "accuracy_floor_sensitivity", "zero_miss_specificity"), default="zero_miss_specificity",
+                        help="Validation-only operating-point and epoch objective; the official test remains untouched until post-freeze evaluation.")
+    parser.add_argument("--minimum-accuracy", type=float, default=0.90,
+                        help="Validation accuracy floor used by accuracy_floor_sensitivity selection.")
+    parser.add_argument("--max-training-seconds", type=float, default=0.0,
+                        help="Optional wall-clock budget; stop only after a completed epoch and validation pass.")
     parser.add_argument("--lesion-presence-csv",
                         help="Optional DDR train-only mask-derived EX/HE/MA/SE labels keyed by image_basename.")
     parser.add_argument("--lesion-loss-weight", type=float, default=0.5)
@@ -784,6 +898,8 @@ def main() -> None:
     parser.add_argument("--rank-score", choices=("binary", "ordinal"), default="binary",
                         help="Train the pairwise boundary objective on the binary-risk head or the deployed ordinal risk score.")
     parser.add_argument("--image-size", type=int, default=224)
+    parser.add_argument("--max-views", type=int, default=2,
+                        help="Number of padded views per eye (use 4 for MFIDDR).")
     parser.add_argument("--epochs", type=int, default=5)
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--num-workers", type=int, default=2)
@@ -804,8 +920,12 @@ def main() -> None:
                         help="Equalize source exposure with natural within-source grades; requires batch size 2.")
     parser.add_argument("--evaluation-sources", nargs="+", default=None,
                         help="Restrict policy selection and aggregate metrics to these source_dataset values.")
+    parser.add_argument("--patient-level-selection", action="store_true",
+                        help="Select checkpoints and operating thresholds after aggregating both eyes by patient.")
     parser.add_argument("--training-sources", nargs="+", default=None,
                         help="Restrict training to these source_dataset values; held-out splits remain patient-disjoint.")
+    parser.add_argument("--fields", nargs="+", default=None,
+                        help="Restrict every split to these ordered anatomical fields, e.g. F1 for an MFIDDR single-field comparator.")
     parser.add_argument("--skip-test-evaluation", action="store_true",
                         help="Do not load or score development-test images; select this candidate using validation only.")
     parser.add_argument("--rank-weight", type=float, default=0.25)
@@ -826,6 +946,10 @@ def main() -> None:
         raise ValueError("--max-train-batches must be nonnegative")
     if args.amp_init_scale <= 0:
         raise ValueError("--amp-init-scale must be positive")
+    if not 0.0 <= args.minimum_accuracy <= 1.0:
+        raise ValueError("--minimum-accuracy must lie in [0, 1]")
+    if args.max_training_seconds < 0:
+        raise ValueError("--max-training-seconds must be nonnegative")
     if args.lesion_aux_batches < 0:
         raise ValueError("--lesion-aux-batches must be nonnegative")
     if args.hard_boundary_batches < 0:
@@ -835,7 +959,14 @@ def main() -> None:
 
     seed_all(args.seed)
     root = Path.cwd()
-    splits = read_rows(Path(args.manifest))
+    required_splits = ("train", "valid") if args.skip_test_evaluation else ("train", "valid", "test")
+    splits = read_rows(Path(args.manifest), required_splits=required_splits)
+    if args.fields:
+        allowed_fields = set(args.fields)
+        for split_name, rows in splits.items():
+            splits[split_name] = [row for row in rows if str(row.get("field", "")) in allowed_fields]
+            if not splits[split_name] and split_name in required_splits:
+                raise ValueError(f"Field filter {sorted(allowed_fields)} removed every row from {split_name}")
     device = torch.device(args.device)
     if device.type == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA requested but unavailable")
@@ -868,6 +999,7 @@ def main() -> None:
         preserve_pretrained_risk=args.preserve_pretrained_risk,
         risk_pooling=args.risk_pooling, risk_pool_temperature=args.risk_pool_temperature,
         lesion_presence_classes=4 if args.lesion_presence_csv else 0,
+        max_views=args.max_views,
     ).to(device)
     if args.init_checkpoint:
         initial = torch.load(args.init_checkpoint, map_location="cpu", weights_only=False)
@@ -897,9 +1029,11 @@ def main() -> None:
     train_rows = select_manifest_sources(splits["train"], args.training_sources, "train")
     valid_rows = select_manifest_sources(splits["valid"], args.evaluation_sources, "validation")
     test_rows = select_manifest_sources(splits["test"], args.evaluation_sources, "test")
-    train_data = EyeBags(train_rows, model.train_transform, root, lesion_presence)
-    valid_data = EyeBags(valid_rows, model.eval_transform, root)
-    test_data = None if args.skip_test_evaluation else EyeBags(test_rows, model.eval_transform, root)
+    train_data = EyeBags(train_rows, model.train_transform, root, lesion_presence, pad_to_views=args.max_views)
+    valid_data = EyeBags(valid_rows, model.eval_transform, root, pad_to_views=args.max_views)
+    test_data = None if args.skip_test_evaluation else EyeBags(
+        test_rows, model.eval_transform, root, pad_to_views=args.max_views
+    )
     pin = device.type == "cuda"
     sampler_modes = sum(bool(value) for value in (
         args.boundary_pair_batches, args.hard_boundary_batches,
@@ -921,7 +1055,9 @@ def main() -> None:
         if args.batch_size != 2:
             raise ValueError("--hard-boundary-batches requires --batch-size 2")
         train_scoring_rows = [row for row in train_rows if int(row["grade"]) in (1, 2)]
-        train_scoring_data = EyeBags(train_scoring_rows, model.eval_transform, root)
+        train_scoring_data = EyeBags(
+            train_scoring_rows, model.eval_transform, root, pad_to_views=args.max_views
+        )
         train_scoring_loader = DataLoader(
             train_scoring_data, batch_size=args.batch_size, shuffle=False,
             num_workers=args.num_workers, pin_memory=pin,
@@ -995,9 +1131,11 @@ def main() -> None:
     # it can replace the checkpoint.
     initial_pred = predictions(model, valid_loader, device)
     initial_policy_pred, initial_policy = select_filtered_policy(
-        initial_pred, args.evaluation_sources, args.selection_score
+        initial_pred, args.evaluation_sources, args.selection_score, args.patient_level_selection, args.selection_objective, args.minimum_accuracy
     )
-    _, initial_ordinal_policy = select_filtered_policy(initial_pred, args.evaluation_sources, "ordinal_risk")
+    _, initial_ordinal_policy = select_filtered_policy(
+        initial_pred, args.evaluation_sources, "ordinal_risk", args.patient_level_selection
+    )
     initial_record = {
         "epoch": 0,
         "selection_score": args.selection_score,
@@ -1023,8 +1161,11 @@ def main() -> None:
     best_state = {name: value.detach().cpu().clone() for name, value in model.state_dict().items()}
     best_record = copy.deepcopy(initial_record)
     best_key = (
-        float(initial_policy["specificity_gradable_nonreferable"]),
-        -float(initial_policy["referral_rate"]),
+        (float(initial_policy["sensitivity"]), float(initial_policy["accuracy"]), float(initial_policy["specificity_gradable_nonreferable"]))
+        if args.selection_objective == "accuracy_floor_sensitivity"
+        else (float(initial_policy["accuracy"]), float(initial_policy["sensitivity"]), float(initial_policy["specificity_gradable_nonreferable"]))
+        if args.selection_objective == "accuracy"
+        else (float(initial_policy["specificity_gradable_nonreferable"]), -float(initial_policy["referral_rate"]), 0.0)
     )
     history = [initial_record]
     Path(args.artifact).parent.mkdir(parents=True, exist_ok=True)
@@ -1035,6 +1176,8 @@ def main() -> None:
         json.dumps({"status": "TRAINING_IN_PROGRESS", "history": history}, indent=2) + "\n", encoding="utf-8"
     )
 
+    training_started = time.monotonic()
+    time_budget_reached = False
     for epoch in range(1, args.epochs + 1):
         model.train()
         total_loss, n_examples = 0.0, 0
@@ -1147,9 +1290,11 @@ def main() -> None:
 
         valid_pred = predictions(model, valid_loader, device)
         policy_valid_pred, policy = select_filtered_policy(
-            valid_pred, args.evaluation_sources, args.selection_score
+            valid_pred, args.evaluation_sources, args.selection_score, args.patient_level_selection, args.selection_objective, args.minimum_accuracy
         )
-        _, ordinal_policy = select_filtered_policy(valid_pred, args.evaluation_sources, "ordinal_risk")
+        _, ordinal_policy = select_filtered_policy(
+            valid_pred, args.evaluation_sources, "ordinal_risk", args.patient_level_selection
+        )
         record = {
             "epoch": epoch,
             "selection_score": args.selection_score,
@@ -1200,7 +1345,13 @@ def main() -> None:
         elif args.source_balanced_batches:
             record["training_sampler"] = "equal_source_exposure_natural_within_source_grades_with_quality_controls"
             record["source_balanced_batches"] = args.source_balanced_batches
-        key = (float(policy["specificity_gradable_nonreferable"]), -float(policy["referral_rate"]))
+        key = (
+            (float(policy["sensitivity"]), float(policy["accuracy"]), float(policy["specificity_gradable_nonreferable"]))
+            if args.selection_objective == "accuracy_floor_sensitivity"
+            else (float(policy["accuracy"]), float(policy["sensitivity"]), float(policy["specificity_gradable_nonreferable"]))
+            if args.selection_objective == "accuracy"
+            else (float(policy["specificity_gradable_nonreferable"]), -float(policy["referral_rate"]), 0.0)
+        )
         if key > best_key:
             best_key = key
             best_record = copy.deepcopy(record)
@@ -1211,15 +1362,20 @@ def main() -> None:
                         "args": vars(args), "claim_boundary": "DEVELOPMENT_CANDIDATE_NOT_CERTIFIED"}, args.artifact)
         (out / "progress.json").write_text(json.dumps({"status": "TRAINING_IN_PROGRESS", "history": history}, indent=2) + "\n", encoding="utf-8")
         print(json.dumps(record, sort_keys=True), flush=True)
+        if args.max_training_seconds and time.monotonic() - training_started >= args.max_training_seconds:
+            time_budget_reached = True
+            break
 
     if best_state is None or best_record is None:
         raise RuntimeError("Training produced no finite validation checkpoint")
     model.load_state_dict(best_state)
     valid_pred = predictions(model, valid_loader, device)
     policy_valid_pred, policy = select_filtered_policy(
-        valid_pred, args.evaluation_sources, args.selection_score
+        valid_pred, args.evaluation_sources, args.selection_score, args.patient_level_selection, args.selection_objective, args.minimum_accuracy
     )
-    _, ordinal_policy = select_filtered_policy(valid_pred, args.evaluation_sources, "ordinal_risk")
+    _, ordinal_policy = select_filtered_policy(
+        valid_pred, args.evaluation_sources, "ordinal_risk", args.patient_level_selection
+    )
     valid_input = {key: policy_valid_pred[key] for key in ("grade", "quality", "quality_known", "ungradable")}
     valid_input["risk"] = policy_valid_pred[args.selection_score]
     ordinal_valid_input = {key: policy_valid_pred[key] for key in ("grade", "quality", "quality_known", "ungradable")}
@@ -1231,6 +1387,8 @@ def main() -> None:
     else:
         test_pred = predictions(model, test_loader, device)
         policy_test_pred = filter_prediction_sources(test_pred, args.evaluation_sources)
+        if args.patient_level_selection:
+            policy_test_pred = aggregate_predictions_by_patient(policy_test_pred)
         test_input = {key: policy_test_pred[key] for key in ("grade", "quality", "quality_known", "ungradable")}
         test_input["risk"] = policy_test_pred[args.selection_score]
         ordinal_test_input = {key: policy_test_pred[key] for key in ("grade", "quality", "quality_known", "ungradable")}
@@ -1240,18 +1398,25 @@ def main() -> None:
         write_predictions(out / "test_predictions_development_only.csv", "test", test_pred, policy, args.selection_score)
     summary = {
         "status": "PARTIAL_TRAINING_DIAGNOSTIC_NOT_CANDIDATE" if args.max_train_batches else "DEVELOPMENT_CANDIDATE_NOT_CERTIFIED",
-        "claim_boundary": "The mixed manifest has been used for prior development and is not an untouched certification cohort.",
-        "unit_of_analysis": "eye-level bag; one DDR image or paired DRTiD/DeepDRiD macula+optic-disc images",
+        "claim_boundary": (
+            "MFIDDR official test was excluded from gradient updates and threshold/checkpoint selection and is used only for the post-freeze held-out evaluation; this is retrospective dataset evidence, not clinical validation."
+            if "mfiddr" in str(args.manifest).lower()
+            else "The mixed manifest has been used for prior development and is not an untouched certification cohort."
+        ),
+        "unit_of_analysis": "patient-level maximum-risk decision" if args.patient_level_selection else "eye-level bag",
+        "patient_level_selection": args.patient_level_selection,
         "manifest": args.manifest,
         "model_name": args.model_name,
         "risk_pooling": args.risk_pooling,
         "risk_pool_temperature": args.risk_pool_temperature,
         "selection_score": args.selection_score,
+        "selection_objective": args.selection_objective,
         "rank_score": args.rank_score,
         "cumulative_ordinal_loss_weight": args.cumulative_ordinal_weight,
         "trainable_components": trainable_info,
         "training_sources": args.training_sources,
         "evaluation_sources": args.evaluation_sources,
+        "fields": args.fields,
         "best_epoch": best_record,
         "selected_validation_policy": policy,
         "validation_metrics": evaluate_policy(valid_input, policy),
@@ -1267,7 +1432,9 @@ def main() -> None:
         "partial_training_diagnostic": bool(args.max_train_batches),
         "view_counts": {
             split: {"eyes": len(dataset), "one_view": sum(len(x["views"]) == 1 for x in dataset.items),
-                   "two_view": sum(len(x["views"]) == 2 for x in dataset.items)}
+                   "two_view": sum(len(x["views"]) == 2 for x in dataset.items),
+                   "three_view": sum(len(x["views"]) == 3 for x in dataset.items),
+                   "four_view": sum(len(x["views"]) == 4 for x in dataset.items)}
             for split, dataset in (("train", train_data), ("valid", valid_data))
         } | {"test": manifest_view_counts(test_rows)},
         "quality_label_boundary": "DDR grade 5 is ungradable; DRTiD quality labels are unknown and excluded from quality loss.",
@@ -1280,10 +1447,18 @@ def main() -> None:
             "auxiliary_head_exported": False,
         },
         "history": history,
+        "requested_epochs": args.epochs,
+        "completed_epochs": len(history) - 1,
+        "max_training_seconds": args.max_training_seconds,
+        "training_elapsed_seconds": time.monotonic() - training_started,
+        "training_time_budget_reached": time_budget_reached,
         "artifact": args.artifact,
     }
     (out / "summary.json").write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    (out / "progress.json").write_text(json.dumps({"status": "COMPLETE", "epochs": args.epochs}, indent=2) + "\n", encoding="utf-8")
+    (out / "progress.json").write_text(json.dumps({
+        "status": "COMPLETE", "epochs": len(history) - 1,
+        "training_time_budget_reached": time_budget_reached,
+    }, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(summary, indent=2, sort_keys=True), flush=True)
 
 

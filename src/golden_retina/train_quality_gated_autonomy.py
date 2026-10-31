@@ -23,7 +23,10 @@ from torch import nn
 from torch.utils.data import DataLoader, Dataset
 
 
-def read_rows(path: Path) -> dict[str, list[dict[str, Any]]]:
+def read_rows(
+    path: Path,
+    required_splits: tuple[str, ...] = ("train", "valid", "test"),
+) -> dict[str, list[dict[str, Any]]]:
     out = {name: [] for name in ("train", "valid", "test")}
     with path.open("r", encoding="utf-8", newline="") as stream:
         for row in csv.DictReader(stream):
@@ -40,7 +43,7 @@ def read_rows(path: Path) -> dict[str, list[dict[str, Any]]]:
                 raise ValueError(f"Unexpected grade 5 outside DDR: {row['image_id']}")
             out[split].append(row)
     for split, rows in out.items():
-        if not rows:
+        if not rows and split in required_splits:
             raise ValueError(f"No {split} rows found")
         if any(int(r["grade"]) not in range(6) for r in rows):
             raise ValueError(f"Invalid grade in {split}")
@@ -174,6 +177,147 @@ def select_policy(pred: dict[str, np.ndarray]) -> dict[str, Any]:
     return best
 
 
+def select_accuracy_policy(pred: dict[str, np.ndarray]) -> dict[str, Any]:
+    """Choose the validation operating point maximizing binary accuracy.
+
+    Ties prefer higher sensitivity, then specificity. This is a validation-only
+    threshold-selection rule; it does not certify a clinical risk bound.
+    """
+    grade = pred["grade"].astype(int)
+    disease_positive = (grade >= 2) & (grade <= 4)
+    negative = grade <= 1
+    ungradable = pred["ungradable"].astype(bool) & pred["quality_known"].astype(bool)
+    if not disease_positive.any() or not negative.any():
+        raise ValueError("Validation needs both DR-positive and DR-negative cases")
+
+    if ungradable.any():
+        min_ungradable_quality = float(pred["quality"][ungradable].min())
+        q_candidates = {min_ungradable_quality}
+        q_candidates.update(
+            float(value)
+            for value in pred["quality"][disease_positive]
+            if float(value) <= min_ungradable_quality
+        )
+    else:
+        q_candidates = {2.0}
+
+    risk_scores = np.asarray(pred["risk"], dtype=float)
+    if not np.isfinite(risk_scores).all():
+        raise ValueError("Risk scores must be finite for accuracy threshold selection")
+    risk_candidates = sorted(set(float(value) for value in risk_scores))
+    risk_candidates.append(float(np.nextafter(max(risk_candidates), np.inf)))
+
+    best: dict[str, Any] | None = None
+    best_key = (-1.0, -1.0, -1.0)
+    for q_threshold in sorted(q_candidates):
+        q_refer = pred["quality"].astype(float) >= q_threshold
+        for risk_threshold in risk_candidates:
+            referred = q_refer | (risk_scores >= risk_threshold)
+            tp = int((disease_positive & referred).sum())
+            tn = int((negative & ~referred).sum())
+            fp = int((negative & referred).sum())
+            fn = int((disease_positive & ~referred).sum())
+            sensitivity = tp / int(disease_positive.sum())
+            specificity = tn / int(negative.sum())
+            accuracy = (tp + tn) / int(len(grade))
+            candidate = {
+                "risk_threshold": risk_threshold,
+                "quality_threshold": q_threshold,
+                "accuracy": float(accuracy),
+                "sensitivity": float(sensitivity),
+                "specificity_gradable_nonreferable": float(specificity),
+                "missed_referable_dr": fn,
+                "missed_ungradable": int((ungradable & ~referred).sum()),
+                "true_positive": tp,
+                "true_negative": tn,
+                "false_positive_referrals": fp,
+                "false_negative_clearances": fn,
+                "n_referable_dr": int(disease_positive.sum()),
+                "n_ungradable": int(ungradable.sum()),
+                "n_gradable_nonreferable": int(negative.sum()),
+                "referral_rate": float(referred.mean()),
+                "n": int(len(grade)),
+                "selection_objective": "maximum_validation_accuracy_then_sensitivity_then_specificity",
+            }
+            key = (accuracy, sensitivity, specificity)
+            if key > best_key:
+                best, best_key = candidate, key
+    if best is None:
+        raise RuntimeError("No accuracy-policy candidates")
+    return best
+
+
+def select_accuracy_floor_sensitivity_policy(
+    pred: dict[str, np.ndarray], minimum_accuracy: float = 0.90
+) -> dict[str, Any]:
+    """Maximize sensitivity among validation policies meeting an accuracy floor."""
+    if not 0.0 <= minimum_accuracy <= 1.0:
+        raise ValueError("minimum_accuracy must lie in [0, 1]")
+    grade = pred["grade"].astype(int)
+    positive = (grade >= 2) & (grade <= 4)
+    negative = grade <= 1
+    ungradable = pred["ungradable"].astype(bool) & pred["quality_known"].astype(bool)
+    if not positive.any() or not negative.any():
+        raise ValueError("Validation needs both referable and nonreferable patients")
+    risk = np.asarray(pred["risk"], dtype=float)
+    quality = np.asarray(pred["quality"], dtype=float)
+    if not np.isfinite(risk).all() or not np.isfinite(quality).all():
+        raise ValueError("Scores must be finite for accuracy-floor threshold selection")
+    if ungradable.any():
+        q_min = float(quality[ungradable].min())
+        q_candidates = {q_min}
+        q_candidates.update(float(value) for value in quality[positive] if float(value) <= q_min)
+    else:
+        q_candidates = {2.0}
+    thresholds = sorted(set(float(value) for value in risk))
+    thresholds.append(float(np.nextafter(max(thresholds), np.inf)))
+
+    best: dict[str, Any] | None = None
+    best_key = (-1.0, -1.0, -1.0)
+    for q_threshold in sorted(q_candidates):
+        for risk_threshold in thresholds:
+            referred = (quality >= q_threshold) | (risk >= risk_threshold)
+            tp = int((positive & referred).sum())
+            tn = int((negative & ~referred).sum())
+            fp = int((negative & referred).sum())
+            fn = int((positive & ~referred).sum())
+            sensitivity = tp / int(positive.sum())
+            specificity = tn / int(negative.sum())
+            accuracy = (tp + tn) / int(len(grade))
+            if accuracy + 1e-12 < minimum_accuracy:
+                continue
+            candidate = {
+                "risk_threshold": risk_threshold,
+                "quality_threshold": q_threshold,
+                "accuracy": float(accuracy),
+                "sensitivity": float(sensitivity),
+                "specificity_gradable_nonreferable": float(specificity),
+                "missed_referable_dr": fn,
+                "missed_ungradable": int((ungradable & ~referred).sum()),
+                "true_positive": tp,
+                "true_negative": tn,
+                "false_positive_referrals": fp,
+                "false_negative_clearances": fn,
+                "n_referable_dr": int(positive.sum()),
+                "n_ungradable": int(ungradable.sum()),
+                "n_gradable_nonreferable": int(negative.sum()),
+                "referral_rate": float(referred.mean()),
+                "n": int(len(grade)),
+                "minimum_accuracy_floor": float(minimum_accuracy),
+                "accuracy_floor_met": True,
+                "selection_objective": "maximum_validation_sensitivity_subject_to_accuracy_floor",
+            }
+            key = (sensitivity, accuracy, specificity)
+            if key > best_key:
+                best, best_key = candidate, key
+    if best is not None:
+        return best
+    fallback = select_accuracy_policy(pred)
+    fallback["minimum_accuracy_floor"] = float(minimum_accuracy)
+    fallback["accuracy_floor_met"] = False
+    return fallback
+
+
 def evaluate_policy(pred: dict[str, np.ndarray], policy: dict[str, Any]) -> dict[str, Any]:
     grade = pred["grade"].astype(int)
     disease_positive = (grade >= 2) & (grade <= 4)
@@ -190,6 +334,8 @@ def evaluate_policy(pred: dict[str, np.ndarray], policy: dict[str, Any]) -> dict
         "missed_known_ungradable": int((~referred & ungradable).sum()),
         "specificity_gradable_nonreferable": float((~referred[negative]).mean()) if negative.any() else None,
         "sensitivity_referable_dr": float(referred[disease_positive].mean()) if disease_positive.any() else None,
+        "accuracy": float(((referred[disease_positive]).sum() + (~referred[negative]).sum()) / len(grade)) if len(grade) else None,
+        "balanced_accuracy": float((referred[disease_positive].mean() + (~referred[negative]).mean()) / 2) if disease_positive.any() and negative.any() else None,
         "ungradable_routed_to_refer": float(referred[ungradable].mean()) if ungradable.any() else None,
         "case_action_coverage": 1.0,
         "referral_rate": float(referred.mean()),
