@@ -1,0 +1,21 @@
+[Unit]
+Description=Golden Retina research-only inference API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=burakaksu
+WorkingDirectory=/data/golden-retina/workspace
+Environment=PYTHONPATH=/data/golden-retina/workspace/src
+EnvironmentFile=/etc/golden-retina/api.env
+ExecStart=/data/golden-retina/venv/bin/uvicorn golden_retina.research_inference_api:app --host 127.0.0.1 --port 8769 --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,114 @@
+{
+  "created_utc": "2026-11-08T04:13:36.726127+00:00",
+  "purpose": "Integrity list for the public-safe Block 20\u201325 code and aggregate release.",
+  "checkpoint_sha256": "61f2e891a8d71e186876fa2dec437afa73b0970f33e92412850af7c24d19c926",
+  "checkpoint_in_repository": false,
+  "raw_images_manifests_and_row_level_predictions_in_repository": false,
+  "files": [
+    {
+      "path": "docs/frozen_model_card_block21.md",
+      "sha256": "e8a27d3dd2bb04c923d3fd51850eebf19a3b7d82e83921c543963bea9b318660",
+      "bytes": 3782
+    },
+    {
+      "path": "docs/research_inference_api.md",
+      "sha256": "7b37df5f667f6dd21b6eedf8cb12216b7faa38355bb82ced77732b4cc4f9dbf1",
+      "bytes": 3051
+    },
+    {
+      "path": "deploy/golden-retina-research-api.service",
+      "sha256": "a7693c2bab2551fd5a451b1052c6eaa0af584826b361b635e9f063948c80b5ff",
+      "bytes": 590
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "de3ff4cae6cb44431a7d344f34cf278a53993a649642f96150cbf48777e71732",
+      "bytes": 175
+    },
+    {
+      "path": "src/golden_retina/compare_paired_view_validation.py",
+      "sha256": "39d5bb11b42f529f0b76068f0c74f12ea1e486f3afb4daeb11e036d58c457ec2",
+      "bytes": 6368
+    },
+    {
+      "path": "src/golden_retina/evaluate_zhejiang_exploratory.py",
+      "sha256": "5a1285924b5ff6dc48816f096905d0d803721589663814c41b88fee225ec9adf",
+      "bytes": 9705
+    },
+    {
+      "path": "src/golden_retina/prepare_paired_view_manifest.py",
+      "sha256": "52f79d58eace34d8f7bd3793f3eaee0540992faa27ac7da62613b8d06777266e",
+      "bytes": 7832
+    },
+    {
+      "path": "src/golden_retina/research_inference_api.py",
+      "sha256": "cf6354fae2a81256f0a1bfc57f12cba5738009ac51c876a384cb67b1a598768b",
+      "bytes": 9636
+    },
+    {
+      "path": "tools/technical_dev/analyze_zhejiang_patient_sampling_sensitivity.py",
+      "sha256": "eebac90713b3090918276cacc962d56ce15e1de51718b04dc9d0a050b4351b5a",
+      "bytes": 4414
+    },
+    {
+      "path": "tools/technical_dev/analyze_zhejiang_quality_strata.py",
+      "sha256": "cc400a03d73a4e32cb7f9b9478dc59e35fc72c69f1c2aca2b0953d489c03e29a",
+      "bytes": 4837
+    },
+    {
+      "path": "tools/technical_dev/build_zhejiang_manifest.py",
+      "sha256": "9d784d13163752a6033bf15fdc8c014617c09bdbb9d8bc9a41ec91af0504996b",
+      "bytes": 3721
+    },
+    {
+      "path": "tools/technical_dev/extract_zhejiang_archive.py",
+      "sha256": "a4445510b5c569821a008351f3ca5371b589ff6c38b90530a070e3d42e1f7e9a",
+      "bytes": 1485
+    },
+    {
+      "path": "tools/technical_dev/inspect_xlsx_stdlib.py",
+      "sha256": "c77a0cde990ebd5f98839d2b0398b24cf208a3ef6c0a855479b405ab6ed98cc9",
+      "bytes": 2809
+    },
+    {
+      "path": "tools/technical_dev/plot_zhejiang_transfer_svg.py",
+      "sha256": "ca45367135fdd3800ce2d0a1a344db0603306bc97dc472c7ab567faec6b9618b",
+      "bytes": 4956
+    },
+    {
+      "path": "tools/technical_dev/smoke_research_inference_api.py",
+      "sha256": "9fb77fe3f917889b4e092f9c68d14410d37fb401671a6cecbb6f84e1dc951ccd",
+      "bytes": 6847
+    },
+    {
+      "path": "results/technical_dev_20261107/api_smoke_report.json",
+      "sha256": "80c53248eaa99bb4921da2ca5c6b36e1f0a2722a3de72f39ad6dc53ae8236514",
+      "bytes": 1386
+    },
+    {
+      "path": "results/technical_dev_20261107/block20_paired_view_vs_macula_findings.md",
+      "sha256": "20eeb3103e678a31e15d22740196d1f11abcf260cb04e5f143fe89769eef4390",
+      "bytes": 3149
+    },
+    {
+      "path": "results/technical_dev_20261107/zhejiang_disease_transfer_aggregate.csv",
+      "sha256": "393892c66b9a319789fb0d77e35a97809cd62e7dbea190ae15c5efa85b0012f2",
+      "bytes": 1084
+    },
+    {
+      "path": "results/technical_dev_20261107/zhejiang_exploratory_findings.md",
+      "sha256": "40642588dd04fcc9a2c36e38b25cc406bb90108a0220ff4db09dec0d56dfaed0",
+      "bytes": 4314
+    },
+    {
+      "path": "results/technical_dev_20261107/zhejiang_external_transfer_public_run_card.json",
+      "sha256": "8f9914e2cc1409d7612b06a8d3866959444e4fbfe64e299013c359dbb2055f64",
+      "bytes": 9078
+    },
+    {
+      "path": "results/technical_dev_20261107/zhejiang_transfer_sampling_quality.svg",
+      "sha256": "5e84a8b8bb33a37c2c8e258a03b9d88c351a36e67cfd9e00625d669773c1ba69",
+      "bytes": 11196
+    }
+  ]
+}

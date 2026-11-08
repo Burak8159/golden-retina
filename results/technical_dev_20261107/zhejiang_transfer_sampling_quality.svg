@@ -1,0 +1,103 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="620" viewBox="0 0 1320 620">
+<rect width="100%" height="100%" fill="#fff"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#172033}.title{font-size:25px;font-weight:700}.sub{font-size:14px;fill:#4d5a70}.axis{font-size:13px}.legend{font-size:13px}.note{font-size:12px;fill:#39465b}.panel{font-size:17px;font-weight:700}</style>
+<text x="42" y="38" class="title">Frozen DR-risk score on Zhejiang UWF: aggregation and quality sensitivity</text>
+<text x="42" y="62" class="sub">One-shot retrospective transfer analysis · patient grouping retained · no threshold/model tuning</text>
+<text x="82" y="112" class="panel">A. Disease-vs-healthy AUROC depends on patient aggregation</text>
+<line x1="82" y1="500.0" x2="802" y2="500.0" stroke="#e5e9f0"/>
+<text x="70" y="504.0" text-anchor="end" class="axis">0.25</text>
+<line x1="82" y1="430.0" x2="802" y2="430.0" stroke="#e5e9f0"/>
+<text x="70" y="434.0" text-anchor="end" class="axis">0.40</text>
+<line x1="82" y1="360.0" x2="802" y2="360.0" stroke="#e5e9f0"/>
+<text x="70" y="364.0" text-anchor="end" class="axis">0.55</text>
+<line x1="82" y1="290.0" x2="802" y2="290.0" stroke="#e5e9f0"/>
+<text x="70" y="294.0" text-anchor="end" class="axis">0.70</text>
+<line x1="82" y1="220.0" x2="802" y2="220.0" stroke="#e5e9f0"/>
+<text x="70" y="224.0" text-anchor="end" class="axis">0.85</text>
+<line x1="82" y1="150.0" x2="802" y2="150.0" stroke="#e5e9f0"/>
+<text x="70" y="154.0" text-anchor="end" class="axis">1.00</text>
+<line x1="82" y1="150" x2="82" y2="500" stroke="#667085"/><line x1="82" y1="500" x2="802" y2="500" stroke="#667085"/>
+<text x="124" y="524" text-anchor="middle" class="axis">AMD</text>
+<text x="250" y="524" text-anchor="middle" class="axis">DR</text>
+<text x="376" y="524" text-anchor="middle" class="axis">PM</text>
+<text x="502" y="524" text-anchor="middle" class="axis">RD</text>
+<text x="628" y="524" text-anchor="middle" class="axis">RVO</text>
+<text x="754" y="524" text-anchor="middle" class="axis">Uveitis</text>
+<line x1="124" y1="420.6" x2="124" y2="503.9" stroke="#2563eb" stroke-width="2"/><line x1="119" y1="420.6" x2="129" y2="420.6" stroke="#2563eb"/><line x1="119" y1="503.9" x2="129" y2="503.9" stroke="#2563eb"/>
+<circle cx="124" cy="460.9" r="5" fill="#2563eb"/>
+<line x1="250" y1="245.7" x2="250" y2="332.3" stroke="#2563eb" stroke-width="2"/><line x1="245" y1="245.7" x2="255" y2="245.7" stroke="#2563eb"/><line x1="245" y1="332.3" x2="255" y2="332.3" stroke="#2563eb"/>
+<circle cx="250" cy="287.9" r="5" fill="#2563eb"/>
+<line x1="376" y1="265.7" x2="376" y2="333.4" stroke="#2563eb" stroke-width="2"/><line x1="371" y1="265.7" x2="381" y2="265.7" stroke="#2563eb"/><line x1="371" y1="333.4" x2="381" y2="333.4" stroke="#2563eb"/>
+<circle cx="376" cy="298.1" r="5" fill="#2563eb"/>
+<line x1="502" y1="172.2" x2="502" y2="207.5" stroke="#2563eb" stroke-width="2"/><line x1="497" y1="172.2" x2="507" y2="172.2" stroke="#2563eb"/><line x1="497" y1="207.5" x2="507" y2="207.5" stroke="#2563eb"/>
+<circle cx="502" cy="189.0" r="5" fill="#2563eb"/>
+<line x1="628" y1="176.3" x2="628" y2="213.0" stroke="#2563eb" stroke-width="2"/><line x1="623" y1="176.3" x2="633" y2="176.3" stroke="#2563eb"/><line x1="623" y1="213.0" x2="633" y2="213.0" stroke="#2563eb"/>
+<circle cx="628" cy="193.1" r="5" fill="#2563eb"/>
+<line x1="754" y1="258.7" x2="754" y2="329.3" stroke="#2563eb" stroke-width="2"/><line x1="749" y1="258.7" x2="759" y2="258.7" stroke="#2563eb"/><line x1="749" y1="329.3" x2="759" y2="329.3" stroke="#2563eb"/>
+<circle cx="754" cy="292.2" r="5" fill="#2563eb"/>
+<polyline points="124,460.9 250,287.9 376,298.1 502,189.0 628,193.1 754,292.2" fill="none" stroke="#2563eb" stroke-width="2.4"/>
+<line x1="124" y1="340.9" x2="124" y2="435.6" stroke="#dc2626" stroke-width="2"/><line x1="119" y1="340.9" x2="129" y2="340.9" stroke="#dc2626"/><line x1="119" y1="435.6" x2="129" y2="435.6" stroke="#dc2626"/>
+<circle cx="124" cy="389.1" r="5" fill="#dc2626"/>
+<line x1="250" y1="179.3" x2="250" y2="235.0" stroke="#dc2626" stroke-width="2"/><line x1="245" y1="179.3" x2="255" y2="179.3" stroke="#dc2626"/><line x1="245" y1="235.0" x2="255" y2="235.0" stroke="#dc2626"/>
+<circle cx="250" cy="205.3" r="5" fill="#dc2626"/>
+<line x1="376" y1="264.2" x2="376" y2="332.0" stroke="#dc2626" stroke-width="2"/><line x1="371" y1="264.2" x2="381" y2="264.2" stroke="#dc2626"/><line x1="371" y1="332.0" x2="381" y2="332.0" stroke="#dc2626"/>
+<circle cx="376" cy="297.6" r="5" fill="#dc2626"/>
+<line x1="502" y1="172.2" x2="502" y2="209.3" stroke="#dc2626" stroke-width="2"/><line x1="497" y1="172.2" x2="507" y2="172.2" stroke="#dc2626"/><line x1="497" y1="209.3" x2="507" y2="209.3" stroke="#dc2626"/>
+<circle cx="502" cy="189.1" r="5" fill="#dc2626"/>
+<line x1="628" y1="174.9" x2="628" y2="213.5" stroke="#dc2626" stroke-width="2"/><line x1="623" y1="174.9" x2="633" y2="174.9" stroke="#dc2626"/><line x1="623" y1="213.5" x2="633" y2="213.5" stroke="#dc2626"/>
+<circle cx="628" cy="193.3" r="5" fill="#dc2626"/>
+<line x1="754" y1="259.9" x2="754" y2="326.8" stroke="#dc2626" stroke-width="2"/><line x1="749" y1="259.9" x2="759" y2="259.9" stroke="#dc2626"/><line x1="749" y1="326.8" x2="759" y2="326.8" stroke="#dc2626"/>
+<circle cx="754" cy="292.9" r="5" fill="#dc2626"/>
+<polyline points="124,389.1 250,205.3 376,297.6 502,189.1 628,193.3 754,292.9" fill="none" stroke="#dc2626" stroke-width="2.4"/>
+<line x1="124" y1="369.2" x2="124" y2="464.9" stroke="#059669" stroke-width="2"/><line x1="119" y1="369.2" x2="129" y2="369.2" stroke="#059669"/><line x1="119" y1="464.9" x2="129" y2="464.9" stroke="#059669"/>
+<circle cx="124" cy="416.4" r="5" fill="#059669"/>
+<line x1="250" y1="210.1" x2="250" y2="287.7" stroke="#059669" stroke-width="2"/><line x1="245" y1="210.1" x2="255" y2="210.1" stroke="#059669"/><line x1="245" y1="287.7" x2="255" y2="287.7" stroke="#059669"/>
+<circle cx="250" cy="246.6" r="5" fill="#059669"/>
+<line x1="376" y1="265.7" x2="376" y2="333.5" stroke="#059669" stroke-width="2"/><line x1="371" y1="265.7" x2="381" y2="265.7" stroke="#059669"/><line x1="371" y1="333.5" x2="381" y2="333.5" stroke="#059669"/>
+<circle cx="376" cy="297.8" r="5" fill="#059669"/>
+<line x1="502" y1="172.2" x2="502" y2="207.8" stroke="#059669" stroke-width="2"/><line x1="497" y1="172.2" x2="507" y2="172.2" stroke="#059669"/><line x1="497" y1="207.8" x2="507" y2="207.8" stroke="#059669"/>
+<circle cx="502" cy="189.0" r="5" fill="#059669"/>
+<line x1="628" y1="176.2" x2="628" y2="213.3" stroke="#059669" stroke-width="2"/><line x1="623" y1="176.2" x2="633" y2="176.2" stroke="#059669"/><line x1="623" y1="213.3" x2="633" y2="213.3" stroke="#059669"/>
+<circle cx="628" cy="193.0" r="5" fill="#059669"/>
+<line x1="754" y1="258.2" x2="754" y2="326.0" stroke="#059669" stroke-width="2"/><line x1="749" y1="258.2" x2="759" y2="258.2" stroke="#059669"/><line x1="749" y1="326.0" x2="759" y2="326.0" stroke="#059669"/>
+<circle cx="754" cy="292.1" r="5" fill="#059669"/>
+<polyline points="124,416.4 250,246.6 376,297.8 502,189.0 628,193.0 754,292.1" fill="none" stroke="#059669" stroke-width="2.4"/>
+<text x="110" y="535" class="legend" fill="#2563eb">● Mean per patient</text><text x="300" y="535" class="legend" fill="#dc2626">● Max per patient</text><text x="490" y="535" class="legend" fill="#059669">● One deterministic eye</text>
+<text x="875" y="112" class="panel">B. Ranking within good-quality images</text>
+<line x1="875" y1="500.0" x2="1255" y2="500.0" stroke="#e5e9f0"/>
+<text x="865" y="504.0" text-anchor="end" class="axis">0.25</text>
+<line x1="875" y1="430.0" x2="1255" y2="430.0" stroke="#e5e9f0"/>
+<text x="865" y="434.0" text-anchor="end" class="axis">0.40</text>
+<line x1="875" y1="360.0" x2="1255" y2="360.0" stroke="#e5e9f0"/>
+<text x="865" y="364.0" text-anchor="end" class="axis">0.55</text>
+<line x1="875" y1="290.0" x2="1255" y2="290.0" stroke="#e5e9f0"/>
+<text x="865" y="294.0" text-anchor="end" class="axis">0.70</text>
+<line x1="875" y1="220.0" x2="1255" y2="220.0" stroke="#e5e9f0"/>
+<text x="865" y="224.0" text-anchor="end" class="axis">0.85</text>
+<line x1="875" y1="150.0" x2="1255" y2="150.0" stroke="#e5e9f0"/>
+<text x="865" y="154.0" text-anchor="end" class="axis">1.00</text>
+<line x1="875" y1="150" x2="875" y2="500" stroke="#667085"/><line x1="875" y1="500" x2="1255" y2="500" stroke="#667085"/>
+<text x="909" y="524" text-anchor="middle" class="axis">AMD</text>
+<text x="969" y="524" text-anchor="middle" class="axis">DR</text>
+<text x="1029" y="524" text-anchor="middle" class="axis">PM</text>
+<text x="1089" y="524" text-anchor="middle" class="axis">RD</text>
+<text x="1149" y="524" text-anchor="middle" class="axis">RVO</text>
+<text x="1209" y="524" text-anchor="middle" class="axis">Uveitis</text>
+<line x1="909" y1="377.5" x2="909" y2="468.5" stroke="#64748b" stroke-width="2"/><circle cx="909" cy="421.5" r="4.5" fill="#64748b"/>
+<line x1="969" y1="222.1" x2="969" y2="289.4" stroke="#64748b" stroke-width="2"/><circle cx="969" cy="254.0" r="4.5" fill="#64748b"/>
+<line x1="1029" y1="263.6" x2="1029" y2="332.2" stroke="#64748b" stroke-width="2"/><circle cx="1029" cy="297.1" r="4.5" fill="#64748b"/>
+<line x1="1089" y1="172.3" x2="1089" y2="208.5" stroke="#64748b" stroke-width="2"/><circle cx="1089" cy="188.8" r="4.5" fill="#64748b"/>
+<line x1="1149" y1="175.7" x2="1149" y2="214.4" stroke="#64748b" stroke-width="2"/><circle cx="1149" cy="193.1" r="4.5" fill="#64748b"/>
+<line x1="1209" y1="260.4" x2="1209" y2="328.1" stroke="#64748b" stroke-width="2"/><circle cx="1209" cy="292.3" r="4.5" fill="#64748b"/>
+<polyline points="909,421.5 969,254.0 1029,297.1 1089,188.8 1149,193.1 1209,292.3" fill="none" stroke="#64748b" stroke-width="2.2"/>
+<line x1="909" y1="372.8" x2="909" y2="472.2" stroke="#7c3aed" stroke-width="2"/><circle cx="909" cy="422.4" r="4.5" fill="#7c3aed"/>
+<line x1="969" y1="228.7" x2="969" y2="301.5" stroke="#7c3aed" stroke-width="2"/><circle cx="969" cy="264.2" r="4.5" fill="#7c3aed"/>
+<line x1="1029" y1="279.5" x2="1029" y2="352.7" stroke="#7c3aed" stroke-width="2"/><circle cx="1029" cy="314.0" r="4.5" fill="#7c3aed"/>
+<line x1="1089" y1="174.9" x2="1089" y2="219.2" stroke="#7c3aed" stroke-width="2"/><circle cx="1089" cy="195.0" r="4.5" fill="#7c3aed"/>
+<line x1="1149" y1="175.3" x2="1149" y2="213.5" stroke="#7c3aed" stroke-width="2"/><circle cx="1149" cy="193.8" r="4.5" fill="#7c3aed"/>
+<line x1="1209" y1="269.9" x2="1209" y2="346.3" stroke="#7c3aed" stroke-width="2"/><circle cx="1209" cy="307.4" r="4.5" fill="#7c3aed"/>
+<polyline points="909,422.4 969,264.2 1029,314.0 1089,195.0 1149,193.8 1209,307.4" fill="none" stroke="#7c3aed" stroke-width="2.2"/>
+<text x="900" y="535" class="legend" fill="#64748b">● All quality</text><text x="1045" y="535" class="legend" fill="#7c3aed">● Good overall quality</text>
+<text x="42" y="578" class="note">DR is the only trained disease target; other categories are exploratory transfer scores. Case counts are enriched, not prevalence estimates.</text>
+<text x="42" y="599" class="note">Quality-stratified estimates are image-level AUROC with patient-cluster bootstrap; poor-quality controls are sparse (n=3).</text>
+</svg>

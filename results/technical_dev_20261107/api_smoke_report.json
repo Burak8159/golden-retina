@@ -1,0 +1,28 @@
+{
+  "project": "Golden Retina",
+  "test_type": "synthetic-only private API integration smoke",
+  "completed_at_utc": "2026-11-08T04:10:30.787751+00:00",
+  "service": {
+    "model_version": "golden-retina-convnext-tiny-paired-block21-2026-11-08",
+    "checkpoint_sha256": "61f2e891a8d71e186876fa2dec437afa73b0970f33e92412850af7c24d19c926",
+    "bind": "VM loopback only; reached from Mac through SSH/IAP port forward",
+    "publicly_exposed": false,
+    "uploaded_images_retained_by_application": false
+  },
+  "checks": {
+    "model_health_and_hash_load": "PASS",
+    "one_view_synthetic_inference": "PASS",
+    "two_view_synthetic_inference": "PASS",
+    "request_id_echo_and_fresh_request_association": "PASS",
+    "unauthenticated_request_rejected_before_body_parse_401": "PASS",
+    "clinical_intended_use_rejected_403": "PASS",
+    "corrupt_image_rejected_415": "PASS",
+    "oversized_image_rejected_413": "PASS",
+    "mid_upload_client_disconnect_recovery": "PASS",
+    "systemd_restart_and_post_restart_inference": "PASS",
+    "research_only_non_actionable_output": "PASS",
+    "threshold_semantics_ungradable_risk_first": "PASS"
+  },
+  "data_boundary": "Generated synthetic images only; no patient images or row-level predictions were used for these API checks.",
+  "interpretation": "Software integration evidence only; not clinical validation or model performance evidence."
+}

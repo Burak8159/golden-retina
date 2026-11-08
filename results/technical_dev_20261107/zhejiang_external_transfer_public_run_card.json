@@ -1,0 +1,297 @@
+{
+  "project": "Golden Retina",
+  "evaluation": "One-shot frozen-checkpoint exploratory source-transfer analysis",
+  "completed_at_utc": "2026-11-08T03:42:53.809635+00:00",
+  "dataset": {
+    "name": "Zhejiang Provincial People’s Hospital open ultra-widefield fundus dataset",
+    "dataset_record": "https://springernature.figshare.com/articles/dataset/Open_ultrawidefield_fundus_image_dataset_with_disease_diagnosis_and_clinical_image_quality_assessment/26936446",
+    "source_paper": "https://pmc.ncbi.nlm.nih.gov/articles/PMC11579006/",
+    "images": 700,
+    "patients": 602,
+    "eyes": 689,
+    "images_by_diagnosis": {
+      "DR": 100,
+      "AMD": 100,
+      "RVO": 100,
+      "PM": 100,
+      "Uveitis": 100,
+      "RD": 100,
+      "Healthy": 100
+    },
+    "patients_by_diagnosis": {
+      "AMD": 51,
+      "DR": 53,
+      "Healthy": 99,
+      "PM": 99,
+      "RD": 100,
+      "RVO": 100,
+      "Uveitis": 100
+    },
+    "manifest_sha256": "37e0b74c32306414e8fe1a7526dab8ad902da65506d73b2eac26f8c236dbcd68",
+    "label_semantics": "Source-defined diagnosis category; DR means diagnosis vs healthy, not referable-DR grade."
+  },
+  "locked_model": {
+    "model_version": "golden-retina-convnext-tiny-paired-block21-2026-11-08",
+    "backbone": "ConvNeXt-Tiny, fine-tuned paired-view fusion model",
+    "checkpoint_sha256": "61f2e891a8d71e186876fa2dec437afa73b0970f33e92412850af7c24d19c926",
+    "thresholds_or_weights_changed_after_freeze": false,
+    "thresholds_used_for_binary_metrics": false
+  },
+  "domain": "Single-center Optos 200Tx ultra-widefield data; training sources used different fundus acquisition domains.",
+  "dr_vs_healthy_patient_ranking": {
+    "n_dr_patients": 53,
+    "n_healthy_patients": 99,
+    "image_count_imbalance": "53 DR patients contribute 100 images (47 bilateral); 99 healthy patients contribute 100 images.",
+    "aggregation_sensitivity": {
+      "patient_mean": {
+        "definition": "mean of image scores per patient",
+        "auroc": 0.7045931008195159,
+        "auprc": 0.6539109978913963,
+        "patient_bootstrap_95_ci": {
+          "auroc_ci95": [
+            0.6092862588145608,
+            0.7949304364398704
+          ],
+          "auprc_ci95": [
+            0.553925925151765,
+            0.7601024342015053
+          ]
+        }
+      },
+      "first_eye": {
+        "definition": "deterministic eye selection",
+        "auroc": 0.7929292929292929,
+        "auprc": 0.7672215362513329,
+        "patient_bootstrap_95_ci": {
+          "auroc_ci95": [
+            0.7049528301886792,
+            0.8711644749380598
+          ],
+          "auprc_ci95": [
+            0.678536318648382,
+            0.8520383698564652
+          ]
+        }
+      },
+      "patient_max": {
+        "definition": "maximum image score per patient",
+        "auroc": 0.8814560701353155,
+        "auprc": 0.8516504288950388,
+        "patient_bootstrap_95_ci": {
+          "auroc_ci95": [
+            0.8177815894797026,
+            0.9373022679626453
+          ],
+          "auprc_ci95": [
+            0.7788319085831572,
+            0.9157192716370848
+          ]
+        }
+      }
+    }
+  },
+  "other_source_label_category_vs_healthy_patient_mean_ranking_using_dr_trained_score": {
+    "AMD": {
+      "patients_with_condition": 51,
+      "healthy_patients": 99,
+      "auroc": 0.33382848088730444,
+      "auroc_95_ci": [
+        0.24162953060011885,
+        0.42011289364230525
+      ],
+      "auprc": 0.2882524326522849,
+      "auprc_95_ci": [
+        0.2415865598431291,
+        0.36769982057328804
+      ]
+    },
+    "PM": {
+      "patients_with_condition": 99,
+      "healthy_patients": 99,
+      "auroc": 0.6826344250586674,
+      "auroc_95_ci": [
+        0.6069227629833691,
+        0.7520686664626057
+      ],
+      "auprc": 0.697277373695574,
+      "auprc_95_ci": [
+        0.6199316728906651,
+        0.7722395741977575
+      ]
+    },
+    "RD": {
+      "patients_with_condition": 100,
+      "healthy_patients": 99,
+      "auroc": 0.9165151515151514,
+      "auroc_95_ci": [
+        0.8767651515151514,
+        0.952425505050505
+      ],
+      "auprc": 0.9273666572846566,
+      "auprc_95_ci": [
+        0.8947653460802957,
+        0.9586571850142062
+      ]
+    },
+    "RVO": {
+      "patients_with_condition": 100,
+      "healthy_patients": 99,
+      "auroc": 0.9076262626262626,
+      "auroc_95_ci": [
+        0.8649911616161616,
+        0.9437386363636364
+      ],
+      "auprc": 0.9253006160738642,
+      "auprc_95_ci": [
+        0.8899860840755006,
+        0.9549064871324019
+      ]
+    },
+    "Uveitis": {
+      "patients_with_condition": 100,
+      "healthy_patients": 99,
+      "auroc": 0.6952525252525252,
+      "auroc_95_ci": [
+        0.6157992424242424,
+        0.7669772727272727
+      ],
+      "auprc": 0.7345368919009556,
+      "auprc_95_ci": [
+        0.6655968635889583,
+        0.8044389795296669
+      ]
+    }
+  },
+  "quality_transfer": {
+    "source_quality_label": "Ground Truth Overall quality: 0=poor, 1=good",
+    "score_semantics": "Frozen DDR ungradable-risk score; mismatch to Zhejiang poor/good overall-quality target.",
+    "frozen_threshold_metrics": {
+      "poor_images": 117,
+      "good_images": 583,
+      "auroc": 0.6879682162701033,
+      "auprc": 0.37765629364261305,
+      "fixed_validation_threshold": 0.21102282404899597,
+      "sensitivity_at_fixed_threshold": 0.28205128205128205,
+      "specificity_at_fixed_threshold": 0.9193825042881647,
+      "threshold_semantics_caveat": "Frozen threshold was selected for DDR gradability, not Zhejiang overall quality; these values are exploratory only."
+    },
+    "strata_by_category": {
+      "AMD": {
+        "all": {
+          "image_rows": 200,
+          "auroc": 0.4182,
+          "patient_cluster_bootstrap_95_ci": [
+            0.3176035094970598,
+            0.5125618731171362
+          ]
+        },
+        "good_quality": {
+          "image_rows": 182,
+          "auroc": 0.41619163129169195,
+          "patient_cluster_bootstrap_95_ci": [
+            0.30954068562868364,
+            0.5226198728391046
+          ]
+        }
+      },
+      "DR": {
+        "all": {
+          "image_rows": 200,
+          "auroc": 0.77715,
+          "patient_cluster_bootstrap_95_ci": [
+            0.7013757198423923,
+            0.8454509318578917
+          ]
+        },
+        "good_quality": {
+          "image_rows": 174,
+          "auroc": 0.7552550542241264,
+          "patient_cluster_bootstrap_95_ci": [
+            0.6754202431237677,
+            0.8313839285714285
+          ]
+        }
+      },
+      "PM": {
+        "all": {
+          "image_rows": 200,
+          "auroc": 0.68485,
+          "patient_cluster_bootstrap_95_ci": [
+            0.6094949494949495,
+            0.7565586463949425
+          ]
+        },
+        "good_quality": {
+          "image_rows": 174,
+          "auroc": 0.6486142723256125,
+          "patient_cluster_bootstrap_95_ci": [
+            0.5656388794234213,
+            0.7224506578947367
+          ]
+        }
+      },
+      "RD": {
+        "all": {
+          "image_rows": 200,
+          "auroc": 0.9167500000000001,
+          "patient_cluster_bootstrap_95_ci": [
+            0.8746452020202019,
+            0.9521762477718361
+          ]
+        },
+        "good_quality": {
+          "image_rows": 174,
+          "auroc": 0.9036684964520016,
+          "patient_cluster_bootstrap_95_ci": [
+            0.851798946060383,
+            0.9465679250596342
+          ]
+        }
+      },
+      "RVO": {
+        "all": {
+          "image_rows": 200,
+          "auroc": 0.90775,
+          "patient_cluster_bootstrap_95_ci": [
+            0.8619617045454545,
+            0.9449517326732673
+          ]
+        },
+        "good_quality": {
+          "image_rows": 193,
+          "auroc": 0.90625,
+          "patient_cluster_bootstrap_95_ci": [
+            0.8640249140893471,
+            0.9457159892253723
+          ]
+        }
+      },
+      "Uveitis": {
+        "all": {
+          "image_rows": 200,
+          "auroc": 0.6951,
+          "patient_cluster_bootstrap_95_ci": [
+            0.6183445266990291,
+            0.7635135101010102
+          ]
+        },
+        "good_quality": {
+          "image_rows": 171,
+          "auroc": 0.6626497631652271,
+          "patient_cluster_bootstrap_95_ci": [
+            0.579292358160351,
+            0.7431095157657658
+          ]
+        }
+      }
+    }
+  },
+  "limits": [
+    "Exploratory ranking only; not binary diagnosis, referable-DR validation, calibration, clinical validation, or prospective benefit.",
+    "The risk score was trained for referable DR and is not a disease-specific model for AMD, pathologic myopia, retinal detachment, RVO, or uveitis.",
+    "Unequal numbers of images per patient materially change DR-versus-healthy estimates.",
+    "Disease groups are source-defined and enriched; predictive values and prevalence claims are not justified.",
+    "Patient-level manifests, images, row-level predictions, and checkpoint weights are excluded from this public artifact."
+  ],
+  "clinical_claim": "None. Research-only; not for patient care."
+}
