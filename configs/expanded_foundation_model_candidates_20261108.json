@@ -1,0 +1,129 @@
+{
+  "project": "Golden Retina",
+  "purpose": "Research-only candidate inventory for the 2026-11-08 L4 rerun. This is a screening list, not permission to use every checkpoint.",
+  "screened_at": "2026-11-08",
+  "candidates": [
+    {
+      "name": "FLAIR",
+      "family": "retinal vision-language encoder",
+      "official_source": "https://github.com/jusiro/FLAIR",
+      "terms_status": "Official repository states FLAIR code and model weights are Apache-2.0. Preserve the source-dataset provenance limitations; do not infer rights to redistribute derived data.",
+      "availability_status": "Probe complete on Golden Retina L4; frozen features/readouts and aggregate summary recorded. Public checkpoint and source commit hashes verified.",
+      "decision": "Completed internal train/validation probe. Mixed results; retain as a comparator, not selected as the leading candidate based on these metrics."
+    },
+    {
+      "name": "DINOv2",
+      "family": "general self-supervised vision encoder",
+      "official_source": "https://github.com/facebookresearch/dinov2",
+      "terms_status": "Official facebookresearch/dinov2 repository ships Apache-2.0 terms; checkpoint source and hash are recorded; probe is research-only.",
+      "availability_status": "Probe complete on Golden Retina L4; metrics and provenance are in results/technical_dev_20261108_rerun/dinov2_aggregate_summary.json.",
+      "decision": "Retain as a general-encoder comparator; not selected to lead based on current development validation because DR and grade metrics were below ConvNeXt."
+    },
+    {
+      "name": "DINOv3",
+      "family": "general self-supervised vision encoder",
+      "official_source": "https://github.com/facebookresearch/dinov3",
+      "terms_status": "Model-specific DINOv3 license; gated model access and licensee eligibility/acceptance remain unresolved.",
+      "availability_status": "Gated; access/acceptance not confirmed; excluded from this run.",
+      "decision": "Do not download/use until the authorized account holder has access and accepts the exact terms; current candidate slot reallocated."
+    },
+    {
+      "name": "RETFound-MAE",
+      "family": "retinal masked-autoencoder foundation encoder",
+      "official_source": "https://github.com/rmaphoh/RETFound",
+      "terms_status": "Model card states CC BY-NC 4.0; account-level gated access is approved for Burak8159. Use only for noncommercial research; not for clinical/commercial deployment; do not redistribute the checkpoint.",
+      "availability_status": "Official checkpoint access verified and frozen-feature probe complete; starting last-block supervised adaptation on L4. Checkpoint remains private.",
+      "decision": "Continue noncommercial research adaptation. Frozen development metrics are below ConvNeXt for DR; fine-tuning is exploratory and validation-selected only."
+    },
+    {
+      "name": "RETFound-DINOv2",
+      "family": "retinal DINOv2 foundation encoder",
+      "official_source": "https://github.com/rmaphoh/RETFound",
+      "terms_status": "Model card states CC BY-NC 4.0. Exact file access is not approved for the authenticated account (403 from Mac and L4). The model card reports pretraining on part of SDPP; overlap with this project’s sources is unresolved.",
+      "availability_status": "Authenticated requests for the exact checkpoint returned 403 from both Mac and L4.",
+      "decision": "Cannot be used until publisher grants account access; access controls will not be bypassed."
+    },
+    {
+      "name": "RETFound-DINOv3",
+      "family": "retinal foundation encoder initialized from DINOv3",
+      "official_source": "https://huggingface.co/YukunZhou/retfound_dinov3",
+      "terms_status": "Model card reports CC BY-NC 4.0; access is gated. Verify upstream DINOv3 obligations and the exact accepted terms.",
+      "availability_status": "Official RETFound-DINOv3 checkpoint is gated; upstream DINOv3 terms also apply. Excluded; no gated download attempted.",
+      "decision": "Include conditionally after access is granted and the derivative-weight license is reviewed."
+    },
+    {
+      "name": "VisionFM",
+      "family": "multimodal ophthalmic foundation encoder",
+      "official_source": "https://github.com/ABILab-CUHK/VisionFM",
+      "terms_status": "CC BY-NC 4.0 / research-education-only conditions recorded in prior project review; no commercial or clinical-decision use and no weight redistribution.",
+      "availability_status": "Probe complete on frozen 7,671-row manifest; aggregate metrics saved in results/technical_dev_20261108_rerun/visionfm_aggregate_summary.json.",
+      "decision": "Retain as research comparator; not selected as lead because current-manifest DR and glaucoma validation are below ConvNeXt and DR transfer is below FLAIR."
+    },
+    {
+      "name": "UrFound",
+      "family": "multimodal retinal foundation encoder (fundus and OCT)",
+      "official_source": "https://github.com/yukkai/UrFound",
+      "terms_status": "Official repository exposes an MIT license for the code; verify the exact checkpoint and its training-data obligations separately.",
+      "availability_status": "Official public MIT checkpoint staged and hash verified; probe running on L4, 1,024/7,671 embeddings extracted; checkpoint reports epoch 199.",
+      "decision": "Add as a candidate; include only after checkpoint provenance and terms check."
+    },
+    {
+      "name": "OPENEye-FM",
+      "family": "retinal vision-language foundation model",
+      "official_source": "https://huggingface.co/youngzhou12/OPENEye-FM",
+      "terms_status": "Model card declares MIT; intended for research and expressly not for direct clinical diagnosis or autonomous screening. Its training-data manifest contains many source datasets whose terms need separate review.",
+      "availability_status": "Official 461,781,163-byte checkpoint downloaded privately on L4; SHA-256 6625ff53dfa9dbce9507dd42310efbf06ea12e4307dab5f443a203c4ac8958d0. Validation-only inference completed; aggregate summary saved locally.",
+      "decision": "Exploratory DRTiD/HYGD transfer only. DRTiD DR AUROC 0.922/AUPRC 0.923 (n=500), but 27 misses at fixed 0.5; HYGD glaucoma AUROC 0.787 and 67 misses (n=125). DeepDRiD and DDR validation excluded due stated pretraining overlap; exact-image overlap for retained sources unknown. Not a clinical model."
+    },
+    {
+      "name": "RETFound-Green",
+      "family": "compact retinal self-supervised encoder",
+      "official_source": "https://github.com/justinengelmann/RETFound_Green",
+      "terms_status": "Public checkpoint; repository has a model-specific custom license. Read and record its exact restrictions before use; do not infer terms from RETFound or DINOv2.",
+      "availability_status": "Not downloaded: official custom licence excludes some industry-involved projects; eligibility for this sponsored/pilot project remains unresolved.",
+      "decision": "Blocked unless the project is demonstrably eligible or the licensor grants prior written permission; continue to next candidate."
+    },
+    {
+      "name": "EyeCLIP",
+      "family": "multimodal ophthalmic vision-language model",
+      "official_source": "https://github.com/Michi-3000/EyeCLIP",
+      "terms_status": "Repository advertises released weights, but an explicit weight license was not established in this screening. Treat as rights-unverified until the official weight terms are confirmed.",
+      "availability_status": "Official repository links eyeclip_visual checkpoint via Google Drive; exact weight-use terms and overlap remain unverified; not downloaded.",
+      "decision": "Verify explicit checkpoint terms and pretraining-source overlap before use; skip if unresolved."
+    },
+    {
+      "name": "RET-CLIP",
+      "family": "retinal image-text foundation model",
+      "official_source": "https://github.com/sStonemason/RET-CLIP",
+      "terms_status": "Repository releases pretrained weights, but this screening did not establish an explicit license for those weights or all dependencies.",
+      "availability_status": "Public repository; weight terms and download not verified",
+      "decision": "Add to inventory; rights check before use."
+    },
+    {
+      "name": "EyeFound",
+      "family": "multimodal ophthalmic foundation model",
+      "official_source": "https://arxiv.org/abs/2405.11338",
+      "terms_status": "No official, clearly reusable weight license/access route confirmed in this screening.",
+      "availability_status": "Public paper; usable checkpoint not confirmed",
+      "decision": "Track as a candidate; exclude from execution unless the authors' official release and terms are located."
+    },
+    {
+      "name": "RFM (Lightweight Retinal Foundation Model)",
+      "family": "retinal foundation encoder initialized from DINOv3",
+      "official_source": "https://github.com/ok1zjf/RFM",
+      "terms_status": "Official project states derived weights are under the DINOv3 license; its code's MIT license does not replace the weight license.",
+      "availability_status": "Public code/weight route; gated/upstream license implications must be resolved",
+      "decision": "Add conditionally alongside DINOv3; do not treat as a license workaround."
+    }
+  ],
+  "explicit_exclusions": [
+    "No checkpoint is included just because the repository code is permissively licensed.",
+    "No gated agreement is accepted on the user's behalf.",
+    "No weights or derived checkpoints are redistributed.",
+    "Models whose exact weight terms remain unclear stay listed but are not staged for training until clarified."
+  ],
+  "source_notes": [
+    "Candidate-specific terms differ between source code, pretrained weights, and training datasets.",
+    "User authorized noncommercial research use; this does not override third-party access gates or license terms."
+  ]
+}

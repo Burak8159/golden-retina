@@ -1,0 +1,56 @@
+{
+  "status": "PAIRED_PATIENT_SOURCE_INTERNAL_VALIDATION_ONLY",
+  "n_common_patient_source_groups": 314,
+  "positive_patients": 150,
+  "threshold": 0.5,
+  "candidate": {
+    "name": "RETFound-Green-source-invariance",
+    "metrics": {
+      "accuracy": 0.8980891719745223,
+      "sensitivity": 0.9,
+      "specificity": 0.8963414634146342,
+      "auroc": 0.9491056910569106,
+      "auprc": 0.9545952983320246
+    }
+  },
+  "reference": {
+    "name": "RETFound-Green-matched-control",
+    "metrics": {
+      "accuracy": 0.8089171974522293,
+      "sensitivity": 0.9466666666666667,
+      "specificity": 0.6829268292682927,
+      "auroc": 0.9486991869918698,
+      "auprc": 0.9536985098268614
+    }
+  },
+  "delta_candidate_minus_reference": {
+    "accuracy": 0.08917197452229297,
+    "sensitivity": -0.046666666666666634,
+    "specificity": 0.21341463414634143,
+    "auroc": 0.0004065040650407248,
+    "auprc": 0.0008967885051631708
+  },
+  "paired_bootstrap_95ci_delta": {
+    "accuracy": [
+      0.05095541401273884,
+      0.13057324840764328
+    ],
+    "sensitivity": [
+      -0.0822891881602741,
+      -0.014814814814814833
+    ],
+    "specificity": [
+      0.15286624203821664,
+      0.2799999999999999
+    ],
+    "auroc": [
+      -0.006059777569314642,
+      0.006958059511282638
+    ],
+    "auprc": [
+      -0.005520489419260979,
+      0.007348828510342075
+    ]
+  },
+  "warning": "Repeated development validation; not independent external validation. Bootstrap unit is source-patient group."
+}

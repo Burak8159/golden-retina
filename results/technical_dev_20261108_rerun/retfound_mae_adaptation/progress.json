@@ -1,0 +1,618 @@
+{
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.8180946323224697,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.4555112881806109,
+          "balanced_accuracy": 0.2295429520556893,
+          "macro_f1": 0.196718326787733
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.6347941567065073,
+          "sensitivity_at_0_5": 0.38922155688622756,
+          "specificity_at_0_5": 0.8305489260143198,
+          "auroc": 0.7184699812784932,
+          "auprc": 0.6240241738382246
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.912,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 0.8,
+          "auroc": 0.9680701754385965,
+          "auprc": 0.9916464155040008
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7272727272727273,
+            "referable_dr_auroc": 0.8090909090909092,
+            "referable_dr_sensitivity": 0.7045454545454546,
+            "referable_dr_specificity": 0.7393939393939394
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.588,
+            "referable_dr_auroc": 0.6851754049036554,
+            "referable_dr_sensitivity": 0.2764227642276423,
+            "referable_dr_specificity": 0.889763779527559
+          }
+        }
+      },
+      "elapsed_seconds": 247.2
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6951127022706529,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.46879150066401065,
+          "balanced_accuracy": 0.23862821463897133,
+          "macro_f1": 0.1967494875318181
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.6879150066401063,
+          "sensitivity_at_0_5": 0.562874251497006,
+          "specificity_at_0_5": 0.7875894988066826,
+          "auroc": 0.7750811027110458,
+          "auprc": 0.7018475456362943
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9705263157894737,
+          "auprc": 0.9922220407731245
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7470355731225297,
+            "referable_dr_auroc": 0.8234504132231405,
+            "referable_dr_sensitivity": 0.75,
+            "referable_dr_specificity": 0.7454545454545455
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.658,
+            "referable_dr_auroc": 0.7524726329940465,
+            "referable_dr_sensitivity": 0.4959349593495935,
+            "referable_dr_specificity": 0.8149606299212598
+          }
+        }
+      },
+      "elapsed_seconds": 494.1
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.6203850768353042,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.4860557768924303,
+          "balanced_accuracy": 0.27267671571829377,
+          "macro_f1": 0.24568141893650802
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7211155378486056,
+          "sensitivity_at_0_5": 0.6167664670658682,
+          "specificity_at_0_5": 0.8042959427207638,
+          "auroc": 0.8089798922441513,
+          "auprc": 0.7661903352954477
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.971578947368421,
+          "auprc": 0.9924631229386425
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7509881422924901,
+            "referable_dr_auroc": 0.8287878787878786,
+            "referable_dr_sensitivity": 0.6818181818181818,
+            "referable_dr_specificity": 0.7878787878787878
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.706,
+            "referable_dr_auroc": 0.7957877216567442,
+            "referable_dr_sensitivity": 0.5934959349593496,
+            "referable_dr_specificity": 0.8149606299212598
+          }
+        }
+      },
+      "elapsed_seconds": 751.3
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.5731484601389246,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5152722443559097,
+          "balanced_accuracy": 0.3414919623973688,
+          "macro_f1": 0.3116034843157584
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7543160690571049,
+          "sensitivity_at_0_5": 0.6736526946107785,
+          "specificity_at_0_5": 0.8186157517899761,
+          "auroc": 0.8242286310434024,
+          "auprc": 0.7937606942947035
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9733333333333333,
+          "auprc": 0.992915121500509
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7707509881422925,
+            "referable_dr_auroc": 0.8459022038567494,
+            "referable_dr_sensitivity": 0.7954545454545454,
+            "referable_dr_specificity": 0.7575757575757576
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.746,
+            "referable_dr_auroc": 0.8225785801165099,
+            "referable_dr_sensitivity": 0.6300813008130082,
+            "referable_dr_specificity": 0.8582677165354331
+          }
+        }
+      },
+      "elapsed_seconds": 1009.7
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.5386660888861249,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5179282868525896,
+          "balanced_accuracy": 0.31030266906792575,
+          "macro_f1": 0.294182038814945
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.751660026560425,
+          "sensitivity_at_0_5": 0.562874251497006,
+          "specificity_at_0_5": 0.9021479713603818,
+          "auroc": 0.8368334929186971,
+          "auprc": 0.8215160226268557
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9750877192982457,
+          "auprc": 0.9934025889420223
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.8063241106719368,
+            "referable_dr_auroc": 0.846935261707989,
+            "referable_dr_sensitivity": 0.6590909090909091,
+            "referable_dr_specificity": 0.8848484848484849
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.724,
+            "referable_dr_auroc": 0.8289962230330965,
+            "referable_dr_sensitivity": 0.5284552845528455,
+            "referable_dr_specificity": 0.9133858267716536
+          }
+        }
+      },
+      "elapsed_seconds": 1266.8
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.5068600127153349,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5365205843293492,
+          "balanced_accuracy": 0.3468536934910948,
+          "macro_f1": 0.3373301809619561
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7729083665338645,
+          "sensitivity_at_0_5": 0.6856287425149701,
+          "specificity_at_0_5": 0.8424821002386634,
+          "auroc": 0.8500135766652852,
+          "auprc": 0.8379907462696905
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9743859649122807,
+          "auprc": 0.9932414930124338
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7905138339920948,
+            "referable_dr_auroc": 0.8629476584022039,
+            "referable_dr_sensitivity": 0.7613636363636364,
+            "referable_dr_specificity": 0.806060606060606
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.764,
+            "referable_dr_auroc": 0.8447122463350618,
+            "referable_dr_sensitivity": 0.6585365853658537,
+            "referable_dr_specificity": 0.8661417322834646
+          }
+        }
+      },
+      "elapsed_seconds": 1524.2
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.48973174254273477,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.548472775564409,
+          "balanced_accuracy": 0.35336607848260326,
+          "macro_f1": 0.32679459846077713
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7662682602921647,
+          "sensitivity_at_0_5": 0.7065868263473054,
+          "specificity_at_0_5": 0.8138424821002387,
+          "auroc": 0.8529754333814472,
+          "auprc": 0.843816112973438
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9764912280701754,
+          "auprc": 0.9938468791306921
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7707509881422925,
+            "referable_dr_auroc": 0.868629476584022,
+            "referable_dr_sensitivity": 0.7954545454545454,
+            "referable_dr_specificity": 0.7575757575757576
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.764,
+            "referable_dr_auroc": 0.8501136290890468,
+            "referable_dr_sensitivity": 0.6747967479674797,
+            "referable_dr_specificity": 0.8503937007874016
+          }
+        }
+      },
+      "elapsed_seconds": 1782.2
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.47462576112187543,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5564409030544488,
+          "balanced_accuracy": 0.43676308905081385,
+          "macro_f1": 0.4188022328685169
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7596281540504648,
+          "sensitivity_at_0_5": 0.7005988023952096,
+          "specificity_at_0_5": 0.8066825775656324,
+          "auroc": 0.8505494976633845,
+          "auprc": 0.8418487350009312
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9768421052631578,
+          "auprc": 0.9940176279025544
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7549407114624506,
+            "referable_dr_auroc": 0.8788911845730027,
+            "referable_dr_sensitivity": 0.8181818181818182,
+            "referable_dr_specificity": 0.7212121212121212
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.762,
+            "referable_dr_auroc": 0.8520741309775304,
+            "referable_dr_sensitivity": 0.6585365853658537,
+            "referable_dr_specificity": 0.8622047244094488
+          }
+        }
+      },
+      "elapsed_seconds": 2039.2
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.4590932039704049,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5524568393094289,
+          "balanced_accuracy": 0.3631114734772844,
+          "macro_f1": 0.33890845172408623
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7649402390438247,
+          "sensitivity_at_0_5": 0.7155688622754491,
+          "specificity_at_0_5": 0.8042959427207638,
+          "auroc": 0.8641618910151059,
+          "auprc": 0.858393868608347
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9771929824561405,
+          "auprc": 0.9940905334201062
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7707509881422925,
+            "referable_dr_auroc": 0.88732782369146,
+            "referable_dr_sensitivity": 0.8068181818181818,
+            "referable_dr_specificity": 0.7515151515151515
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.762,
+            "referable_dr_auroc": 0.8602362204724409,
+            "referable_dr_sensitivity": 0.6829268292682927,
+            "referable_dr_specificity": 0.8385826771653543
+          }
+        }
+      },
+      "elapsed_seconds": 2285.9
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.44784513747143073,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.545816733067729,
+          "balanced_accuracy": 0.381099931737238,
+          "macro_f1": 0.37327544216048947
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7888446215139442,
+          "sensitivity_at_0_5": 0.6856287425149701,
+          "specificity_at_0_5": 0.8711217183770883,
+          "auroc": 0.8688529861518015,
+          "auprc": 0.8637812153655715
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9775438596491228,
+          "auprc": 0.9942516517216473
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.8102766798418972,
+            "referable_dr_auroc": 0.8872245179063362,
+            "referable_dr_sensitivity": 0.7840909090909091,
+            "referable_dr_specificity": 0.8242424242424242
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.778,
+            "referable_dr_auroc": 0.8624767940592792,
+            "referable_dr_sensitivity": 0.6504065040650406,
+            "referable_dr_specificity": 0.9015748031496063
+          }
+        }
+      },
+      "elapsed_seconds": 2542.8
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.4434929719315913,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5737051792828686,
+          "balanced_accuracy": 0.42892219135680243,
+          "macro_f1": 0.42593152903942366
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7901726427622842,
+          "sensitivity_at_0_5": 0.718562874251497,
+          "specificity_at_0_5": 0.847255369928401,
+          "auroc": 0.8721256770468608,
+          "auprc": 0.8678966015021148
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9778947368421054,
+          "auprc": 0.9943245572391988
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.8221343873517787,
+            "referable_dr_auroc": 0.8913567493112948,
+            "referable_dr_sensitivity": 0.7954545454545454,
+            "referable_dr_specificity": 0.8363636363636363
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.774,
+            "referable_dr_auroc": 0.8621006977786314,
+            "referable_dr_sensitivity": 0.6910569105691057,
+            "referable_dr_specificity": 0.8543307086614174
+          }
+        }
+      },
+      "elapsed_seconds": 2800.0
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.43726058991811184,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5683930942895087,
+          "balanced_accuracy": 0.4551042165949065,
+          "macro_f1": 0.4381135751052456
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7715803452855245,
+          "sensitivity_at_0_5": 0.7455089820359282,
+          "specificity_at_0_5": 0.7923627684964201,
+          "auroc": 0.8670165635316478,
+          "auprc": 0.8634383406377112
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9782456140350878,
+          "auprc": 0.9944353352136476
+        },
+        "image_quality_ddr": {
+          "status": "no validation labels for this task",
+          "n": 0
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_accuracy": 0.7747035573122529,
+            "referable_dr_auroc": 0.897348484848485,
+            "referable_dr_sensitivity": 0.8409090909090909,
+            "referable_dr_specificity": 0.7393939393939394
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_accuracy": 0.77,
+            "referable_dr_auroc": 0.8588678701747647,
+            "referable_dr_sensitivity": 0.7113821138211383,
+            "referable_dr_specificity": 0.8267716535433071
+          }
+        }
+      },
+      "elapsed_seconds": 3057.1
+    }
+  ],
+  "best_epoch": 11,
+  "best_auroc": 0.8721256770468608
+}

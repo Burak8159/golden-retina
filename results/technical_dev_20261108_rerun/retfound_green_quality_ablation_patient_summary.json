@@ -1,0 +1,95 @@
+{
+  "status": "PATIENT_LEVEL_INTERNAL_VALIDATION_ONLY",
+  "task": "referable_DR_ge2",
+  "validation_patient_source_groups": 314,
+  "positive_groups": 150,
+  "threshold": 0.5,
+  "control": {
+    "accuracy": 0.8089171974522293,
+    "sensitivity": 0.9466666666666667,
+    "specificity": 0.6829268292682927,
+    "auroc": 0.9486991869918698,
+    "auprc": 0.9536985098268614,
+    "bootstrap_95ci": {
+      "accuracy": [
+        0.7643312101910829,
+        0.8503184713375797
+      ],
+      "sensitivity": [
+        0.9102430555555555,
+        0.9798657718120806
+      ],
+      "specificity": [
+        0.6081785345717234,
+        0.7532004737128212
+      ],
+      "auroc": [
+        0.924136108774881,
+        0.9696082053511059
+      ],
+      "auprc": [
+        0.9316523917638041,
+        0.9727624904453087
+      ]
+    }
+  },
+  "quality_aux_candidate": {
+    "accuracy": 0.8057324840764332,
+    "sensitivity": 0.96,
+    "specificity": 0.6646341463414634,
+    "auroc": 0.9465853658536586,
+    "auprc": 0.9509607650881413,
+    "bootstrap_95ci": {
+      "accuracy": [
+        0.7643312101910829,
+        0.8503184713375797
+      ],
+      "sensitivity": [
+        0.9251658163265306,
+        0.9870988420181969
+      ],
+      "specificity": [
+        0.591174130484201,
+        0.7350993377483444
+      ],
+      "auroc": [
+        0.9196572756395222,
+        0.969025451292688
+      ],
+      "auprc": [
+        0.9263625591311063,
+        0.9721775082688381
+      ]
+    }
+  },
+  "paired_candidate_minus_control": {
+    "accuracy": -0.0031847133757961776,
+    "sensitivity": 0.013333333333333308,
+    "specificity": -0.018292682926829285,
+    "auroc": -0.002113821138211236,
+    "auprc": -0.002737744738720127,
+    "bootstrap_95ci": {
+      "accuracy": [
+        -0.03821656050955413,
+        0.031847133757961776
+      ],
+      "sensitivity": [
+        -0.012822580645161352,
+        0.04195804195804187
+      ],
+      "specificity": [
+        -0.07734888845040781,
+        0.042430709534368026
+      ],
+      "auroc": [
+        -0.013950660398141645,
+        0.009504333910582991
+      ],
+      "auprc": [
+        -0.01194391178929067,
+        0.005789841072852655
+      ]
+    }
+  },
+  "interpretation": "All paired intervals include zero; no reliable disease-transfer gain from this auxiliary-quality objective. Quality-head performance is not measured because the validation cohort has no quality labels. Exposed development validation; not independent external or clinical validation."
+}

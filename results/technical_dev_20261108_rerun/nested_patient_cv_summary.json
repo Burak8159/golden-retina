@@ -1,0 +1,1018 @@
+{
+  "status": "NESTED_PATIENT_GROUPED_DEVELOPMENT_CV_TRAIN_ROWS_ONLY",
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "C_grid": [
+    0.1,
+    1.0,
+    10.0
+  ],
+  "seed": 20261108,
+  "n_manifest_rows_total": 7671,
+  "n_verified_train_rows": 3791,
+  "validation_rows_read": 0,
+  "test_rows_read": 0,
+  "excluded_sources": {
+    "ddr_hf_specificity300": "patient grouping is unverified; excluded from patient-grouped model selection"
+  },
+  "candidate_ranking_by_mean_outer_oof_disease_auroc": [
+    "UrFound",
+    "FLAIR",
+    "DINOv2",
+    "RETFound-MAE",
+    "VisionFM"
+  ],
+  "models": {
+    "FLAIR": {
+      "referable_dr_ge2": {
+        "n_images": 3290,
+        "positive_images": 1442,
+        "n_patients": 1365,
+        "outer_oof_auroc": 0.9397496862822798,
+        "outer_oof_accuracy_at_0_5": 0.8793313069908815,
+        "outer_oof_sensitivity_at_0_5": 0.8509015256588072,
+        "outer_oof_specificity_at_0_5": 0.9015151515151515,
+        "source_auroc": {
+          "deepdrid": {
+            "n_images": 1124,
+            "n_patients": 282,
+            "auroc": 0.9715973396747077
+          },
+          "drtid_paired": {
+            "n_images": 2166,
+            "n_patients": 1083,
+            "auroc": 0.9218227074235809
+          }
+        },
+        "selected_C_by_outer_fold": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 1.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9364484758471946,
+              "1.0": 0.9380969339408155,
+              "10.0": 0.9335430147623457
+            },
+            "holdout_auroc": 0.9350932946773715,
+            "holdout_accuracy_at_0_5": 0.8662613981762918
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 273,
+            "selected_C": 1.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9361485345191326,
+              "1.0": 0.9383380865661981,
+              "10.0": 0.9347877479469654
+            },
+            "holdout_auroc": 0.9407649769585255,
+            "holdout_accuracy_at_0_5": 0.8818181818181818
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 274,
+            "selected_C": 1.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9320007920322838,
+              "1.0": 0.9324448269102305,
+              "10.0": 0.9284814518003891
+            },
+            "holdout_auroc": 0.9405413105413104,
+            "holdout_accuracy_at_0_5": 0.8863636363636364
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 2636,
+            "n_holdout_images": 654,
+            "n_holdout_patients": 272,
+            "selected_C": 1.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9356363260595123,
+              "1.0": 0.9375498773217846,
+              "10.0": 0.9335444937235947
+            },
+            "holdout_auroc": 0.9461134453781513,
+            "holdout_accuracy_at_0_5": 0.8853211009174312
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 1.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9367740008375058,
+              "1.0": 0.9374456732064266,
+              "10.0": 0.9319405804942497
+            },
+            "holdout_auroc": 0.9442635365391897,
+            "holdout_accuracy_at_0_5": 0.8768996960486323
+          }
+        ]
+      },
+      "glaucoma_hygd": {
+        "n_images": 501,
+        "positive_images": 364,
+        "n_patients": 201,
+        "outer_oof_auroc": 0.9560439560439561,
+        "outer_oof_accuracy_at_0_5": 0.9161676646706587,
+        "outer_oof_sensitivity_at_0_5": 0.9203296703296703,
+        "outer_oof_specificity_at_0_5": 0.9051094890510949,
+        "source_auroc": {
+          "hygd_v1_1_0": {
+            "n_images": 501,
+            "n_patients": 201,
+            "auroc": 0.9560439560439561
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 410,
+            "n_holdout_images": 91,
+            "n_holdout_patients": 39,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9583667233716325,
+              "1.0": 0.9478791570952589,
+              "10.0": 0.9390170809425494
+            },
+            "holdout_auroc": 0.9666313559322034,
+            "holdout_accuracy_at_0_5": 0.8901098901098901
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 413,
+            "n_holdout_images": 88,
+            "n_holdout_patients": 41,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.973525111614803,
+              "1.0": 0.9711670326696535,
+              "10.0": 0.9678758912305797
+            },
+            "holdout_auroc": 0.9263392857142856,
+            "holdout_accuracy_at_0_5": 0.8977272727272727
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 399,
+            "n_holdout_images": 102,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9474143024696823,
+              "1.0": 0.9352851236316426,
+              "10.0": 0.9246527470419875
+            },
+            "holdout_auroc": 0.9794238683127572,
+            "holdout_accuracy_at_0_5": 0.9411764705882353
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 385,
+            "n_holdout_images": 116,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9658896060959946,
+              "1.0": 0.9568004782970446,
+              "10.0": 0.9416687225042472
+            },
+            "holdout_auroc": 0.9317519766957969,
+            "holdout_accuracy_at_0_5": 0.9051724137931034
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 397,
+            "n_holdout_images": 104,
+            "n_holdout_patients": 41,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9470939009261459,
+              "1.0": 0.940272477973482,
+              "10.0": 0.9231524212441985
+            },
+            "holdout_auroc": 0.9934177215189874,
+            "holdout_accuracy_at_0_5": 0.9423076923076923
+          }
+        ]
+      },
+      "macro_disease_auroc": 0.947896821163118
+    },
+    "DINOv2": {
+      "referable_dr_ge2": {
+        "n_images": 3290,
+        "positive_images": 1442,
+        "n_patients": 1365,
+        "outer_oof_auroc": 0.8893788539246237,
+        "outer_oof_accuracy_at_0_5": 0.8191489361702128,
+        "outer_oof_sensitivity_at_0_5": 0.7836338418862691,
+        "outer_oof_specificity_at_0_5": 0.8468614718614719,
+        "source_auroc": {
+          "deepdrid": {
+            "n_images": 1124,
+            "n_patients": 282,
+            "auroc": 0.9473180563856709
+          },
+          "drtid_paired": {
+            "n_images": 2166,
+            "n_patients": 1083,
+            "auroc": 0.8493161572052402
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8873527243140847,
+              "1.0": 0.8613452720842659,
+              "10.0": 0.845770000317842
+            },
+            "holdout_auroc": 0.8996803449301221,
+            "holdout_accuracy_at_0_5": 0.8297872340425532
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.886247340104112,
+              "1.0": 0.8598055924004434,
+              "10.0": 0.8448569211931641
+            },
+            "holdout_auroc": 0.8827649769585253,
+            "holdout_accuracy_at_0_5": 0.8166666666666667
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 274,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.899151539668428,
+              "1.0": 0.8717007946220204,
+              "10.0": 0.8540207840219991
+            },
+            "holdout_auroc": 0.8999050332383666,
+            "holdout_accuracy_at_0_5": 0.8196969696969697
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 2636,
+            "n_holdout_images": 654,
+            "n_holdout_patients": 272,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8774273636192363,
+              "1.0": 0.8479849675759077,
+              "10.0": 0.8329595371876644
+            },
+            "holdout_auroc": 0.9019098548510314,
+            "holdout_accuracy_at_0_5": 0.8256880733944955
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8862651718050559,
+              "1.0": 0.8528665980724274,
+              "10.0": 0.8334819392339193
+            },
+            "holdout_auroc": 0.8744698977659977,
+            "holdout_accuracy_at_0_5": 0.8039513677811551
+          }
+        ]
+      },
+      "glaucoma_hygd": {
+        "n_images": 501,
+        "positive_images": 364,
+        "n_patients": 201,
+        "outer_oof_auroc": 0.96191946739392,
+        "outer_oof_accuracy_at_0_5": 0.936127744510978,
+        "outer_oof_sensitivity_at_0_5": 0.9532967032967034,
+        "outer_oof_specificity_at_0_5": 0.8905109489051095,
+        "source_auroc": {
+          "hygd_v1_1_0": {
+            "n_images": 501,
+            "n_patients": 201,
+            "auroc": 0.96191946739392
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          0.1,
+          0.1,
+          10.0,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 410,
+            "n_holdout_images": 91,
+            "n_holdout_patients": 39,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.950906576213392,
+              "1.0": 0.9470651326208891,
+              "10.0": 0.9469021240715811
+            },
+            "holdout_auroc": 0.9888771186440678,
+            "holdout_accuracy_at_0_5": 0.9340659340659341
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 413,
+            "n_holdout_images": 88,
+            "n_holdout_patients": 41,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9807740998189455,
+              "1.0": 0.9792382599604498,
+              "10.0": 0.9774149964016008
+            },
+            "holdout_auroc": 0.9408482142857142,
+            "holdout_accuracy_at_0_5": 0.9204545454545454
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 399,
+            "n_holdout_images": 102,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9704593586792954,
+              "1.0": 0.96830100542917,
+              "10.0": 0.9693441474137675
+            },
+            "holdout_auroc": 0.9876543209876543,
+            "holdout_accuracy_at_0_5": 0.9901960784313726
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 385,
+            "n_holdout_images": 116,
+            "n_holdout_patients": 40,
+            "selected_C": 10.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9749190047222127,
+              "1.0": 0.9751926121496272,
+              "10.0": 0.9765150085428759
+            },
+            "holdout_auroc": 0.9467332501040366,
+            "holdout_accuracy_at_0_5": 0.8706896551724138
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 397,
+            "n_holdout_images": 104,
+            "n_holdout_patients": 41,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9692168143523386,
+              "1.0": 0.9666156128202333,
+              "10.0": 0.9672582348570694
+            },
+            "holdout_auroc": 0.9868354430379747,
+            "holdout_accuracy_at_0_5": 0.9711538461538461
+          }
+        ]
+      },
+      "macro_disease_auroc": 0.9256491606592718
+    },
+    "RETFound-MAE": {
+      "referable_dr_ge2": {
+        "n_images": 3290,
+        "positive_images": 1442,
+        "n_patients": 1365,
+        "outer_oof_auroc": 0.8535471116955167,
+        "outer_oof_accuracy_at_0_5": 0.7826747720364742,
+        "outer_oof_sensitivity_at_0_5": 0.7517337031900139,
+        "outer_oof_specificity_at_0_5": 0.8068181818181818,
+        "source_auroc": {
+          "deepdrid": {
+            "n_images": 1124,
+            "n_patients": 282,
+            "auroc": 0.905890356956649
+          },
+          "drtid_paired": {
+            "n_images": 2166,
+            "n_patients": 1083,
+            "auroc": 0.8171371179039302
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.846522988757509,
+              "1.0": 0.8278507015002249,
+              "10.0": 0.8044714217251525
+            },
+            "holdout_auroc": 0.843471231043711,
+            "holdout_accuracy_at_0_5": 0.7781155015197568
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8451562712057634,
+              "1.0": 0.828341983957768,
+              "10.0": 0.8063054873279406
+            },
+            "holdout_auroc": 0.844442396313364,
+            "holdout_accuracy_at_0_5": 0.7651515151515151
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 274,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8420001018958215,
+              "1.0": 0.8259042525709024,
+              "10.0": 0.8079794724083239
+            },
+            "holdout_auroc": 0.8700949667616334,
+            "holdout_accuracy_at_0_5": 0.7893939393939394
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 2636,
+            "n_holdout_images": 654,
+            "n_holdout_patients": 272,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8379694020988739,
+              "1.0": 0.82123273413043,
+              "10.0": 0.7964376063740147
+            },
+            "holdout_auroc": 0.8466004583651643,
+            "holdout_accuracy_at_0_5": 0.7828746177370031
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8337594285306137,
+              "1.0": 0.814507972569778,
+              "10.0": 0.7950394155981865
+            },
+            "holdout_auroc": 0.8737126088602802,
+            "holdout_accuracy_at_0_5": 0.7978723404255319
+          }
+        ]
+      },
+      "glaucoma_hygd": {
+        "n_images": 501,
+        "positive_images": 364,
+        "n_patients": 201,
+        "outer_oof_auroc": 0.9734499077564771,
+        "outer_oof_accuracy_at_0_5": 0.9421157684630739,
+        "outer_oof_sensitivity_at_0_5": 0.945054945054945,
+        "outer_oof_specificity_at_0_5": 0.9343065693430657,
+        "source_auroc": {
+          "hygd_v1_1_0": {
+            "n_images": 501,
+            "n_patients": 201,
+            "auroc": 0.9734499077564771
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          10.0,
+          10.0,
+          0.1,
+          1.0
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 410,
+            "n_holdout_images": 91,
+            "n_holdout_patients": 39,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.962545206289393,
+              "1.0": 0.9624585366056962,
+              "10.0": 0.9613212409499615
+            },
+            "holdout_auroc": 0.9994703389830508,
+            "holdout_accuracy_at_0_5": 0.989010989010989
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 413,
+            "n_holdout_images": 88,
+            "n_holdout_patients": 41,
+            "selected_C": 10.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9854485308474826,
+              "1.0": 0.9859596323778037,
+              "10.0": 0.9864577494163983
+            },
+            "holdout_auroc": 0.9642857142857143,
+            "holdout_accuracy_at_0_5": 0.9090909090909091
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 399,
+            "n_holdout_images": 102,
+            "n_holdout_patients": 40,
+            "selected_C": 10.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9620276585229117,
+              "1.0": 0.958646045410286,
+              "10.0": 0.9621578737717978
+            },
+            "holdout_auroc": 0.9794238683127572,
+            "holdout_accuracy_at_0_5": 0.9117647058823529
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 385,
+            "n_holdout_images": 116,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.966863379058501,
+              "1.0": 0.9652603204904512,
+              "10.0": 0.9632874305494168
+            },
+            "holdout_auroc": 0.9733666250520183,
+            "holdout_accuracy_at_0_5": 0.9310344827586207
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 397,
+            "n_holdout_images": 104,
+            "n_holdout_patients": 41,
+            "selected_C": 1.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9708408741745586,
+              "1.0": 0.9709605312723072,
+              "10.0": 0.969629319244866
+            },
+            "holdout_auroc": 0.9853164556962025,
+            "holdout_accuracy_at_0_5": 0.9711538461538461
+          }
+        ]
+      },
+      "macro_disease_auroc": 0.9134985097259969
+    },
+    "VisionFM": {
+      "referable_dr_ge2": {
+        "n_images": 3290,
+        "positive_images": 1442,
+        "n_patients": 1365,
+        "outer_oof_auroc": 0.875261556520225,
+        "outer_oof_accuracy_at_0_5": 0.7984802431610942,
+        "outer_oof_sensitivity_at_0_5": 0.7649098474341193,
+        "outer_oof_specificity_at_0_5": 0.8246753246753247,
+        "source_auroc": {
+          "deepdrid": {
+            "n_images": 1124,
+            "n_patients": 282,
+            "auroc": 0.927448274985058
+          },
+          "drtid_paired": {
+            "n_images": 2166,
+            "n_patients": 1083,
+            "auroc": 0.841682096069869
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8798593709238774,
+              "1.0": 0.8730238096975459,
+              "10.0": 0.8727540640960981
+            },
+            "holdout_auroc": 0.8659678858162355,
+            "holdout_accuracy_at_0_5": 0.8100303951367781
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.870788936255257,
+              "1.0": 0.8612979437525783,
+              "10.0": 0.859329534302227
+            },
+            "holdout_auroc": 0.8821658986175116,
+            "holdout_accuracy_at_0_5": 0.7893939393939394
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 274,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8682357604392986,
+              "1.0": 0.8613545598914358,
+              "10.0": 0.8607378488984726
+            },
+            "holdout_auroc": 0.9003988603988604,
+            "holdout_accuracy_at_0_5": 0.8015151515151515
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 2636,
+            "n_holdout_images": 654,
+            "n_holdout_patients": 272,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8806270503001009,
+              "1.0": 0.8742310169941255,
+              "10.0": 0.8725575680405075
+            },
+            "holdout_auroc": 0.8651928953399541,
+            "holdout_accuracy_at_0_5": 0.7859327217125383
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.8729273990001362,
+              "1.0": 0.864851581100643,
+              "10.0": 0.864389757999291
+            },
+            "holdout_auroc": 0.8756342294585384,
+            "holdout_accuracy_at_0_5": 0.8054711246200608
+          }
+        ]
+      },
+      "glaucoma_hygd": {
+        "n_images": 501,
+        "positive_images": 364,
+        "n_patients": 201,
+        "outer_oof_auroc": 0.9474211919467393,
+        "outer_oof_accuracy_at_0_5": 0.9201596806387226,
+        "outer_oof_sensitivity_at_0_5": 0.9395604395604396,
+        "outer_oof_specificity_at_0_5": 0.8686131386861314,
+        "source_auroc": {
+          "hygd_v1_1_0": {
+            "n_images": 501,
+            "n_patients": 201,
+            "auroc": 0.9474211919467393
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          10.0,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 410,
+            "n_holdout_images": 91,
+            "n_holdout_patients": 39,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9543843161212598,
+              "1.0": 0.9534660427472971,
+              "10.0": 0.9413314137868878
+            },
+            "holdout_auroc": 0.9804025423728814,
+            "holdout_accuracy_at_0_5": 0.9340659340659341
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 413,
+            "n_holdout_images": 88,
+            "n_holdout_patients": 41,
+            "selected_C": 10.0,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9614263807333114,
+              "1.0": 0.9609497644442316,
+              "10.0": 0.963202090517175
+            },
+            "holdout_auroc": 0.9112723214285714,
+            "holdout_accuracy_at_0_5": 0.875
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 399,
+            "n_holdout_images": 102,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.951134685462217,
+              "1.0": 0.9502467284824879,
+              "10.0": 0.9451854290224543
+            },
+            "holdout_auroc": 0.9935332157554381,
+            "holdout_accuracy_at_0_5": 0.9313725490196079
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 385,
+            "n_holdout_images": 116,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9725333455108996,
+              "1.0": 0.9715371116684725,
+              "10.0": 0.962891108158005
+            },
+            "holdout_auroc": 0.9396587598834789,
+            "holdout_accuracy_at_0_5": 0.9310344827586207
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 397,
+            "n_holdout_images": 104,
+            "n_holdout_patients": 41,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9591793893194778,
+              "1.0": 0.9572548664483923,
+              "10.0": 0.9487589044484627
+            },
+            "holdout_auroc": 0.9554430379746837,
+            "holdout_accuracy_at_0_5": 0.9230769230769231
+          }
+        ]
+      },
+      "macro_disease_auroc": 0.9113413742334822
+    },
+    "UrFound": {
+      "referable_dr_ge2": {
+        "n_images": 3290,
+        "positive_images": 1442,
+        "n_patients": 1365,
+        "outer_oof_auroc": 0.9098489351610017,
+        "outer_oof_accuracy_at_0_5": 0.841337386018237,
+        "outer_oof_sensitivity_at_0_5": 0.8023578363384188,
+        "outer_oof_specificity_at_0_5": 0.8717532467532467,
+        "source_auroc": {
+          "deepdrid": {
+            "n_images": 1124,
+            "n_patients": 282,
+            "auroc": 0.961846840545799
+          },
+          "drtid_paired": {
+            "n_images": 2166,
+            "n_patients": 1083,
+            "auroc": 0.8711860262008735
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9127252479653948,
+              "1.0": 0.8887617858523074,
+              "10.0": 0.8678350315519611
+            },
+            "holdout_auroc": 0.8971807166220637,
+            "holdout_accuracy_at_0_5": 0.8267477203647416
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.901202322515633,
+              "1.0": 0.8736768655925621,
+              "10.0": 0.8520330429655631
+            },
+            "holdout_auroc": 0.9131612903225806,
+            "holdout_accuracy_at_0_5": 0.8560606060606061
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 2630,
+            "n_holdout_images": 660,
+            "n_holdout_patients": 274,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9094751251295601,
+              "1.0": 0.8866278812893436,
+              "10.0": 0.8666832943295235
+            },
+            "holdout_auroc": 0.9275403608736942,
+            "holdout_accuracy_at_0_5": 0.8469696969696969
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 2636,
+            "n_holdout_images": 654,
+            "n_holdout_patients": 272,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9013511351699259,
+              "1.0": 0.8726267813965949,
+              "10.0": 0.8499927990670938
+            },
+            "holdout_auroc": 0.9185733384262795,
+            "holdout_accuracy_at_0_5": 0.8440366972477065
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 2632,
+            "n_holdout_images": 658,
+            "n_holdout_patients": 273,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9028900598431839,
+              "1.0": 0.8761129345674097,
+              "10.0": 0.8585761199890761
+            },
+            "holdout_auroc": 0.9015240439227565,
+            "holdout_accuracy_at_0_5": 0.8328267477203647
+          }
+        ]
+      },
+      "glaucoma_hygd": {
+        "n_images": 501,
+        "positive_images": 364,
+        "n_patients": 201,
+        "outer_oof_auroc": 0.9879080773241358,
+        "outer_oof_accuracy_at_0_5": 0.9540918163672655,
+        "outer_oof_sensitivity_at_0_5": 0.9532967032967034,
+        "outer_oof_specificity_at_0_5": 0.9562043795620438,
+        "source_auroc": {
+          "hygd_v1_1_0": {
+            "n_images": 501,
+            "n_patients": 201,
+            "auroc": 0.9879080773241358
+          }
+        },
+        "selected_C_by_outer_fold": [
+          0.1,
+          0.1,
+          0.1,
+          0.1,
+          0.1
+        ],
+        "folds": [
+          {
+            "outer_fold": 1,
+            "n_train_images": 410,
+            "n_holdout_images": 91,
+            "n_holdout_patients": 39,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.971610484700217,
+              "1.0": 0.9666960836908819,
+              "10.0": 0.9688504185487702
+            },
+            "holdout_auroc": 0.9989406779661016,
+            "holdout_accuracy_at_0_5": 0.978021978021978
+          },
+          {
+            "outer_fold": 2,
+            "n_train_images": 413,
+            "n_holdout_images": 88,
+            "n_holdout_patients": 41,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.993626897703776,
+              "1.0": 0.9926795620738544,
+              "10.0": 0.9929554299967812
+            },
+            "holdout_auroc": 0.9860491071428572,
+            "holdout_accuracy_at_0_5": 0.9431818181818182
+          },
+          {
+            "outer_fold": 3,
+            "n_train_images": 399,
+            "n_holdout_images": 102,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9814546081555574,
+              "1.0": 0.9778451137470124,
+              "10.0": 0.980182017349739
+            },
+            "holdout_auroc": 0.9917695473251028,
+            "holdout_accuracy_at_0_5": 0.9509803921568627
+          },
+          {
+            "outer_fold": 4,
+            "n_train_images": 385,
+            "n_holdout_images": 116,
+            "n_holdout_patients": 40,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9791768349869973,
+              "1.0": 0.9742233352340909,
+              "10.0": 0.970706996595801
+            },
+            "holdout_auroc": 0.9900124843945068,
+            "holdout_accuracy_at_0_5": 0.9310344827586207
+          },
+          {
+            "outer_fold": 5,
+            "n_train_images": 397,
+            "n_holdout_images": 104,
+            "n_holdout_patients": 41,
+            "selected_C": 0.1,
+            "inner_mean_auroc_by_C": {
+              "0.1": 0.9835340138040088,
+              "1.0": 0.9825602806222146,
+              "10.0": 0.9833332293851219
+            },
+            "holdout_auroc": 0.9873417721518988,
+            "holdout_accuracy_at_0_5": 0.9711538461538461
+          }
+        ]
+      },
+      "macro_disease_auroc": 0.9488785062425688
+    }
+  },
+  "interpretation": "Internal development-only model selection estimate. These nested folds are not an external test or clinical validation. Metrics are image-level; patient IDs define fold grouping."
+}

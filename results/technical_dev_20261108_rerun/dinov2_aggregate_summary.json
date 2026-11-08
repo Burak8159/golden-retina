@@ -1,0 +1,115 @@
+{
+  "status": "completed; development train/validation only; no internal test or Zhejiang rows loaded",
+  "encoder": "Official DINOv2 ViT-B/14; frozen normalized CLS token",
+  "checkpoint_file": "dinov2_vitb14_pretrain.pth",
+  "checkpoint_sha256": "0b8b82f85de91b424aded121c7e1dcc2b7bc6d0adeea651bf73a13307fad8c73",
+  "model_license": "Apache-2.0 per official facebookresearch/dinov2 repository",
+  "dinov2_repository_commit": "7764ea0f912e53c92e82eb78a2a1631e92725fc8",
+  "preprocessing": "ImageNet normalization; bicubic resize 256 and center crop 224",
+  "probe": "training-only StandardScaler + balanced LogisticRegression(C=1,max_iter=5000)",
+  "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+  "rows_train_valid": 7671,
+  "train_rows": 6793,
+  "validation_rows": 878,
+  "embedding_dim": 768,
+  "feature_extraction_seconds": 255.76,
+  "tasks": {
+    "dr_grade_0_4": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "accuracy": 0.548472775564409,
+      "balanced_accuracy": 0.4729439384859808,
+      "macro_f1": 0.4644897329021632,
+      "class_support_valid": {
+        "0": 337,
+        "1": 82,
+        "2": 192,
+        "3": 106,
+        "4": 36
+      },
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "accuracy": 0.6126482213438735,
+          "balanced_accuracy": 0.5418343350258483,
+          "macro_f1": 0.5196195610421552
+        },
+        "drtid_paired": {
+          "n": 500,
+          "accuracy": 0.516,
+          "balanced_accuracy": 0.4283992841031676,
+          "macro_f1": 0.4266217778380117
+        }
+      }
+    },
+    "referable_dr_ge2": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "n": 753,
+      "positives": 334,
+      "accuracy_at_0_5": 0.799468791500664,
+      "balanced_accuracy_at_0_5": 0.7973361153587812,
+      "sensitivity_at_0_5": 0.7784431137724551,
+      "specificity_at_0_5": 0.8162291169451074,
+      "f1_macro_at_0_5": 0.7970622094112818,
+      "auroc": 0.8705214868592172,
+      "auprc": 0.8590379616856663,
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "positives": 88,
+          "accuracy_at_0_5": 0.8260869565217391,
+          "balanced_accuracy_at_0_5": 0.821590909090909,
+          "sensitivity_at_0_5": 0.8068181818181818,
+          "specificity_at_0_5": 0.8363636363636363,
+          "f1_macro_at_0_5": 0.8129704301075269,
+          "auroc": 0.896969696969697,
+          "auprc": 0.8346368632351057
+        },
+        "drtid_paired": {
+          "n": 500,
+          "positives": 246,
+          "accuracy_at_0_5": 0.786,
+          "balanced_accuracy_at_0_5": 0.785721144613021,
+          "sensitivity_at_0_5": 0.7682926829268293,
+          "specificity_at_0_5": 0.8031496062992126,
+          "f1_macro_at_0_5": 0.7858072265038535,
+          "auroc": 0.8587798476409961,
+          "auprc": 0.8752971223347199
+        }
+      }
+    },
+    "ungradable_ddr": {
+      "status": "insufficient class support",
+      "n_train": 3002,
+      "n_valid": 0
+    },
+    "glaucoma_hygd": {
+      "n_train": 501,
+      "n_valid": 125,
+      "n": 125,
+      "positives": 95,
+      "accuracy_at_0_5": 0.936,
+      "balanced_accuracy_at_0_5": 0.9464912280701754,
+      "sensitivity_at_0_5": 0.9263157894736842,
+      "specificity_at_0_5": 0.9666666666666667,
+      "f1_macro_at_0_5": 0.9176548089591567,
+      "auroc": 0.9835087719298246,
+      "auprc": 0.9950627649712909,
+      "by_source": {
+        "hygd_v1_1_0": {
+          "n": 125,
+          "positives": 95,
+          "accuracy_at_0_5": 0.936,
+          "balanced_accuracy_at_0_5": 0.9464912280701754,
+          "sensitivity_at_0_5": 0.9263157894736842,
+          "specificity_at_0_5": 0.9666666666666667,
+          "f1_macro_at_0_5": 0.9176548089591567,
+          "auroc": 0.9835087719298246,
+          "auprc": 0.9950627649712909
+        }
+      }
+    }
+  },
+  "elapsed_seconds_total": 282.7
+}

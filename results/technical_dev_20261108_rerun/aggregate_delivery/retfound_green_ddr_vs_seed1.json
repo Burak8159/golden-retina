@@ -1,0 +1,56 @@
+{
+  "status": "PAIRED_PATIENT_SOURCE_INTERNAL_VALIDATION_ONLY",
+  "n_common_patient_source_groups": 314,
+  "positive_patients": 150,
+  "threshold": 0.5,
+  "candidate": {
+    "name": "RETFound-Green-DDR-train-only",
+    "metrics": {
+      "accuracy": 0.8471337579617835,
+      "sensitivity": 0.9533333333333334,
+      "specificity": 0.75,
+      "auroc": 0.9471138211382113,
+      "auprc": 0.9488517010322393
+    }
+  },
+  "reference": {
+    "name": "RETFound-Green-seed1",
+    "metrics": {
+      "accuracy": 0.8439490445859873,
+      "sensitivity": 0.9266666666666666,
+      "specificity": 0.7682926829268293,
+      "auroc": 0.9510772357723577,
+      "auprc": 0.9567194261934129
+    }
+  },
+  "delta_candidate_minus_reference": {
+    "accuracy": 0.0031847133757961776,
+    "sensitivity": 0.026666666666666727,
+    "specificity": -0.018292682926829285,
+    "auroc": -0.0039634146341464005,
+    "auprc": -0.007867725161173622
+  },
+  "paired_bootstrap_95ci_delta": {
+    "accuracy": [
+      -0.0286624203821656,
+      0.035031847133757954
+    ],
+    "sensitivity": [
+      0.006172839506172867,
+      0.05517241379310345
+    ],
+    "specificity": [
+      -0.07692307692307687,
+      0.038964666618297866
+    ],
+    "auroc": [
+      -0.013593850245171513,
+      0.005739809202412734
+    ],
+    "auprc": [
+      -0.020165029046244752,
+      0.0021561088733368238
+    ]
+  },
+  "warning": "Repeated development validation; not independent external validation. Bootstrap unit is source-patient group."
+}

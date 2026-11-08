@@ -1,0 +1,118 @@
+{
+  "status": "complete",
+  "encoder": "Official RETFound-MAE ViT-L/16 fundus encoder; frozen pretrained CLS token + pretrained LayerNorm",
+  "checkpoint_repo": "YukunZhou/RETFound_mae_natureCFP",
+  "checkpoint_license": "CC-BY-NC-4.0; non-commercial project use authorized by user",
+  "checkpoint_sha256": "e1e4f66a1b792eeb6e2efaf158f33be35c8255f36b3d17ed67cd5129da246485",
+  "checkpoint_loaded_encoder_tensors": 292,
+  "checkpoint_missing_keys": [],
+  "checkpoint_unexpected_key_count": 104,
+  "preprocessing": "official RETFound eval resize 256 bicubic, center crop 224, ImageNet RGB mean/std",
+  "probe": "training-only StandardScaler + LogisticRegression(C=1, balanced, max_iter=5000); scaler fit only on eligible training rows",
+  "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+  "rows_train_valid": 7671,
+  "train_rows": 6793,
+  "validation_rows": 878,
+  "embedding_dim": 1024,
+  "feature_extraction_seconds": 267.43,
+  "cached_embedding_refit": true,
+  "tasks": {
+    "dr_grade_0_4": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "accuracy": 0.48738379814077026,
+      "balanced_accuracy": 0.4284579663583994,
+      "macro_f1": 0.4171807400292466,
+      "class_support_valid": {
+        "0": 337,
+        "1": 82,
+        "2": 192,
+        "3": 106,
+        "4": 36
+      },
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "accuracy": 0.5612648221343873,
+          "balanced_accuracy": 0.4931361035312539,
+          "macro_f1": 0.49626443566882444
+        },
+        "drtid_paired": {
+          "n": 500,
+          "accuracy": 0.45,
+          "balanced_accuracy": 0.3940161321957439,
+          "macro_f1": 0.3777759254697385
+        }
+      }
+    },
+    "referable_dr_ge2": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "n": 753,
+      "positives": 334,
+      "accuracy_at_0_5": 0.749003984063745,
+      "balanced_accuracy_at_0_5": 0.7440941506009461,
+      "sensitivity_at_0_5": 0.7005988023952096,
+      "specificity_at_0_5": 0.7875894988066826,
+      "f1_macro_at_0_5": 0.7448569630669442,
+      "auroc": 0.834786274705958,
+      "auprc": 0.8220952245893407,
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "positives": 88,
+          "accuracy_at_0_5": 0.7747035573122529,
+          "balanced_accuracy_at_0_5": 0.7742424242424242,
+          "sensitivity_at_0_5": 0.7727272727272727,
+          "specificity_at_0_5": 0.7757575757575758,
+          "f1_macro_at_0_5": 0.761277293118575,
+          "auroc": 0.8583333333333334,
+          "auprc": 0.745268610927041
+        },
+        "drtid_paired": {
+          "n": 500,
+          "positives": 246,
+          "accuracy_at_0_5": 0.736,
+          "balanced_accuracy_at_0_5": 0.7350361692593304,
+          "sensitivity_at_0_5": 0.6747967479674797,
+          "specificity_at_0_5": 0.7952755905511811,
+          "f1_macro_at_0_5": 0.7346242923314462,
+          "auroc": 0.8215863260994816,
+          "auprc": 0.8506642163059733
+        }
+      }
+    },
+    "ungradable_ddr": {
+      "status": "insufficient class support",
+      "n_train": 3002,
+      "n_valid": 0
+    },
+    "glaucoma_hygd": {
+      "n_train": 501,
+      "n_valid": 125,
+      "n": 125,
+      "positives": 95,
+      "accuracy_at_0_5": 0.968,
+      "balanced_accuracy_at_0_5": 0.9789473684210526,
+      "sensitivity_at_0_5": 0.9578947368421052,
+      "specificity_at_0_5": 1.0,
+      "f1_macro_at_0_5": 0.957997311827957,
+      "auroc": 0.9905263157894738,
+      "auprc": 0.9975107222404089,
+      "by_source": {
+        "hygd_v1_1_0": {
+          "n": 125,
+          "positives": 95,
+          "accuracy_at_0_5": 0.968,
+          "balanced_accuracy_at_0_5": 0.9789473684210526,
+          "sensitivity_at_0_5": 0.9578947368421052,
+          "specificity_at_0_5": 1.0,
+          "f1_macro_at_0_5": 0.957997311827957,
+          "auroc": 0.9905263157894738,
+          "auprc": 0.9975107222404089
+        }
+      }
+    }
+  },
+  "elapsed_seconds_total": 76.92
+}

@@ -1,0 +1,58 @@
+{
+  "project": "Golden Retina",
+  "candidate": "RETFound-Green",
+  "run": "partial supervised adaptation on patient-grouped training rows",
+  "base_checkpoint_sha256": "431de5dbc1bebbb32f60e2c0bcf8daa4f8bcbf06f7cb1e1dc97ec589713942e1",
+  "adapted_checkpoint_sha256": "3432ca58b1eaa94685d46aee42b5082abe2eb9cfd29142670779fbe7b2b36839",
+  "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+  "train_rows": 3791,
+  "validation_rows": 878,
+  "patient_overlap": 0,
+  "test_rows_loaded": 0,
+  "best_epoch": 9,
+  "best_validation": {
+    "dr_grade_0_4": {
+      "n": 753,
+      "accuracy": 0.6719787516600265,
+      "balanced_accuracy": 0.5326093586820477,
+      "macro_f1": 0.5486016444798374
+    },
+    "referable_dr_ge2": {
+      "n": 753,
+      "positive": 334,
+      "accuracy_at_0_5": 0.8539176626826029,
+      "sensitivity_at_0_5": 0.8532934131736527,
+      "specificity_at_0_5": 0.8544152744630071,
+      "auroc": 0.9325418375659182,
+      "auprc": 0.932945529230682
+    },
+    "glaucoma_hygd": {
+      "n": 125,
+      "positive": 95,
+      "accuracy_at_0_5": 0.952,
+      "sensitivity_at_0_5": 0.9368421052631579,
+      "specificity_at_0_5": 1.0,
+      "auroc": 0.9950877192982457,
+      "auprc": 0.9985083754866024
+    },
+    "by_source": {
+      "deepdrid": {
+        "n": 253,
+        "referable_dr_auroc": 0.9585399449035813,
+        "accuracy_at_0_5": 0.8735177865612648,
+        "sensitivity_at_0_5": 0.9090909090909091,
+        "specificity_at_0_5": 0.8545454545454545
+      },
+      "drtid_paired": {
+        "n": 500,
+        "referable_dr_auroc": 0.9215719224121374,
+        "accuracy_at_0_5": 0.844,
+        "sensitivity_at_0_5": 0.8333333333333334,
+        "specificity_at_0_5": 0.8543307086614174
+      }
+    }
+  },
+  "license_scope": "Research-only under RETFound-Green custom non-commercial research license; checkpoint and derived weights remain private.",
+  "artifacts": "weights and image-level predictions are private; aggregate results may be published only within dataset terms",
+  "created_utc": "2026-11-08T11:16:32+00:00"
+}

@@ -1,0 +1,116 @@
+{
+  "status": "completed; development train/validation only; no internal test or Zhejiang rows loaded",
+  "encoder": "Official VisionFM ViT-Base/16 fundus encoder; frozen; concatenated CLS tokens from final four transformer blocks",
+  "checkpoint_source": "Fundus checkpoint linked by official ABILab-CUHK/VisionFM repository",
+  "checkpoint_sha256": "9a3176a0308066d6e9c9cf40fc03bfd5fa4580dd3dc62ddb2b5b8db4f2e4f350",
+  "checkpoint_backbone_tensors_loaded": 150,
+  "checkpoint_missing_keys": [],
+  "checkpoint_unexpected_keys": [],
+  "preprocessing": "Official VisionFM Fundus mean/std; RGB square resize 224x224; tensor normalization",
+  "probe": "training-only StandardScaler + balanced LogisticRegression(C=1, max_iter=5000); scaler fit only on eligible train rows",
+  "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+  "rows_train_valid": 7671,
+  "train_rows": 6793,
+  "validation_rows": 878,
+  "embedding_dim": 3072,
+  "feature_extraction_seconds": 167.72,
+  "tasks": {
+    "dr_grade_0_4": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "accuracy": 0.5630810092961488,
+      "balanced_accuracy": 0.4888777050579839,
+      "macro_f1": 0.48516278778996325,
+      "class_support_valid": {
+        "0": 337,
+        "1": 82,
+        "2": 192,
+        "3": 106,
+        "4": 36
+      },
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "accuracy": 0.6284584980237155,
+          "balanced_accuracy": 0.5747390911737567,
+          "macro_f1": 0.5460716972433525
+        },
+        "drtid_paired": {
+          "n": 500,
+          "accuracy": 0.53,
+          "balanced_accuracy": 0.4412167794449348,
+          "macro_f1": 0.4475902921555095
+        }
+      }
+    },
+    "referable_dr_ge2": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "n": 753,
+      "positives": 334,
+      "accuracy_at_0_5": 0.7928286852589641,
+      "balanced_accuracy_at_0_5": 0.7904584625498406,
+      "sensitivity_at_0_5": 0.7694610778443114,
+      "specificity_at_0_5": 0.8114558472553699,
+      "f1_macro_at_0_5": 0.7902806541455403,
+      "auroc": 0.864776413759593,
+      "auprc": 0.8665494792044657,
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "positives": 88,
+          "accuracy_at_0_5": 0.8458498023715415,
+          "balanced_accuracy_at_0_5": 0.8579545454545454,
+          "sensitivity_at_0_5": 0.8977272727272727,
+          "specificity_at_0_5": 0.8181818181818182,
+          "f1_macro_at_0_5": 0.8379084323098911,
+          "auroc": 0.9283057851239669,
+          "auprc": 0.875301993133664
+        },
+        "drtid_paired": {
+          "n": 500,
+          "positives": 246,
+          "accuracy_at_0_5": 0.766,
+          "balanced_accuracy_at_0_5": 0.765331924972793,
+          "sensitivity_at_0_5": 0.7235772357723578,
+          "specificity_at_0_5": 0.8070866141732284,
+          "f1_macro_at_0_5": 0.7653156604659186,
+          "auroc": 0.8361500544139299,
+          "auprc": 0.8674330166261827
+        }
+      }
+    },
+    "ungradable_ddr": {
+      "status": "insufficient class support",
+      "n_train": 3002,
+      "n_valid": 0
+    },
+    "glaucoma_hygd": {
+      "n_train": 501,
+      "n_valid": 125,
+      "n": 125,
+      "positives": 95,
+      "accuracy_at_0_5": 0.944,
+      "balanced_accuracy_at_0_5": 0.9289473684210526,
+      "sensitivity_at_0_5": 0.9578947368421052,
+      "specificity_at_0_5": 0.9,
+      "f1_macro_at_0_5": 0.9241044323011536,
+      "auroc": 0.9628070175438597,
+      "auprc": 0.9848438414162148,
+      "by_source": {
+        "hygd_v1_1_0": {
+          "n": 125,
+          "positives": 95,
+          "accuracy_at_0_5": 0.944,
+          "balanced_accuracy_at_0_5": 0.9289473684210526,
+          "sensitivity_at_0_5": 0.9578947368421052,
+          "specificity_at_0_5": 0.9,
+          "f1_macro_at_0_5": 0.9241044323011536,
+          "auroc": 0.9628070175438597,
+          "auprc": 0.9848438414162148
+        }
+      }
+    }
+  },
+  "elapsed_seconds_total": 219.32
+}

@@ -1,0 +1,8 @@
+{
+  "archive": "/data/golden-retina/workspace/external/zhejiang_uwf/Dataset.zip",
+  "bytes": 9018811972,
+  "md5": "ddee42dc99792545654a65413c0fdb6f",
+  "entries": 710,
+  "extracted_to": "/data/golden-retina/workspace/external/zhejiang_uwf/unpacked",
+  "status": "CHECKSUM_AND_ZIP_CRC_VERIFIED_AND_EXTRACTED"
+}

@@ -1,0 +1,719 @@
+{
+  "status": "PATIENT_LEVEL_INTERNAL_VALIDATION_ONLY",
+  "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+  "base_checkpoint_sha256": "431de5dbc1bebbb32f60e2c0bcf8daa4f8bcbf06f7cb1e1dc97ec589713942e1",
+  "adapted_checkpoint_sha256": "2f6e62a414f36f9632e00ce78bed9a5629435e7f6864f164d3c3984f7d5460ac",
+  "validation_images": 878,
+  "test_rows_read": 0,
+  "patient_rule": "patient positive if any labeled eye/image is positive; patient score is maximum per-image score; bootstrap resamples patient clusters.",
+  "models": {
+    "RETFound-Green": {
+      "dr": {
+        "n_patients": 314,
+        "positive_patients": 150,
+        "accuracy_at_0_5": 0.821656050955414,
+        "sensitivity_at_0_5": 0.9266666666666666,
+        "specificity_at_0_5": 0.725609756097561,
+        "auroc": 0.9468089430894309,
+        "auprc": 0.9543114126037823,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            0.7802547770700637,
+            0.8630573248407644
+          ],
+          "sensitivity_at_0_5": [
+            0.8830977845683727,
+            0.9657534246575342
+          ],
+          "specificity_at_0_5": [
+            0.656441717791411,
+            0.7904191616766467
+          ],
+          "auroc": [
+            0.9212520116369955,
+            0.9695099806421585
+          ],
+          "auprc": [
+            0.9323709036258249,
+            0.9736301046046755
+          ]
+        }
+      },
+      "glaucoma": {
+        "n_patients": 43,
+        "positive_patients": 28,
+        "accuracy_at_0_5": 1.0,
+        "sensitivity_at_0_5": 1.0,
+        "specificity_at_0_5": 1.0,
+        "auroc": 1.0,
+        "auprc": 0.9999999999999999,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "sensitivity_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "specificity_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "auroc": [
+            0.9999999999999999,
+            1.0
+          ],
+          "auprc": [
+            0.9999999999999998,
+            1.0000000000000002
+          ]
+        }
+      }
+    },
+    "ConvNeXt-Tiny": {
+      "dr": {
+        "n_patients": 314,
+        "positive_patients": 150,
+        "accuracy_at_0_5": 0.8694267515923567,
+        "sensitivity_at_0_5": 0.88,
+        "specificity_at_0_5": 0.8597560975609756,
+        "auroc": 0.9406097560975609,
+        "auprc": 0.9453520357501157,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            0.8312101910828026,
+            0.9044585987261147
+          ],
+          "sensitivity_at_0_5": [
+            0.827808860470427,
+            0.9299396463409202
+          ],
+          "specificity_at_0_5": [
+            0.8024691358024691,
+            0.9107142857142857
+          ],
+          "auroc": [
+            0.9150922376742099,
+            0.962603058413735
+          ],
+          "auprc": [
+            0.9206168957826911,
+            0.9660849144566986
+          ]
+        }
+      },
+      "glaucoma": {
+        "n_patients": 43,
+        "positive_patients": 28,
+        "accuracy_at_0_5": 1.0,
+        "sensitivity_at_0_5": 1.0,
+        "specificity_at_0_5": 1.0,
+        "auroc": 1.0,
+        "auprc": 0.9999999999999999,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "sensitivity_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "specificity_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "auroc": [
+            0.9999999999999999,
+            1.0
+          ],
+          "auprc": [
+            0.9999999999999998,
+            1.0000000000000002
+          ]
+        }
+      }
+    },
+    "FLAIR": {
+      "dr": {
+        "n_patients": 314,
+        "positive_patients": 150,
+        "accuracy_at_0_5": 0.8280254777070064,
+        "sensitivity_at_0_5": 0.9133333333333333,
+        "specificity_at_0_5": 0.75,
+        "auroc": 0.9370731707317074,
+        "auprc": 0.9344680661237075,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            0.7866242038216561,
+            0.8694267515923567
+          ],
+          "sensitivity_at_0_5": [
+            0.864516129032258,
+            0.9575800256081946
+          ],
+          "specificity_at_0_5": [
+            0.6818181818181818,
+            0.8143762144585002
+          ],
+          "auroc": [
+            0.9096049997114699,
+            0.9614009093103787
+          ],
+          "auprc": [
+            0.8972483579186336,
+            0.9636177422225592
+          ]
+        }
+      },
+      "glaucoma": {
+        "n_patients": 43,
+        "positive_patients": 28,
+        "accuracy_at_0_5": 0.9302325581395349,
+        "sensitivity_at_0_5": 1.0,
+        "specificity_at_0_5": 0.8,
+        "auroc": 0.9880952380952381,
+        "auprc": 0.9940807246146511,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            0.8372093023255814,
+            1.0
+          ],
+          "sensitivity_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "specificity_at_0_5": [
+            0.5714285714285714,
+            1.0
+          ],
+          "auroc": [
+            0.9606056874160323,
+            1.0
+          ],
+          "auprc": [
+            0.9799744318181818,
+            1.0
+          ]
+        }
+      }
+    },
+    "UrFound": {
+      "dr": {
+        "n_patients": 314,
+        "positive_patients": 150,
+        "accuracy_at_0_5": 0.7929936305732485,
+        "sensitivity_at_0_5": 0.8533333333333334,
+        "specificity_at_0_5": 0.7378048780487805,
+        "auroc": 0.8953252032520326,
+        "auprc": 0.9101703025864236,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            0.7452229299363057,
+            0.8375796178343949
+          ],
+          "sensitivity_at_0_5": [
+            0.7911320013237363,
+            0.9103474009264025
+          ],
+          "specificity_at_0_5": [
+            0.6707317073170732,
+            0.8024711016749233
+          ],
+          "auroc": [
+            0.8579836242714202,
+            0.9291465325920757
+          ],
+          "auprc": [
+            0.8744551507721672,
+            0.9399359855664071
+          ]
+        }
+      },
+      "glaucoma": {
+        "n_patients": 43,
+        "positive_patients": 28,
+        "accuracy_at_0_5": 0.9767441860465116,
+        "sensitivity_at_0_5": 1.0,
+        "specificity_at_0_5": 0.9333333333333333,
+        "auroc": 1.0,
+        "auprc": 0.9999999999999999,
+        "patient_bootstrap_95ci": {
+          "accuracy_at_0_5": [
+            0.9302325581395349,
+            1.0
+          ],
+          "sensitivity_at_0_5": [
+            1.0,
+            1.0
+          ],
+          "specificity_at_0_5": [
+            0.7857142857142857,
+            1.0
+          ],
+          "auroc": [
+            0.9999999999999999,
+            1.0
+          ],
+          "auprc": [
+            0.9999999999999998,
+            1.0000000000000002
+          ]
+        }
+      }
+    }
+  },
+  "by_source": {
+    "deepdrid": {
+      "RETFound-Green": {
+        "dr": {
+          "n_patients": 64,
+          "positive_patients": 27,
+          "accuracy_at_0_5": 0.890625,
+          "sensitivity_at_0_5": 0.9629629629629629,
+          "specificity_at_0_5": 0.8378378378378378,
+          "auroc": 0.9909909909909911,
+          "auprc": 0.9907407407407407,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.8125,
+              0.953125
+            ],
+            "sensitivity_at_0_5": [
+              0.875,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              0.7142857142857143,
+              0.9459815078236129
+            ],
+            "auroc": [
+              0.9671794871794872,
+              1.0
+            ],
+            "auprc": [
+              0.9655766129032258,
+              1.0
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      },
+      "ConvNeXt-Tiny": {
+        "dr": {
+          "n_patients": 64,
+          "positive_patients": 27,
+          "accuracy_at_0_5": 0.90625,
+          "sensitivity_at_0_5": 0.9259259259259259,
+          "specificity_at_0_5": 0.8918918918918919,
+          "auroc": 0.9689689689689691,
+          "auprc": 0.9674511823937111,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.828125,
+              0.96875
+            ],
+            "sensitivity_at_0_5": [
+              0.8125,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              0.7878246753246753,
+              0.9743589743589743
+            ],
+            "auroc": [
+              0.9217986314760509,
+              0.9980295566502463
+            ],
+            "auprc": [
+              0.9166410639525426,
+              0.9976211001642037
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      },
+      "FLAIR": {
+        "dr": {
+          "n_patients": 64,
+          "positive_patients": 27,
+          "accuracy_at_0_5": 0.859375,
+          "sensitivity_at_0_5": 0.9259259259259259,
+          "specificity_at_0_5": 0.8108108108108109,
+          "auroc": 0.9639639639639639,
+          "auprc": 0.9529403300657873,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.78125,
+              0.9375
+            ],
+            "sensitivity_at_0_5": [
+              0.8095238095238095,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              0.68289911308204,
+              0.9348001402524544
+            ],
+            "auroc": [
+              0.92019313037235,
+              0.9939953346203346
+            ],
+            "auprc": [
+              0.889661977575121,
+              0.992510762704728
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      },
+      "UrFound": {
+        "dr": {
+          "n_patients": 64,
+          "positive_patients": 27,
+          "accuracy_at_0_5": 0.84375,
+          "sensitivity_at_0_5": 0.9629629629629629,
+          "specificity_at_0_5": 0.7567567567567568,
+          "auroc": 0.975975975975976,
+          "auprc": 0.9738761421520044,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.75,
+              0.921875
+            ],
+            "sensitivity_at_0_5": [
+              0.875,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              0.6052631578947368,
+              0.8857305194805194
+            ],
+            "auroc": [
+              0.9379708563504512,
+              1.0
+            ],
+            "auprc": [
+              0.9312627011668528,
+              0.9999999999999999
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      }
+    },
+    "drtid_paired": {
+      "RETFound-Green": {
+        "dr": {
+          "n_patients": 250,
+          "positive_patients": 123,
+          "accuracy_at_0_5": 0.804,
+          "sensitivity_at_0_5": 0.9186991869918699,
+          "specificity_at_0_5": 0.6929133858267716,
+          "auroc": 0.9336470136354906,
+          "auprc": 0.945381897226652,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.752,
+              0.852
+            ],
+            "sensitivity_at_0_5": [
+              0.8617886178861789,
+              0.9649199084668192
+            ],
+            "specificity_at_0_5": [
+              0.6052478580171359,
+              0.7734446281934306
+            ],
+            "auroc": [
+              0.8989482161504004,
+              0.9623717948717949
+            ],
+            "auprc": [
+              0.9149203358879798,
+              0.9692145565389205
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      },
+      "ConvNeXt-Tiny": {
+        "dr": {
+          "n_patients": 250,
+          "positive_patients": 123,
+          "accuracy_at_0_5": 0.86,
+          "sensitivity_at_0_5": 0.8699186991869918,
+          "specificity_at_0_5": 0.8503937007874016,
+          "auroc": 0.9325907432302669,
+          "auprc": 0.9408912236183088,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.816,
+              0.904
+            ],
+            "sensitivity_at_0_5": [
+              0.8050847457627118,
+              0.9274338709677418
+            ],
+            "specificity_at_0_5": [
+              0.7862459105779717,
+              0.9090909090909091
+            ],
+            "auroc": [
+              0.9005678309699786,
+              0.9590097037465458
+            ],
+            "auprc": [
+              0.9109702619198955,
+              0.965561897512168
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      },
+      "FLAIR": {
+        "dr": {
+          "n_patients": 250,
+          "positive_patients": 123,
+          "accuracy_at_0_5": 0.82,
+          "sensitivity_at_0_5": 0.9105691056910569,
+          "specificity_at_0_5": 0.7322834645669292,
+          "auroc": 0.9361116445810127,
+          "auprc": 0.937009989523975,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.768,
+              0.868
+            ],
+            "sensitivity_at_0_5": [
+              0.8515605662128712,
+              0.9586861536377185
+            ],
+            "specificity_at_0_5": [
+              0.6507936507936508,
+              0.808
+            ],
+            "auroc": [
+              0.9025552207862277,
+              0.9620522540983606
+            ],
+            "auprc": [
+              0.8951170923764223,
+              0.9672919907226567
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      },
+      "UrFound": {
+        "dr": {
+          "n_patients": 250,
+          "positive_patients": 123,
+          "accuracy_at_0_5": 0.78,
+          "sensitivity_at_0_5": 0.8292682926829268,
+          "specificity_at_0_5": 0.7322834645669292,
+          "auroc": 0.870622879457141,
+          "auprc": 0.8954184925749676,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.724,
+              0.832
+            ],
+            "sensitivity_at_0_5": [
+              0.7570030310684516,
+              0.890625
+            ],
+            "specificity_at_0_5": [
+              0.6521574440052701,
+              0.8129496402877698
+            ],
+            "auroc": [
+              0.8204109123399898,
+              0.9145607342995169
+            ],
+            "auprc": [
+              0.8512601411900665,
+              0.9330222575817531
+            ]
+          }
+        },
+        "glaucoma": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        }
+      }
+    },
+    "hygd_v1_1_0": {
+      "RETFound-Green": {
+        "dr": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        },
+        "glaucoma": {
+          "n_patients": 43,
+          "positive_patients": 28,
+          "accuracy_at_0_5": 1.0,
+          "sensitivity_at_0_5": 1.0,
+          "specificity_at_0_5": 1.0,
+          "auroc": 1.0,
+          "auprc": 0.9999999999999999,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "sensitivity_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "auroc": [
+              0.9999999999999999,
+              1.0
+            ],
+            "auprc": [
+              0.9999999999999998,
+              1.0000000000000002
+            ]
+          }
+        }
+      },
+      "ConvNeXt-Tiny": {
+        "dr": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        },
+        "glaucoma": {
+          "n_patients": 43,
+          "positive_patients": 28,
+          "accuracy_at_0_5": 1.0,
+          "sensitivity_at_0_5": 1.0,
+          "specificity_at_0_5": 1.0,
+          "auroc": 1.0,
+          "auprc": 0.9999999999999999,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "sensitivity_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "auroc": [
+              0.9999999999999999,
+              1.0
+            ],
+            "auprc": [
+              0.9999999999999998,
+              1.0000000000000002
+            ]
+          }
+        }
+      },
+      "FLAIR": {
+        "dr": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        },
+        "glaucoma": {
+          "n_patients": 43,
+          "positive_patients": 28,
+          "accuracy_at_0_5": 0.9302325581395349,
+          "sensitivity_at_0_5": 1.0,
+          "specificity_at_0_5": 0.8,
+          "auroc": 0.9880952380952381,
+          "auprc": 0.9940807246146511,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.8372093023255814,
+              1.0
+            ],
+            "sensitivity_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              0.5714285714285714,
+              1.0
+            ],
+            "auroc": [
+              0.9606056874160323,
+              1.0
+            ],
+            "auprc": [
+              0.9799744318181818,
+              1.0
+            ]
+          }
+        }
+      },
+      "UrFound": {
+        "dr": {
+          "n_patients": 0,
+          "status": "no eligible patients"
+        },
+        "glaucoma": {
+          "n_patients": 43,
+          "positive_patients": 28,
+          "accuracy_at_0_5": 0.9767441860465116,
+          "sensitivity_at_0_5": 1.0,
+          "specificity_at_0_5": 0.9333333333333333,
+          "auroc": 1.0,
+          "auprc": 0.9999999999999999,
+          "patient_bootstrap_95ci": {
+            "accuracy_at_0_5": [
+              0.9302325581395349,
+              1.0
+            ],
+            "sensitivity_at_0_5": [
+              1.0,
+              1.0
+            ],
+            "specificity_at_0_5": [
+              0.7857142857142857,
+              1.0
+            ],
+            "auroc": [
+              0.9999999999999999,
+              1.0
+            ],
+            "auprc": [
+              0.9999999999999998,
+              1.0000000000000002
+            ]
+          }
+        }
+      }
+    }
+  }
+}

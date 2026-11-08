@@ -1,0 +1,32 @@
+{
+  "status": "EXPLORATORY_SOURCE_TRANSFER_ONLY_NOT_REFERABLE_DR_VALIDATION",
+  "dataset": "Previously exposed Zhejiang single-center Optos UWF dataset",
+  "label_semantics": "Source-defined DR diagnosis versus healthy; not referable-DR grade.",
+  "checkpoint_sha256": "de221fc19b6e76fede71593d92363bac8d814ea3ef287b2cf586d9f97602e176",
+  "manifest_sha256": "37e0b74c32306414e8fe1a7526dab8ad902da65506d73b2eac26f8c236dbcd68",
+  "base_weights_sha256": "431de5dbc1bebbb32f60e2c0bcf8daa4f8bcbf06f7cb1e1dc97ec589713942e1",
+  "images": 200,
+  "patients": 152,
+  "patient_aggregation": "Maximum referable-DR score across available images per patient.",
+  "fixed_referral_threshold_used": false,
+  "patient_metrics": {
+    "n_patients": 152,
+    "positive_DR_patients": 53,
+    "healthy_patients": 99,
+    "auroc": 0.9897084048027445,
+    "auprc": 0.9825710583908334
+  },
+  "stratified_patient_bootstrap_95ci": {
+    "replicates": 5000,
+    "auroc": [
+      0.9773203735467887,
+      0.9980989136649514
+    ],
+    "auprc": [
+      0.9628707662367547,
+      0.9967471637117762
+    ]
+  },
+  "claim_boundary": "Previously exposed retrospective exploratory domain-shift analysis; not independent confirmation, referable-DR validation, or clinical performance.",
+  "row_predictions": "Private only; do not publish or transfer to GitHub."
+}

@@ -1,0 +1,121 @@
+{
+  "status": "completed; development train/validation only; no internal test or Zhejiang rows loaded",
+  "encoder": "Official UrFound ViT-Base/16 fundus encoder; frozen global-average pooled representation",
+  "checkpoint_source": "Official yukkai/UrFound repository link to public yyyyk/UrFound/urfound_mm.pth",
+  "checkpoint_epoch": 199,
+  "checkpoint_sha256": "8a26bf1a64d449d30fe6fc5faabea48431aa6c15a743d324b8e16271109942e3",
+  "checkpoint_missing_keys": [
+    "fc_norm.weight",
+    "fc_norm.bias"
+  ],
+  "checkpoint_unexpected_key_count": 171,
+  "checkpoint_tensor_count": 319,
+  "pretraining_provenance": "Model card reports FLAIR pretraining and RETFound fine-tuning; exact source-level overlap with current development rows is not established.",
+  "preprocessing": "Official UrFound evaluation transform: bicubic resize 256, center crop 224, ImageNet mean/std",
+  "probe": "training-only StandardScaler + balanced LogisticRegression(C=1, max_iter=5000); scaler fit only on eligible train rows",
+  "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+  "rows_train_valid": 7671,
+  "train_rows": 6793,
+  "validation_rows": 878,
+  "embedding_dim": 768,
+  "feature_extraction_seconds": 233.89,
+  "tasks": {
+    "dr_grade_0_4": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "accuracy": 0.5285524568393094,
+      "balanced_accuracy": 0.48891928537202906,
+      "macro_f1": 0.4825687796139655,
+      "class_support_valid": {
+        "0": 337,
+        "1": 82,
+        "2": 192,
+        "3": 106,
+        "4": 36
+      },
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "accuracy": 0.6245059288537549,
+          "balanced_accuracy": 0.5865571301920651,
+          "macro_f1": 0.5632833209912317
+        },
+        "drtid_paired": {
+          "n": 500,
+          "accuracy": 0.48,
+          "balanced_accuracy": 0.4327647837599294,
+          "macro_f1": 0.4323330298238047
+        }
+      }
+    },
+    "referable_dr_ge2": {
+      "n_train": 5724,
+      "n_valid": 753,
+      "n": 753,
+      "positives": 334,
+      "accuracy_at_0_5": 0.8167330677290837,
+      "balanced_accuracy_at_0_5": 0.8131529304160177,
+      "sensitivity_at_0_5": 0.781437125748503,
+      "specificity_at_0_5": 0.8448687350835322,
+      "f1_macro_at_0_5": 0.8138942617666022,
+      "auroc": 0.8921941320223514,
+      "auprc": 0.8959724111009177,
+      "by_source": {
+        "deepdrid": {
+          "n": 253,
+          "positives": 88,
+          "accuracy_at_0_5": 0.8814229249011858,
+          "balanced_accuracy_at_0_5": 0.890530303030303,
+          "sensitivity_at_0_5": 0.9204545454545454,
+          "specificity_at_0_5": 0.8606060606060606,
+          "f1_macro_at_0_5": 0.8741042993630573,
+          "auroc": 0.962121212121212,
+          "auprc": 0.9456623135689398
+        },
+        "drtid_paired": {
+          "n": 500,
+          "positives": 246,
+          "accuracy_at_0_5": 0.784,
+          "balanced_accuracy_at_0_5": 0.7831764931822547,
+          "sensitivity_at_0_5": 0.7317073170731707,
+          "specificity_at_0_5": 0.8346456692913385,
+          "f1_macro_at_0_5": 0.7831116252168884,
+          "auroc": 0.8512899302221368,
+          "auprc": 0.8793325994450208
+        }
+      }
+    },
+    "ungradable_ddr": {
+      "status": "insufficient class support",
+      "n_train": 3002,
+      "n_valid": 0
+    },
+    "glaucoma_hygd": {
+      "n_train": 501,
+      "n_valid": 125,
+      "n": 125,
+      "positives": 95,
+      "accuracy_at_0_5": 0.968,
+      "balanced_accuracy_at_0_5": 0.9675438596491228,
+      "sensitivity_at_0_5": 0.968421052631579,
+      "specificity_at_0_5": 0.9666666666666667,
+      "f1_macro_at_0_5": 0.9571036376115305,
+      "auroc": 0.996842105263158,
+      "auprc": 0.9990387027112853,
+      "by_source": {
+        "hygd_v1_1_0": {
+          "n": 125,
+          "positives": 95,
+          "accuracy_at_0_5": 0.968,
+          "balanced_accuracy_at_0_5": 0.9675438596491228,
+          "sensitivity_at_0_5": 0.968421052631579,
+          "specificity_at_0_5": 0.9666666666666667,
+          "f1_macro_at_0_5": 0.9571036376115305,
+          "auroc": 0.996842105263158,
+          "auprc": 0.9990387027112853
+        }
+      }
+    }
+  },
+  "elapsed_seconds_total": 267.4
+}

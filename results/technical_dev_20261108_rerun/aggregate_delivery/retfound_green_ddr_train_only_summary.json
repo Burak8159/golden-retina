@@ -1,0 +1,832 @@
+{
+  "status": "DEVELOPMENT_TRAIN_VALID_ONLY",
+  "backbone": "RETFound-Green ViT-S/14 reg4 DINOv2 architecture at 392px; last transformer block, final norms and DR/glaucoma heads trainable; all other encoder parameters frozen",
+  "train_rows": 6225,
+  "train_rows_by_source": {
+    "ddr_hf_specificity300": 2434,
+    "deepdrid": 1124,
+    "drtid_paired": 2166,
+    "hygd_v1_1_0": 501
+  },
+  "validation_rows": 878,
+  "validation_rows_by_source": {
+    "deepdrid": 253,
+    "drtid_paired": 500,
+    "hygd_v1_1_0": 125
+  },
+  "include_train_only_ddr": true,
+  "sources": [
+    "ddr_hf_specificity300",
+    "deepdrid",
+    "drtid_paired",
+    "hygd_v1_1_0"
+  ],
+  "train_verified_patients": 1566,
+  "validation_verified_patients": 357,
+  "patient_overlap": 0,
+  "test_rows_loaded": 0,
+  "trainable_parameters": 1778695,
+  "loss": "masked DR 5-grade cross entropy + referable DR BCE + masked glaucoma BCE; source/label group-balanced sampling",
+  "selection_metric": "validation referable-DR AUROC; glaucoma tracked separately",
+  "checkpoint_sha256": "431de5dbc1bebbb32f60e2c0bcf8daa4f8bcbf06f7cb1e1dc97ec589713942e1",
+  "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+  "best_epoch": 10,
+  "best_validation": {
+    "dr_grade_0_4": {
+      "n": 753,
+      "accuracy": 0.6733067729083665,
+      "balanced_accuracy": 0.546783038156441,
+      "macro_f1": 0.5642900861238933
+    },
+    "referable_dr_ge2": {
+      "n": 753,
+      "positive": 334,
+      "accuracy_at_0_5": 0.8552456839309429,
+      "sensitivity_at_0_5": 0.874251497005988,
+      "specificity_at_0_5": 0.8400954653937948,
+      "auroc": 0.9295299615566003,
+      "auprc": 0.929506863338301
+    },
+    "glaucoma_hygd": {
+      "n": 125,
+      "positive": 95,
+      "accuracy_at_0_5": 0.968,
+      "sensitivity_at_0_5": 0.968421052631579,
+      "specificity_at_0_5": 0.9666666666666667,
+      "auroc": 0.995438596491228,
+      "auprc": 0.9986160813986877
+    },
+    "by_source": {
+      "deepdrid": {
+        "n": 253,
+        "referable_dr_auroc": 0.962431129476584,
+        "accuracy_at_0_5": 0.8893280632411067,
+        "sensitivity_at_0_5": 0.9431818181818182,
+        "specificity_at_0_5": 0.8606060606060606
+      },
+      "drtid_paired": {
+        "n": 500,
+        "referable_dr_auroc": 0.9131057550732988,
+        "accuracy_at_0_5": 0.838,
+        "sensitivity_at_0_5": 0.8495934959349594,
+        "specificity_at_0_5": 0.8267716535433071
+      }
+    }
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6049386145157287,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5086321381142098,
+          "balanced_accuracy": 0.458884205401877,
+          "macro_f1": 0.4452933459299313
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7729083665338645,
+          "sensitivity_at_0_5": 0.8622754491017964,
+          "specificity_at_0_5": 0.7016706443914081,
+          "auroc": 0.8858631186314722,
+          "auprc": 0.8880415470707653
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.976,
+          "sensitivity_at_0_5": 0.9894736842105263,
+          "specificity_at_0_5": 0.9333333333333333,
+          "auroc": 0.9954385964912281,
+          "auprc": 0.9985824427684102
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9222451790633609,
+            "accuracy_at_0_5": 0.8300395256916996,
+            "sensitivity_at_0_5": 0.875,
+            "specificity_at_0_5": 0.806060606060606
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.8643652775110428,
+            "accuracy_at_0_5": 0.744,
+            "sensitivity_at_0_5": 0.8577235772357723,
+            "specificity_at_0_5": 0.6338582677165354
+          }
+        }
+      },
+      "elapsed_seconds": 162.9
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.4887231521987487,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6201859229747676,
+          "balanced_accuracy": 0.5189125180803764,
+          "macro_f1": 0.5240615881576123
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8233731739707836,
+          "sensitivity_at_0_5": 0.8562874251497006,
+          "specificity_at_0_5": 0.7971360381861575,
+          "auroc": 0.9119517528189445,
+          "auprc": 0.9146756039451875
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.976,
+          "sensitivity_at_0_5": 0.9894736842105263,
+          "specificity_at_0_5": 0.9333333333333333,
+          "auroc": 0.9964912280701754,
+          "auprc": 0.9989974937343358
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9480716253443526,
+            "accuracy_at_0_5": 0.8656126482213439,
+            "sensitivity_at_0_5": 0.8863636363636364,
+            "specificity_at_0_5": 0.8545454545454545
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.8925324883170092,
+            "accuracy_at_0_5": 0.802,
+            "sensitivity_at_0_5": 0.8455284552845529,
+            "specificity_at_0_5": 0.7598425196850394
+          }
+        }
+      },
+      "elapsed_seconds": 325.5
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.4463218903168737,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6135458167330677,
+          "balanced_accuracy": 0.4825094007336692,
+          "macro_f1": 0.49631152754016233
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8353253652058433,
+          "sensitivity_at_0_5": 0.8652694610778443,
+          "specificity_at_0_5": 0.8114558472553699,
+          "auroc": 0.9162927129035484,
+          "auprc": 0.9196682035993199
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.976,
+          "sensitivity_at_0_5": 0.9894736842105263,
+          "specificity_at_0_5": 0.9333333333333333,
+          "auroc": 0.9964912280701754,
+          "auprc": 0.9989782655018112
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9519283746556474,
+            "accuracy_at_0_5": 0.8932806324110671,
+            "sensitivity_at_0_5": 0.9090909090909091,
+            "specificity_at_0_5": 0.8848484848484849
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.895541258562192,
+            "accuracy_at_0_5": 0.806,
+            "sensitivity_at_0_5": 0.8495934959349594,
+            "specificity_at_0_5": 0.7637795275590551
+          }
+        }
+      },
+      "elapsed_seconds": 488.8
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.419850821462155,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6560424966799469,
+          "balanced_accuracy": 0.5144768591095434,
+          "macro_f1": 0.5061177622506431
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8393094289508632,
+          "sensitivity_at_0_5": 0.8862275449101796,
+          "specificity_at_0_5": 0.801909307875895,
+          "auroc": 0.9259178540294114,
+          "auprc": 0.9285261336463206
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9473684210526315,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9975438596491228,
+          "auprc": 0.9992508988035599
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9601239669421487,
+            "accuracy_at_0_5": 0.8735177865612648,
+            "sensitivity_at_0_5": 0.9431818181818182,
+            "specificity_at_0_5": 0.8363636363636363
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9092007553933805,
+            "accuracy_at_0_5": 0.822,
+            "sensitivity_at_0_5": 0.8658536585365854,
+            "specificity_at_0_5": 0.7795275590551181
+          }
+        }
+      },
+      "elapsed_seconds": 652.2
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.4112839794673494,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6626826029216467,
+          "balanced_accuracy": 0.5293129047269421,
+          "macro_f1": 0.5386391209436393
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8446215139442231,
+          "sensitivity_at_0_5": 0.844311377245509,
+          "specificity_at_0_5": 0.8448687350835322,
+          "auroc": 0.9219984851299787,
+          "auprc": 0.9248174496103918
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.968,
+          "sensitivity_at_0_5": 0.9578947368421052,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9968421052631578,
+          "auprc": 0.9990890688259111
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9600550964187328,
+            "accuracy_at_0_5": 0.8695652173913043,
+            "sensitivity_at_0_5": 0.9204545454545454,
+            "specificity_at_0_5": 0.8424242424242424
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9061199667114781,
+            "accuracy_at_0_5": 0.832,
+            "sensitivity_at_0_5": 0.8170731707317073,
+            "specificity_at_0_5": 0.8464566929133859
+          }
+        }
+      },
+      "elapsed_seconds": 815.7
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.3753144393563844,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6626826029216467,
+          "balanced_accuracy": 0.5430742106046557,
+          "macro_f1": 0.5552017843369642
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.852589641434263,
+          "sensitivity_at_0_5": 0.8473053892215568,
+          "specificity_at_0_5": 0.8568019093078759,
+          "auroc": 0.9237813156503223,
+          "auprc": 0.9276250494758587
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.976,
+          "sensitivity_at_0_5": 0.9789473684210527,
+          "specificity_at_0_5": 0.9666666666666667,
+          "auroc": 0.9964912280701754,
+          "auprc": 0.9989463254506731
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9550964187327824,
+            "accuracy_at_0_5": 0.8695652173913043,
+            "sensitivity_at_0_5": 0.9090909090909091,
+            "specificity_at_0_5": 0.8484848484848485
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9127776710837975,
+            "accuracy_at_0_5": 0.844,
+            "sensitivity_at_0_5": 0.8252032520325203,
+            "specificity_at_0_5": 0.8622047244094488
+          }
+        }
+      },
+      "elapsed_seconds": 980.4
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.367516734498339,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.5949535192563081,
+          "balanced_accuracy": 0.48738440261131244,
+          "macro_f1": 0.4742930156929476
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8140770252324038,
+          "sensitivity_at_0_5": 0.907185628742515,
+          "specificity_at_0_5": 0.7398568019093079,
+          "auroc": 0.9288368370657254,
+          "auprc": 0.931434421246679
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9578947368421052,
+          "specificity_at_0_5": 0.9666666666666667,
+          "auroc": 0.9954385964912281,
+          "auprc": 0.9986090982180832
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9585055096418733,
+            "accuracy_at_0_5": 0.8102766798418972,
+            "sensitivity_at_0_5": 0.9431818181818182,
+            "specificity_at_0_5": 0.7393939393939394
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9147781832149031,
+            "accuracy_at_0_5": 0.816,
+            "sensitivity_at_0_5": 0.8943089430894309,
+            "specificity_at_0_5": 0.7401574803149606
+          }
+        }
+      },
+      "elapsed_seconds": 1146.1
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.35142289424394,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.646746347941567,
+          "balanced_accuracy": 0.5172939341579184,
+          "macro_f1": 0.5267273039152078
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8579017264276229,
+          "sensitivity_at_0_5": 0.8622754491017964,
+          "specificity_at_0_5": 0.8544152744630071,
+          "auroc": 0.9266324153602103,
+          "auprc": 0.9264316673286802
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.976,
+          "sensitivity_at_0_5": 0.968421052631579,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9964912280701755,
+          "auprc": 0.9989337694157229
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9632920110192837,
+            "accuracy_at_0_5": 0.9051383399209486,
+            "sensitivity_at_0_5": 0.9431818181818182,
+            "specificity_at_0_5": 0.8848484848484849
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9096328660136995,
+            "accuracy_at_0_5": 0.834,
+            "sensitivity_at_0_5": 0.8333333333333334,
+            "specificity_at_0_5": 0.8346456692913385
+          }
+        }
+      },
+      "elapsed_seconds": 1312.2
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.33721010469555357,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6294820717131474,
+          "balanced_accuracy": 0.5657789387681962,
+          "macro_f1": 0.5660283449365096
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8366533864541833,
+          "sensitivity_at_0_5": 0.8772455089820359,
+          "specificity_at_0_5": 0.8042959427207638,
+          "auroc": 0.9236098209309305,
+          "auprc": 0.9259736730976849
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.944,
+          "sensitivity_at_0_5": 0.9263157894736842,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9964912280701754,
+          "auprc": 0.9989371360682323
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9648760330578512,
+            "accuracy_at_0_5": 0.8458498023715415,
+            "sensitivity_at_0_5": 0.9545454545454546,
+            "specificity_at_0_5": 0.7878787878787878
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9103370462838487,
+            "accuracy_at_0_5": 0.832,
+            "sensitivity_at_0_5": 0.8495934959349594,
+            "specificity_at_0_5": 0.8149606299212598
+          }
+        }
+      },
+      "elapsed_seconds": 1477.2
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.3227012608551799,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6733067729083665,
+          "balanced_accuracy": 0.546783038156441,
+          "macro_f1": 0.5642900861238933
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8552456839309429,
+          "sensitivity_at_0_5": 0.874251497005988,
+          "specificity_at_0_5": 0.8400954653937948,
+          "auroc": 0.9295299615566003,
+          "auprc": 0.929506863338301
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.968,
+          "sensitivity_at_0_5": 0.968421052631579,
+          "specificity_at_0_5": 0.9666666666666667,
+          "auroc": 0.995438596491228,
+          "auprc": 0.9986160813986877
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.962431129476584,
+            "accuracy_at_0_5": 0.8893280632411067,
+            "sensitivity_at_0_5": 0.9431818181818182,
+            "specificity_at_0_5": 0.8606060606060606
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9131057550732988,
+            "accuracy_at_0_5": 0.838,
+            "sensitivity_at_0_5": 0.8495934959349594,
+            "specificity_at_0_5": 0.8267716535433071
+          }
+        }
+      },
+      "elapsed_seconds": 1642.5
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.31976727638465374,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6759628154050464,
+          "balanced_accuracy": 0.5387112240124697,
+          "macro_f1": 0.5478179772402709
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8751660026560425,
+          "sensitivity_at_0_5": 0.7994011976047904,
+          "specificity_at_0_5": 0.9355608591885441,
+          "auroc": 0.9244601489145813,
+          "auprc": 0.9275575872323432
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.968,
+          "sensitivity_at_0_5": 0.9789473684210527,
+          "specificity_at_0_5": 0.9333333333333333,
+          "auroc": 0.9947368421052633,
+          "auprc": 0.9984658616237564
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9555096418732782,
+            "accuracy_at_0_5": 0.9090909090909091,
+            "sensitivity_at_0_5": 0.8522727272727273,
+            "specificity_at_0_5": 0.9393939393939394
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9075363293003009,
+            "accuracy_at_0_5": 0.858,
+            "sensitivity_at_0_5": 0.7804878048780488,
+            "specificity_at_0_5": 0.9330708661417323
+          }
+        }
+      },
+      "elapsed_seconds": 1807.3
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.29807726831673925,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6746347941567065,
+          "balanced_accuracy": 0.5664465329147441,
+          "macro_f1": 0.5824893596049945
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8579017264276229,
+          "sensitivity_at_0_5": 0.7245508982035929,
+          "specificity_at_0_5": 0.964200477326969,
+          "auroc": 0.9256713303702857,
+          "auprc": 0.9289721490405413
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.952,
+          "sensitivity_at_0_5": 0.968421052631579,
+          "specificity_at_0_5": 0.9,
+          "auroc": 0.9943859649122807,
+          "auprc": 0.9983039543820121
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.95633608815427,
+            "accuracy_at_0_5": 0.9051383399209486,
+            "sensitivity_at_0_5": 0.8181818181818182,
+            "specificity_at_0_5": 0.9515151515151515
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.912009474425453,
+            "accuracy_at_0_5": 0.834,
+            "sensitivity_at_0_5": 0.6910569105691057,
+            "specificity_at_0_5": 0.9724409448818898
+          }
+        }
+      },
+      "elapsed_seconds": 1971.0
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.272015014430424,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.646746347941567,
+          "balanced_accuracy": 0.5160341692752631,
+          "macro_f1": 0.5114367313221571
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8300132802124834,
+          "sensitivity_at_0_5": 0.8832335329341318,
+          "specificity_at_0_5": 0.7875894988066826,
+          "auroc": 0.9215876123647693,
+          "auprc": 0.9236808160471011
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.952,
+          "sensitivity_at_0_5": 0.968421052631579,
+          "specificity_at_0_5": 0.9,
+          "auroc": 0.9943859649122807,
+          "auprc": 0.9982647547513751
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9534779614325068,
+            "accuracy_at_0_5": 0.849802371541502,
+            "sensitivity_at_0_5": 0.9090909090909091,
+            "specificity_at_0_5": 0.8181818181818182
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9058238909160745,
+            "accuracy_at_0_5": 0.82,
+            "sensitivity_at_0_5": 0.8739837398373984,
+            "specificity_at_0_5": 0.7677165354330708
+          }
+        }
+      },
+      "elapsed_seconds": 2137.1
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.2700737033772195,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.6733067729083665,
+          "balanced_accuracy": 0.5501488515878944,
+          "macro_f1": 0.5592519859309125
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8645418326693227,
+          "sensitivity_at_0_5": 0.8353293413173652,
+          "specificity_at_0_5": 0.8878281622911695,
+          "auroc": 0.9185685907421434,
+          "auprc": 0.9202204397242657
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9789473684210527,
+          "specificity_at_0_5": 0.9,
+          "auroc": 0.9957894736842106,
+          "auprc": 0.9987201707826778
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9557506887052342,
+            "accuracy_at_0_5": 0.8932806324110671,
+            "sensitivity_at_0_5": 0.8636363636363636,
+            "specificity_at_0_5": 0.9090909090909091
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.899294219320146,
+            "accuracy_at_0_5": 0.85,
+            "sensitivity_at_0_5": 0.8252032520325203,
+            "specificity_at_0_5": 0.8740157480314961
+          }
+        }
+      },
+      "elapsed_seconds": 2302.3
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.2624629242303847,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.601593625498008,
+          "balanced_accuracy": 0.5286776340185859,
+          "macro_f1": 0.529050034294729
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.7768924302788844,
+          "sensitivity_at_0_5": 0.9131736526946108,
+          "specificity_at_0_5": 0.6682577565632458,
+          "auroc": 0.9236991410972804,
+          "auprc": 0.9213659591944674
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.952,
+          "sensitivity_at_0_5": 0.968421052631579,
+          "specificity_at_0_5": 0.9,
+          "auroc": 0.9947368421052631,
+          "auprc": 0.9983723542353962
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9617424242424243,
+            "accuracy_at_0_5": 0.7905138339920948,
+            "sensitivity_at_0_5": 0.9659090909090909,
+            "specificity_at_0_5": 0.696969696969697
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.9042314832597145,
+            "accuracy_at_0_5": 0.77,
+            "sensitivity_at_0_5": 0.8943089430894309,
+            "specificity_at_0_5": 0.6496062992125984
+          }
+        }
+      },
+      "elapsed_seconds": 2467.5
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.25011521653512514,
+      "validation": {
+        "dr_grade_0_4": {
+          "n": 753,
+          "accuracy": 0.649402390438247,
+          "balanced_accuracy": 0.538128354248382,
+          "macro_f1": 0.5379973831341375
+        },
+        "referable_dr_ge2": {
+          "n": 753,
+          "positive": 334,
+          "accuracy_at_0_5": 0.8406374501992032,
+          "sensitivity_at_0_5": 0.8562874251497006,
+          "specificity_at_0_5": 0.8281622911694511,
+          "auroc": 0.9144955911565891,
+          "auprc": 0.9131504236824022
+        },
+        "glaucoma_hygd": {
+          "n": 125,
+          "positive": 95,
+          "accuracy_at_0_5": 0.96,
+          "sensitivity_at_0_5": 0.9789473684210527,
+          "specificity_at_0_5": 0.9,
+          "auroc": 0.9947368421052633,
+          "auprc": 0.9984009086392509
+        },
+        "by_source": {
+          "deepdrid": {
+            "n": 253,
+            "referable_dr_auroc": 0.9612947658402204,
+            "accuracy_at_0_5": 0.8774703557312253,
+            "sensitivity_at_0_5": 0.9318181818181818,
+            "specificity_at_0_5": 0.8484848484848485
+          },
+          "drtid_paired": {
+            "n": 500,
+            "referable_dr_auroc": 0.8983579796427885,
+            "accuracy_at_0_5": 0.822,
+            "sensitivity_at_0_5": 0.8292682926829268,
+            "specificity_at_0_5": 0.8149606299212598
+          }
+        }
+      },
+      "elapsed_seconds": 2632.3
+    }
+  ],
+  "elapsed_seconds": 2632.6,
+  "warning": "Internal development validation used for checkpoint selection. Not independent clinical validation. RETFound-Green terms restrict this to non-commercial research."
+}

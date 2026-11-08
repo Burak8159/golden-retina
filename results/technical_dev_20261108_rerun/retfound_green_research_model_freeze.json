@@ -1,0 +1,112 @@
+{
+  "model_id": "golden-retina-retfound-green-source-invariance-seed-20261111-epoch-8",
+  "freeze_status": "FROZEN_RESEARCH_COMPARATOR_INTERNAL_VALIDATION_ONLY",
+  "intended_use": "Internal non-commercial research comparison only; not for clinical diagnosis, deployment, or autonomous patient decisions.",
+  "model": {
+    "backbone": "RETFound-Green ViT-S/14 reg4 with DINOv2 architecture",
+    "input_size": [
+      392,
+      392
+    ],
+    "input_preprocessing": "RGB; resize to 392x392; convert to float [0,1]; normalize each channel with mean 0.5 and standard deviation 0.5.",
+    "training_augmentation": "Random horizontal flip, random rotation up to 5 degrees, brightness jitter 0.08, contrast jitter 0.08, saturation jitter 0.04.",
+    "trainable_parameters": 1779850,
+    "trainable_components": [
+      "last transformer block",
+      "final norm layers",
+      "five-grade DR head",
+      "referable DR head",
+      "glaucoma head",
+      "three-class source-adversarial head"
+    ],
+    "frozen_components": "All other encoder parameters.",
+    "source_classes": [
+      "DeepDRiD",
+      "DRTiD paired",
+      "HYGD"
+    ],
+    "quality_head": "Not included in this frozen comparator; quality auxiliary weight 0.0."
+  },
+  "training": {
+    "seed": 20261111,
+    "epochs_run": 16,
+    "selected_epoch": 8,
+    "batch_size": 8,
+    "optimizer": "AdamW",
+    "encoder_learning_rate": 2e-05,
+    "head_learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "source_gradient_reversal_strength": 0.1,
+    "losses": "Masked five-grade DR cross entropy, referable DR binary cross entropy, masked glaucoma binary cross entropy, and source classification cross entropy with gradient reversal on the encoder.",
+    "sampling": "WeightedRandomSampler balancing source and labeled disease groups; replacement sampling.",
+    "selection_rule": "Highest internal validation referable-DR AUROC among the fixed 16-epoch run; no test split was read.",
+    "train_only_DDR": "DDR labeled and gradability rows were used for disease supervision only; DDR excluded from source-adversarial classes and validation due unverified patient IDs / no validation rows."
+  },
+  "data_and_provenance": {
+    "manifest": "results/technical_dev_20261108_rerun/train_valid_manifest.csv",
+    "manifest_sha256": "d92debe39fab68f66d553c0215124f0da4ffca6a474760ebd7abfa354ea9468c",
+    "base_RETFound_Green_weights_sha256": "431de5dbc1bebbb32f60e2c0bcf8daa4f8bcbf06f7cb1e1dc97ec589713942e1",
+    "selected_checkpoint_sha256": "de221fc19b6e76fede71593d92363bac8d814ea3ef287b2cf586d9f97602e176",
+    "trainer_sha256": "3a1716d821078779f5b78600c89d67c516d390d9c798439587866583c5d833e2",
+    "patient_evaluator_sha256": "90c8fe8071261735b6bce0359c8b64cd1b9d7787ffb1fcbf4d0ad5b5c35c23a0",
+    "validation_rows": 878,
+    "validation_patient_source_groups": 314,
+    "positive_patient_source_groups": 150,
+    "test_rows_loaded": 0,
+    "weights_and_row_level_predictions": "Remain private on the Golden Retina VM; not included in repository artifacts."
+  },
+  "internal_validation_patient_metrics": {
+    "aggregation": "Source-patient group; positive if any labeled image is positive; score is maximum image score.",
+    "fixed_threshold": 0.5,
+    "referable_DR": {
+      "accuracy": 0.8980891719745223,
+      "sensitivity": 0.9,
+      "specificity": 0.8963414634146342,
+      "auroc": 0.9491056910569106,
+      "auprc": 0.9545952983320246,
+      "patient_bootstrap_95ci": {
+        "accuracy": [
+          0.8630573248407644,
+          0.9300159235668786
+        ],
+        "sensitivity": [
+          0.852112676056338,
+          0.9455833538234572
+        ],
+        "specificity": [
+          0.8456275966762544,
+          0.939399023794997
+        ],
+        "auroc": [
+          0.9240819638871982,
+          0.9702082000859147
+        ],
+        "auprc": [
+          0.9320568370298171,
+          0.973486724301999
+        ]
+      }
+    },
+    "glaucoma_HYGD": {
+      "patient_source_groups": 43,
+      "positive_patient_source_groups": 28,
+      "accuracy": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "auroc": 1.0,
+      "note": "Small internal validation; do not generalize or describe as clinical performance."
+    }
+  },
+  "seed_sensitivity": {
+    "seed_2_selected_epoch": 5,
+    "seed_2_selected_auroc": 0.932795506838352,
+    "seed_2_patient_accuracy": 0.821656050955414,
+    "seed_2_patient_sensitivity": 0.9266666666666666,
+    "seed_2_patient_specificity": 0.725609756097561,
+    "seed_2_patient_auroc": 0.9468089430894309,
+    "interpretation": "The high seed-1 fixed-threshold specificity did not reproduce; model scores/operating point are seed-sensitive. The source-invariance ablation did not show a statistically distinguishable AUROC/AUPRC gain over the matched control."
+  },
+  "claim_boundary": "Exposed internal development validation only. Not independent external validation, clinical validation, diagnosis certification, or evidence of safe autonomous use.",
+  "license_boundary": "Non-commercial internal research only under the applicable RETFound-Green terms; no commercial/clinical deployment, sublicensing, or weight redistribution authorization is asserted.",
+  "frozen_at_utc": "2026-11-08T16:52:16Z"
+}

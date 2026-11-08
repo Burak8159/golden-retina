@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Golden Retina · Development tracker</title>
+  <style>
+    :root{color-scheme:dark;--ink:#e7edf7;--muted:#a1afc1;--line:#202a38;--paper:#090d14;--bg:#000000;--blue:#8aaaff;--green:#54d49a;--amber:#f3bb61;--red:#ff8179;background:#000000}
+    html,body{background:#000000!important}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    main{max-width:1180px;margin:auto;padding:28px 20px 56px}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:20px}
+    h1{font-size:27px;line-height:1.2;margin:0 0 7px}.sub{color:var(--muted);margin:0}.live{white-space:nowrap;border:1px solid var(--line);border-radius:999px;background:#fff;padding:6px 11px;color:var(--green);font-size:13px}
+    .cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0}.card,.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 2px 8px #14213a08}.label{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.value{font-size:22px;font-weight:700;margin-top:4px}.small{font-size:13px;color:var(--muted);margin-top:3px}
+    .notice{border-left:4px solid var(--amber);background:#292216;padding:13px 15px;border-radius:8px;margin:14px 0 20px}.notice strong{display:block;margin-bottom:3px;color:#ffd58c}.layout{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(300px,.8fr);gap:14px;align-items:start}.panel h2{font-size:17px;margin:0 0 12px}.issuegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}.issue{border:1px solid var(--line);border-left:3px solid var(--amber);border-radius:9px;background:#101927;padding:10px}.issue.blocked{border-left-color:var(--red)}.issue.resolved{border-left-color:var(--green)}.issue strong{display:block;font-size:13px;margin-bottom:4px}.issue p{font-size:12px;color:#c0cada;margin:0 0 5px}.issue small{font-size:11px;color:var(--muted)}
+    .progress{height:9px;background:#263246;border-radius:99px;overflow:hidden;margin:10px 0 16px}.progress>i{display:block;height:100%;background:var(--blue);width:0;transition:width .25s}.budgetbar{height:8px;background:#263246;border-radius:99px;overflow:hidden;margin-top:9px}.budgetbar i{display:block;height:100%;width:0;background:var(--green);transition:width .25s}.budgetbar i.warn{background:var(--amber)}.budgetbar i.danger{background:var(--red)}
+    .filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.filters button{border:1px solid var(--line);background:#172233;border-radius:8px;padding:6px 10px;color:var(--ink);cursor:pointer}.filters button.active{background:#22365d;border-color:#4568ad;color:#c8d7ff}
+    .blocks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.block{display:flex;text-align:left;gap:10px;align-items:flex-start;border:1px solid var(--line);background:#101927;border-radius:10px;padding:10px;cursor:pointer;color:inherit}.block:hover{border-color:#647dad}.num{flex:0 0 28px;height:28px;border-radius:8px;background:#263246;display:grid;place-items:center;font-size:12px;font-weight:700}.block.complete .num{background:#143a30;color:var(--green)}.block.active .num{background:#22365d;color:var(--blue)}.block.blocked .num{background:#472522;color:var(--red)}.bname{font-size:13px;font-weight:650;line-height:1.35}.badge{display:inline-block;margin-top:4px;color:var(--muted);font-size:11px}.badge.complete{color:var(--green)}.badge.blocked{color:var(--red)}.badge.active{color:var(--blue)}
+    .detail{min-height:148px;border:1px solid var(--line);border-radius:10px;padding:13px;background:#101927}.detail h3{font-size:15px;margin:0 0 7px}.detail p{margin:6px 0;color:#c0cada;font-size:13px}.kv{display:grid;grid-template-columns:1fr auto;gap:7px;border-top:1px solid var(--line);padding-top:9px;margin-top:10px;font-size:13px}.rightstack{display:grid;gap:14px}.log{padding-left:17px;margin:0;color:#c0cada;font-size:13px}.log li{margin:7px 0}.foot{color:var(--muted);font-size:12px;margin-top:13px}.substeps{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:7px}.substeps li{display:grid;grid-template-columns:22px 1fr;gap:7px;font-size:12px;color:#d4dceb}.substeps .mark{font-weight:800;color:var(--muted)}.substeps li.complete .mark{color:var(--green)}.substeps li.blocked .mark{color:var(--red)}
+    @media(max-width:960px){.layout{grid-template-columns:1fr}.issuegrid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:800px){.cards{grid-template-columns:repeat(2,1fr)}}@media(max-width:500px){main{padding:18px 12px}.blocks,.issuegrid{grid-template-columns:1fr}.top{display:block}.live{display:inline-block;margin-top:10px}}
+  </style>
+</head>
+<body>
+<main>
+  <header class="top"><div><h1>Golden Retina</h1><p class="sub">Research-model rerun · 14 individually tracked candidates · 38 blocks · spend-controlled</p></div><span class="live" id="live">● Live local tracker</span></header>
+  <section class="cards">
+    <div class="card"><div class="label">Completed blocks</div><div class="value" id="completed">—</div><div class="small">of 38 planned</div></div>
+    <div class="card"><div class="label">Current block</div><div class="value" id="current">—</div><div class="small" id="currentName">Loading</div></div>
+    <div class="card"><div class="label">GPU use</div><div class="value" id="gpu">—</div><div class="small">L4 only · RTX not authorized</div></div>
+    <div class="card"><div class="label">Budget · hard ceiling</div><div class="value" id="budgetValue">— / ₺1,980</div><div class="small" id="spend">Estimated spend · loading</div><div class="budgetbar"><i id="budgetBar"></i></div><div class="small" id="budgetPercent">—% used · ₺1,900 planned · ₺80 reserve</div></div>
+  </section>
+  <div class="notice" id="gate"><strong>Loading current gate…</strong><span></span></div>
+  <section class="panel" style="margin-bottom:14px"><h2>Issues &amp; gates</h2><div class="issuegrid" id="issues"></div></section>
+  <section class="panel" style="margin-bottom:14px"><h2>Expanded model candidates</h2><p class="sub">Newly identified candidates are listed with their checkpoint access and terms status. Only models cleared for this noncommercial research run can proceed to a probe.</p><div class="issuegrid" id="candidateRoster"></div></section>
+  <div class="layout">
+    <section class="panel"><h2>Work plan</h2><div class="progress"><i id="bar"></i></div><div class="filters" id="filters"></div><div class="blocks" id="blocks"></div></section>
+    <div class="rightstack">
+      <section class="panel"><h2>Selected block</h2><div class="detail" id="detail">Choose a block to see its scope and evidence.</div></section>
+      <section class="panel"><h2>Latest evidence</h2><ul class="log" id="evidence"></ul><p class="foot" id="updated"></p></section>
+    </div>
+  </div>
+  <section class="panel" id="mbrset-followup" style="margin-top:14px">
+    <h2>When mBRSET arrives</h2>
+    <p class="sub">Queued until Burak notifies us that the files have arrived. Store the dataset in private, access-controlled project storage, then begin this work immediately after the initial 38-block program and its closeout checks are complete. Use the existing Golden Retina software suite; do not add a new model family.</p>
+    <div class="issuegrid" style="margin-top:12px">
+      <article class="issue"><strong>Time cap</strong><p>12 hours maximum for the mBRSET follow-up.</p><small>Begin only after the arrival notice and a quick file/label integrity check.</small></article>
+      <article class="issue"><strong>Planned spending ceiling</strong><p>₺1,400 planned compute and operating ceiling.</p><small>Stop or reduce work before crossing the planned ceiling.</small></article>
+      <article class="issue"><strong>Contingency</strong><p>Up to ₺75 beyond the planned ceiling.</p><small>Absolute cap: ₺1,475; use only for justified completion work.</small></article>
+    </div>
+    <p class="foot">First verify patient/eye IDs, DR labels, image pairing, and duplicates. Keep raw files in authorized private storage; put only allowed code, provenance, checksums, and aggregate findings in the repository. Evaluate compatible existing outputs first. If the model is adapted on mBRSET, treat it as development data for that version, not an untouched confirmation set.</p>
+  </section>
+  <section class="panel" id="overall-limits" style="margin-top:14px">
+    <h2>Budget definitions and separate phase caps</h2>
+    <div class="issuegrid" style="margin-top:12px">
+      <article class="issue"><strong>Current rerun · planned spend</strong><p>₺1,900 for the 38-block L4 effort.</p><small>“Spent” is an accrued estimate: elapsed L4 VM and attached-disk runtime at recorded rates, converted using a conservative USD/TRY rate, plus recorded outbound artifact transfer. It is not the settled Google invoice.</small></article>
+      <article class="issue"><strong>Current rerun · reserve and hard spend cap</strong><p>₺1,900 planned ceiling · ₺80 protected contingency · ₺1,980 absolute maximum.</p><small>Planned headroom = ₺1,900 minus estimated spend. Hard-cap headroom = ₺1,980 minus estimated spend. No separate project time limit. The ₺80 reserve is not routine spend. Cloud billing is delayed and budget alerts do not stop a VM; the live estimate is tracked conservatively, with the Golden Retina VM shutdown at the planned spend ceiling.</small></article>
+      <article class="issue"><strong>mBRSET · separate future phase</strong><p>12 hours · ₺1,400 planned + ₺75 reserve = ₺1,475 hard cap.</p><small>Not part of the initial program’s spend. Start only after Burak reports arrival and the initial Block 38 closeout is complete.</small></article>
+    </div>
+    <p class="foot">Budget percentage is estimated spend divided by the ₺1,980 hard cap; the tracker also reports the ₺1,900 planned ceiling and ₺80 contingency separately. Cloud billing is delayed, so estimates may differ from the final invoice, including tax, storage, network and other unmetered items. There is no separate elapsed-time cap: continue while the run remains within budget, and stop at the ₺1,900 planned ceiling to preserve the ₺80 margin. The 38 blocks total 76 nominal block-hours; actual duration depends on compute throughput and spend. Use one Golden Retina L4 only; RTX remains unauthorized. At closeout, shut down only Golden Retina cloud resources.</p>
+  </section>
+  <section class="panel" id="hard-time-cap" style="margin-top:14px;border-color:#694047">
+    <h2>Budget-controlled closeout · current rerun</h2>
+    <p><strong>Current rule:</strong> no independent time deadline · stop at the ₺1,900 planned spend ceiling and preserve the ₺80 reserve.</p>
+    <p class="foot">Block 38 artifact pull, checksums, permitted publication, and Golden Retina cloud shutdown are the closeout target. An earlier VM scheduling safeguard is being cleared at a saved-checkpoint boundary; current training is not being discarded. The separate mBRSET follow-up remains a distinct phase with its own budget.</p>
+  </section>
+</main>
+<script>
+const stages=[
+ ["Checkout, cloud, data locations and cost gate", "Inspect repository state, available data/storage and cloud resources; do not launch a VM."],
+ ["Dataset, label, metadata and rights inventory", "Map supported diagnoses, patient/eye identifiers, quality and acquisition fields, dataset terms and usable model weights."],
+ ["Duplicate audit and frozen split design", "Check duplicates and overlap; freeze patient/source manifests. Stop training if independence cannot be established."],
+ ["Reproduce ConvNeXt-Tiny baseline", "Run the recorded baseline on frozen manifests and save config, logs and checkpoint hash."],
+ ["Baseline error and subgroup audit", "Break results down by disease, patient, source and available quality strata."],
+ ["Candidate 1/14 · FLAIR", "Verify the staged checkpoint hash/provenance, then run a frozen-feature probe on the frozen validation split if cleared."],
+ ["Candidate 2/14 · DINOv2", "Use the exact locally available DINOv2 checkpoint after hash/provenance check; frozen-feature validation probe."],
+ ["Candidate 3/14 · DINOv3", "Conditional probe only after account-level gated access and applicable model terms are cleared; otherwise record blocked with no download/use."],
+ ["Candidate 4/14 · RETFound-MAE", "Verify access, exact MAE checkpoint, weight terms, upstream obligations and hash before probing."],
+ ["Candidate 5/14 · RETFound-DINOv2", "Verify access, exact DINOv2 checkpoint, weight terms, upstream obligations and hash before probing."],
+ ["Candidate 6/14 · RETFound-DINOv3", "Probe only if gated access is granted and exact checkpoint plus inherited DINOv3 terms are documented; otherwise mark blocked."],
+ ["Candidate 7/14 · VisionFM", "Internal noncommercial research probe only under the checkpoint restrictions; do not redistribute weights or present as a clinical decision service."],
+ ["Candidate 8/14 · UrFound", "Verify official checkpoint availability, exact weight terms and source obligations; probe only if cleared."],
+ ["Candidate 9/14 · OPENEye-FM", "Check exact checkpoint and source-specific restrictions. Pretraining overlap means any result is exploratory, not independent transfer evidence."],
+ ["Candidate 10/14 · RETFound-Green", "Read and record the model-specific checkpoint terms before download/use; do not infer permission from related licenses."],
+ ["Candidate 11/14 · EyeCLIP", "Inventory-only until explicit official weight terms and access are confirmed; repository code license alone is insufficient."],
+ ["Candidate 12/14 · RET-CLIP", "Inventory-only until explicit official weight/dependency terms are confirmed; do not download/use unresolved weights."],
+ ["Candidate 13/14 · EyeFound", "Probe only if an official usable checkpoint and reusable terms are located; otherwise record unavailable and move on."],
+ ["Candidate 14/14 · RFM (Lightweight Retinal Foundation Model)", "Verify derived-weight DINOv3 license and access obligations; do not treat RFM as a workaround for upstream gating."],
+ ["Select candidates using nested patient-grouped validation", "Compare eligible candidate probes without consulting exposed or reserved test data for selection."],
+ ["Adapt leading candidate, part 1", "Masked multi-label training with source-balanced sampling and resumable checkpoints."],
+ ["Adapt leading candidate, part 2", "Continue the leading candidate under frozen splits and config; stop if validation deteriorates."],
+ ["Adapt leading candidate, part 3", "Track disease-wise and source-wise behavior; preserve error records."],
+ ["Adapt leading candidate, part 4", "Complete or stop based on prespecified validation criteria."],
+ ["Adapt runner-up, part 1", "Use the same split and evaluation protocol for fair comparison."],
+ ["Adapt runner-up, part 2", "Continue only if validation evidence warrants the cost."],
+ ["Runner-up stop decision", "Stop repeat variations without consistent validation benefit."],
+ ["Quality-supervision ablation", "Use real quality labels only; report disease-specific effects."],
+ ["Source-invariance ablation", "Compare with the same model without this component; retain only if validation supports it."],
+ ["Paired-view fusion or independent-seed replication", "Use paired fusion only where same-eye pairing is verified; otherwise replicate the leader."],
+ ["Freeze candidate, preprocessing and thresholds", "Record model, preprocessing, thresholds and hashes before any final scoring."],
+ ["Exploratory Zhejiang transfer check", "Zhejiang was used previously; any rerun is exploratory, not fresh independent confirmation."],
+ ["Patient-level uncertainty and error reporting", "Report patient-level intervals and disease/source/quality results only where labels support them."],
+ ["Package versioned research inference service", "Package separate supported-condition scores and quality status; label outputs research-only."],
+ ["End-to-end service and failure-mode checks", "Check invalid images, auth, network loss, timeouts, restarts and stale results."],
+ ["Pull, checksum, safe publish and cloud shutdown", "Publish only permitted code/aggregates; pull private artifacts and delete only Golden Retina resources."],
+ ["RETFound-MAE frozen-feature probe", "Authenticated account access is verified. Run the official ViT-L/16 frozen-feature probe on the private L4 under CC BY-NC noncommercial research terms."],
+ ["RETFound-MAE partial supervised adaptation", "Fine-tune the last ViT block and task heads on patient-grouped training rows; choose checkpoints using validation only and leave all test rows unopened."]
+];
+let data=null,filter='all',selected=1,lastCurrent=null;
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function stateFor(i){const b=(data.blocks||[]).find(x=>x.id===i+1);return b?.status||'planned'}
+function render(){if(!data)return;
+ const done=(data.blocks||[]).filter(x=>x.status==='complete').length;
+ const cur=data.current_block||1;if(lastCurrent!==cur){selected=cur-1;lastCurrent=cur}document.querySelector('#completed').textContent=done;document.querySelector('#current').textContent=`${cur} / ${data.total_blocks||stages.length}`;document.querySelector('#currentName').textContent=stages[cur-1]?.[0]||'';
+ document.querySelector('#gpu').textContent=data.gpu_status||'Not started';
+ const budget=data.budget||{};let spent=Number(budget.spent_try??budget.estimated_spent_try??0);if(budget.accrual_active&&budget.as_of_utc&&Number.isFinite(Number(budget.accrual_rate_try_per_hour))){spent+=Math.max(0,Date.now()-Date.parse(budget.as_of_utc))/3600000*Number(budget.accrual_rate_try_per_hour)}const limit=Number(budget.hard_total_try??budget.hard_ceiling_try??1980),planned=Number(budget.planned_total_try??budget.planned_ceiling_try??1900),reserve=Number(budget.protected_reserve_try??80),pct=limit?Math.min(100,spent/limit*100):0;
+ document.querySelector('#budgetValue').textContent=`₺${spent.toFixed(2)} / ₺${limit.toLocaleString('en-US')}`;
+ document.querySelector('#spend').textContent=`${budget.display_label||'Estimated spend · invoice delayed'}`;
+ document.querySelector('#budgetPercent').textContent=`${pct.toFixed(1)}% of hard ceiling · ₺${planned.toLocaleString('en-US')} planned · ₺${reserve.toLocaleString('en-US')} protected reserve`;
+ const budgetBar=document.querySelector('#budgetBar');budgetBar.style.width=`${pct}%`;budgetBar.className=pct>=90?'danger':pct>=75?'warn':'';
+ document.querySelector('#bar').style.width=`${done/(data.total_blocks||stages.length)*100}%`;
+ document.querySelector('#gate').innerHTML=`<strong>${esc(data.gate_title||'Current gate')}</strong><span>${esc(data.gate_detail||'')}</span>`;
+ const f=document.querySelector('#filters');f.innerHTML='';[['all','All'],['complete','Complete'],['active','Active'],['blocked','Blocked'],['planned','Planned']].forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.className=filter===v?'active':'';b.onclick=()=>{filter=v;render()};f.appendChild(b)});
+ const list=document.querySelector('#blocks');list.innerHTML='';stages.forEach(([name,desc],i)=>{const s=stateFor(i);if(filter!=='all'&&s!==filter)return;const b=document.createElement('button');b.className=`block ${s}`;b.innerHTML=`<span class="num">${i+1}</span><span><span class="bname">${esc(name)}</span><br><span class="badge ${s}">${esc((data.blocks||[]).find(x=>x.id===i+1)?.status_label||s.replace('_',' '))}</span></span>`;b.onclick=()=>{selected=i;showDetail()};list.appendChild(b)});
+ showDetail();const issues=document.querySelector('#issues');issues.innerHTML='';(data.issues||[]).forEach(x=>{const card=document.createElement('article');card.className=`issue ${x.status==='blocked'?'blocked':''} ${x.status==='resolved'?'resolved':''}`;card.innerHTML=`<strong>${esc(x.title)}</strong><p>${esc(x.detail)}</p><small>${x.status==='resolved'?'Resolved':'Next: '+esc(x.next_action)}</small>`;issues.appendChild(card)});const roster=document.querySelector('#candidateRoster');roster.innerHTML='';(data.candidate_roster||[]).forEach(x=>{const card=document.createElement('article');card.className='issue';card.innerHTML=`<strong>${esc(x.name)}</strong><p>${esc(x.family||'')}</p><small>${esc(x.availability_status||'Availability unverified')} · ${esc(x.terms_status||'Terms unverified')}</small><p>${esc(x.decision||'Screen before use.')}</p>`;roster.appendChild(card)});const ev=document.querySelector('#evidence');ev.innerHTML='';(data.evidence||[]).forEach(x=>{const li=document.createElement('li');li.textContent=x;ev.appendChild(li)});document.querySelector('#updated').textContent=`Updated ${data.updated_at||'—'} · Localhost only`;
+}
+function showDetail(){if(!data)return;const item=stages[selected],b=(data.blocks||[]).find(x=>x.id===selected+1)||{};let steps='';if(selected+1===data.current_block&&(data.current_stage_steps||[]).length){steps=`<ul class="substeps">${data.current_stage_steps.map(s=>`<li class="${esc(s.status)}"><span class="mark">${s.status==='complete'?'✓':s.status==='blocked'?'!':'·'}</span><span><strong>${esc(s.title)}</strong><br>${esc(s.evidence||s.status_label||'')}</span></li>`).join('')}</ul>`}document.querySelector('#detail').innerHTML=`<h3>Block ${selected+1}: ${esc(item[0])}</h3><p>${esc(item[1])}</p><div class="kv"><span>Status</span><strong>${esc(b.status_label||b.status||'planned')}</strong>${selected+1===data.current_block?`<span>Est. time left</span><strong>${esc(data.current_block_estimate||'Updating estimate')}</strong>`:''}<span>Evidence</span><strong>${esc(b.evidence||'Not recorded')}</strong></div>${steps}`}
+async function refresh(){try{const r=await fetch('/api/status',{cache:'no-store'});if(!r.ok)throw Error('status unavailable');data=await r.json();render();document.querySelector('#live').textContent='● Live local tracker'}catch(e){document.querySelector('#live').textContent='● Waiting for tracker data'}}
+refresh();setInterval(refresh,10000);
+</script>
+</body>
+</html>

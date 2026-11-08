@@ -1,0 +1,57 @@
+{
+  "status": "PATIENT_GROUPED_INTERNAL_VALIDATION_SEED_STABILITY",
+  "cohort": "fixed exposed validation manifest; no test rows",
+  "patient_aggregation": "source-patient group; patient positive if any labeled image is positive; patient score is max image score",
+  "classification_threshold": 0.5,
+  "common_patient_source_groups": 314,
+  "seed1_groups": 314,
+  "seed2_groups": 314,
+  "metrics": {
+    "n_patients": 314,
+    "positive_patients": 150,
+    "seed_1": {
+      "accuracy_at_fixed_0_5": 0.8980891719745223,
+      "sensitivity_at_fixed_0_5": 0.9,
+      "specificity_at_fixed_0_5": 0.8963414634146342,
+      "auroc": 0.9491056910569106,
+      "auprc": 0.9545952983320246
+    },
+    "seed_2": {
+      "accuracy_at_fixed_0_5": 0.821656050955414,
+      "sensitivity_at_fixed_0_5": 0.9266666666666666,
+      "specificity_at_fixed_0_5": 0.725609756097561,
+      "auroc": 0.9468089430894309,
+      "auprc": 0.9543114126037823
+    },
+    "delta_seed2_minus_seed1": {
+      "accuracy_at_fixed_0_5": -0.07643312101910826,
+      "sensitivity_at_fixed_0_5": 0.026666666666666616,
+      "specificity_at_fixed_0_5": -0.1707317073170732,
+      "auroc": -0.0022967479674796953,
+      "auprc": -0.00028388572824233904
+    },
+    "paired_patient_bootstrap_95ci_for_delta": {
+      "accuracy_at_fixed_0_5": [
+        -0.10828025477707004,
+        -0.04140127388535031
+      ],
+      "sensitivity_at_fixed_0_5": [
+        0.006172839506172867,
+        0.054424860853432296
+      ],
+      "specificity_at_fixed_0_5": [
+        -0.2287581699346405,
+        -0.11464488527357844
+      ],
+      "auroc": [
+        -0.009436811606699225,
+        0.004873423206686548
+      ],
+      "auprc": [
+        -0.006603914585694198,
+        0.00666498832398878
+      ]
+    }
+  },
+  "warning": "Seed stability on the same exposed validation cohort is not independent validation or clinical certification."
+}

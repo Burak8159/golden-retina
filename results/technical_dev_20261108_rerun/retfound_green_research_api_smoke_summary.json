@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "synthetic_only": true,
+  "patient_data_used": false,
+  "health": 200,
+  "auth_required": 401,
+  "research_inference": 200,
+  "clinical_use_blocked": 403,
+  "corrupt_upload": 415,
+  "oversized_upload": 413,
+  "service_recovers": true,
+  "bind_address": "127.0.0.1",
+  "port": 8768,
+  "model_version": "golden-retina-retfound-green-source-invariance-seed-20261111-epoch-8",
+  "checkpoint_sha256": "de221fc19b6e76fede71593d92363bac8d814ea3ef287b2cf586d9f97602e176",
+  "client_disconnect_recovery": true,
+  "restart_recovery": "PASS: stopped and relaunched inference process; model reloaded and authenticated synthetic inference smoke passed again",
+  "quality_head": "not present in this frozen checkpoint; API does not claim ungradable-image classification"
+}

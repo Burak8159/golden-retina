@@ -1,0 +1,8 @@
+{
+  "candidate": "RETFound-Green",
+  "eligibility_source": "user confirmation in conversation",
+  "user_statement": "Golden Retina has no commercial activity or commercial funding; project is nonprofit-supported.",
+  "scope": "internal non-commercial research only under the candidate custom license",
+  "not_cleared": "commercial or clinical deployment; checkpoint or derived-weight redistribution; rights outside the cited research license",
+  "handling": "keep checkpoint and row-level predictions private"
+}
