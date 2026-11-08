@@ -88,32 +88,32 @@
       "family": "multimodal ophthalmic vision-language model",
       "official_source": "https://github.com/Michi-3000/EyeCLIP",
       "terms_status": "Repository advertises released weights, but an explicit weight license was not established in this screening. Treat as rights-unverified until the official weight terms are confirmed.",
-      "availability_status": "Official repository links eyeclip_visual checkpoint via Google Drive; exact weight-use terms and overlap remain unverified; not downloaded.",
-      "decision": "Verify explicit checkpoint terms and pretraining-source overlap before use; skip if unresolved."
+      "availability_status": "Removed from active plan by user direction; no gated/unverified weights were accessed or downloaded.",
+      "decision": "Excluded from this run. Retained in the inventory for audit history only."
     },
     {
       "name": "RET-CLIP",
       "family": "retinal image-text foundation model",
       "official_source": "https://github.com/sStonemason/RET-CLIP",
       "terms_status": "Repository releases pretrained weights, but this screening did not establish an explicit license for those weights or all dependencies.",
-      "availability_status": "Public repository; weight terms and download not verified",
-      "decision": "Add to inventory; rights check before use."
+      "availability_status": "Removed from active plan by user direction; no gated/unverified weights were accessed or downloaded.",
+      "decision": "Excluded from this run. Retained in the inventory for audit history only."
     },
     {
       "name": "EyeFound",
       "family": "multimodal ophthalmic foundation model",
       "official_source": "https://arxiv.org/abs/2405.11338",
       "terms_status": "No official, clearly reusable weight license/access route confirmed in this screening.",
-      "availability_status": "Public paper; usable checkpoint not confirmed",
-      "decision": "Track as a candidate; exclude from execution unless the authors' official release and terms are located."
+      "availability_status": "Removed from active plan by user direction; no gated/unverified weights were accessed or downloaded.",
+      "decision": "Excluded from this run. Retained in the inventory for audit history only."
     },
     {
       "name": "RFM (Lightweight Retinal Foundation Model)",
       "family": "retinal foundation encoder initialized from DINOv3",
       "official_source": "https://github.com/ok1zjf/RFM",
       "terms_status": "Official project states derived weights are under the DINOv3 license; its code's MIT license does not replace the weight license.",
-      "availability_status": "Public code/weight route; gated/upstream license implications must be resolved",
-      "decision": "Add conditionally alongside DINOv3; do not treat as a license workaround."
+      "availability_status": "Removed from active plan by user direction; no gated/unverified weights were accessed or downloaded.",
+      "decision": "Excluded from this run. Retained in the inventory for audit history only."
     }
   ],
   "explicit_exclusions": [

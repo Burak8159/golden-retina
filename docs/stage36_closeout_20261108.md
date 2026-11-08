@@ -26,4 +26,4 @@ The local progress tracker remains available at `http://127.0.0.1:8769/`. The cl
 
 ## Remaining scope limits
 
-Blocks 16–19 remain blocked where access or reusable terms were not verified; no gated weights were accessed. The local checkout still contains unrelated pre-existing changes that were deliberately left unstaged.
+At the user’s direction, the four gated or unavailable candidate stages (original stages 16–19: EyeCLIP, RET-CLIP, EyeFound, and RFM) were removed from the active plan. No gated weights were accessed. The tracker now presents a 34-stage active plan; completed work after the removed slots is renumbered for the live view, while original stage IDs are preserved in `removed_blocks` for audit history. The local checkout still contains unrelated pre-existing changes that were deliberately left unstaged.

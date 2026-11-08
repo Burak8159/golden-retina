@@ -21,7 +21,7 @@
 </head>
 <body>
 <main>
-  <header class="top"><div><h1>Golden Retina</h1><p class="sub">Research-model rerun · 14 individually tracked candidates · 38 blocks · spend-controlled</p></div><span class="live" id="live">● Live local tracker</span></header>
+  <header class="top"><div><h1>Golden Retina</h1><p class="sub">Research-model rerun · 10 active candidates · 34 blocks · spend-controlled</p></div><span class="live" id="live">● Live local tracker</span></header>
   <section class="cards">
     <div class="card"><div class="label">Completed blocks</div><div class="value" id="completed">—</div><div class="small">of 38 planned</div></div>
     <div class="card"><div class="label">Current block</div><div class="value" id="current">—</div><div class="small" id="currentName">Loading</div></div>
@@ -40,7 +40,7 @@
   </div>
   <section class="panel" id="mbrset-followup" style="margin-top:14px">
     <h2>When mBRSET arrives</h2>
-    <p class="sub">Queued until Burak notifies us that the files have arrived. Store the dataset in private, access-controlled project storage, then begin this work immediately after the initial 38-block program and its closeout checks are complete. Use the existing Golden Retina software suite; do not add a new model family.</p>
+    <p class="sub">Queued until Burak notifies us that the files have arrived. Store the dataset in private, access-controlled project storage, then begin this work immediately after the initial 34-block program and its closeout checks are complete. Use the existing Golden Retina software suite; do not add a new model family.</p>
     <div class="issuegrid" style="margin-top:12px">
       <article class="issue"><strong>Time cap</strong><p>12 hours maximum for the mBRSET follow-up.</p><small>Begin only after the arrival notice and a quick file/label integrity check.</small></article>
       <article class="issue"><strong>Planned spending ceiling</strong><p>₺1,400 planned compute and operating ceiling.</p><small>Stop or reduce work before crossing the planned ceiling.</small></article>
@@ -51,16 +51,16 @@
   <section class="panel" id="overall-limits" style="margin-top:14px">
     <h2>Budget definitions and separate phase caps</h2>
     <div class="issuegrid" style="margin-top:12px">
-      <article class="issue"><strong>Current rerun · planned spend</strong><p>₺1,900 for the 38-block L4 effort.</p><small>“Spent” is an accrued estimate: elapsed L4 VM and attached-disk runtime at recorded rates, converted using a conservative USD/TRY rate, plus recorded outbound artifact transfer. It is not the settled Google invoice.</small></article>
+      <article class="issue"><strong>Current rerun · planned spend</strong><p>₺1,900 for the 34-block L4 effort.</p><small>“Spent” is an accrued estimate: elapsed L4 VM and attached-disk runtime at recorded rates, converted using a conservative USD/TRY rate, plus recorded outbound artifact transfer. It is not the settled Google invoice.</small></article>
       <article class="issue"><strong>Current rerun · reserve and hard spend cap</strong><p>₺1,900 planned ceiling · ₺80 protected contingency · ₺1,980 absolute maximum.</p><small>Planned headroom = ₺1,900 minus estimated spend. Hard-cap headroom = ₺1,980 minus estimated spend. No separate project time limit. The ₺80 reserve is not routine spend. Cloud billing is delayed and budget alerts do not stop a VM; the live estimate is tracked conservatively, with the Golden Retina VM shutdown at the planned spend ceiling.</small></article>
-      <article class="issue"><strong>mBRSET · separate future phase</strong><p>12 hours · ₺1,400 planned + ₺75 reserve = ₺1,475 hard cap.</p><small>Not part of the initial program’s spend. Start only after Burak reports arrival and the initial Block 38 closeout is complete.</small></article>
+      <article class="issue"><strong>mBRSET · separate future phase</strong><p>12 hours · ₺1,400 planned + ₺75 reserve = ₺1,475 hard cap.</p><small>Not part of the initial program’s spend. Start only after Burak reports arrival and the initial Block 34 closeout is complete.</small></article>
     </div>
-    <p class="foot">Budget percentage is estimated spend divided by the ₺1,980 hard cap; the tracker also reports the ₺1,900 planned ceiling and ₺80 contingency separately. Cloud billing is delayed, so estimates may differ from the final invoice, including tax, storage, network and other unmetered items. There is no separate elapsed-time cap: continue while the run remains within budget, and stop at the ₺1,900 planned ceiling to preserve the ₺80 margin. The 38 blocks total 76 nominal block-hours; actual duration depends on compute throughput and spend. Use one Golden Retina L4 only; RTX remains unauthorized. At closeout, shut down only Golden Retina cloud resources.</p>
+    <p class="foot">Budget percentage is estimated spend divided by the ₺1,980 hard cap; the tracker also reports the ₺1,900 planned ceiling and ₺80 contingency separately. Cloud billing is delayed, so estimates may differ from the final invoice, including tax, storage, network and other unmetered items. There is no separate elapsed-time cap: continue while the run remains within budget, and stop at the ₺1,900 planned ceiling to preserve the ₺80 margin. The 34 active blocks total 68 nominal block-hours; actual duration depends on compute throughput and spend. Use one Golden Retina L4 only; RTX remains unauthorized. At closeout, shut down only Golden Retina cloud resources.</p>
   </section>
   <section class="panel" id="hard-time-cap" style="margin-top:14px;border-color:#694047">
     <h2>Budget-controlled closeout · current rerun</h2>
     <p><strong>Current rule:</strong> no independent time deadline · stop at the ₺1,900 planned spend ceiling and preserve the ₺80 reserve.</p>
-    <p class="foot">Block 38 artifact pull, checksums, permitted publication, and Golden Retina cloud shutdown are the closeout target. An earlier VM scheduling safeguard is being cleared at a saved-checkpoint boundary; current training is not being discarded. The separate mBRSET follow-up remains a distinct phase with its own budget.</p>
+    <p class="foot">Block 34 artifact pull, checksums, permitted publication, and Golden Retina cloud shutdown are the closeout target. An earlier VM scheduling safeguard is being cleared at a saved-checkpoint boundary; current training is not being discarded. The separate mBRSET follow-up remains a distinct phase with its own budget.</p>
   </section>
 </main>
 <script>
@@ -70,20 +70,16 @@ const stages=[
  ["Duplicate audit and frozen split design", "Check duplicates and overlap; freeze patient/source manifests. Stop training if independence cannot be established."],
  ["Reproduce ConvNeXt-Tiny baseline", "Run the recorded baseline on frozen manifests and save config, logs and checkpoint hash."],
  ["Baseline error and subgroup audit", "Break results down by disease, patient, source and available quality strata."],
- ["Candidate 1/14 · FLAIR", "Verify the staged checkpoint hash/provenance, then run a frozen-feature probe on the frozen validation split if cleared."],
- ["Candidate 2/14 · DINOv2", "Use the exact locally available DINOv2 checkpoint after hash/provenance check; frozen-feature validation probe."],
- ["Candidate 3/14 · DINOv3", "Conditional probe only after account-level gated access and applicable model terms are cleared; otherwise record blocked with no download/use."],
- ["Candidate 4/14 · RETFound-MAE", "Verify access, exact MAE checkpoint, weight terms, upstream obligations and hash before probing."],
- ["Candidate 5/14 · RETFound-DINOv2", "Verify access, exact DINOv2 checkpoint, weight terms, upstream obligations and hash before probing."],
- ["Candidate 6/14 · RETFound-DINOv3", "Probe only if gated access is granted and exact checkpoint plus inherited DINOv3 terms are documented; otherwise mark blocked."],
- ["Candidate 7/14 · VisionFM", "Internal noncommercial research probe only under the checkpoint restrictions; do not redistribute weights or present as a clinical decision service."],
- ["Candidate 8/14 · UrFound", "Verify official checkpoint availability, exact weight terms and source obligations; probe only if cleared."],
- ["Candidate 9/14 · OPENEye-FM", "Check exact checkpoint and source-specific restrictions. Pretraining overlap means any result is exploratory, not independent transfer evidence."],
- ["Candidate 10/14 · RETFound-Green", "Read and record the model-specific checkpoint terms before download/use; do not infer permission from related licenses."],
- ["Candidate 11/14 · EyeCLIP", "Inventory-only until explicit official weight terms and access are confirmed; repository code license alone is insufficient."],
- ["Candidate 12/14 · RET-CLIP", "Inventory-only until explicit official weight/dependency terms are confirmed; do not download/use unresolved weights."],
- ["Candidate 13/14 · EyeFound", "Probe only if an official usable checkpoint and reusable terms are located; otherwise record unavailable and move on."],
- ["Candidate 14/14 · RFM (Lightweight Retinal Foundation Model)", "Verify derived-weight DINOv3 license and access obligations; do not treat RFM as a workaround for upstream gating."],
+ ["Candidate 1/10 · FLAIR", "Verify the staged checkpoint hash/provenance, then run a frozen-feature probe on the frozen validation split if cleared."],
+ ["Candidate 2/10 · DINOv2", "Use the exact locally available DINOv2 checkpoint after hash/provenance check; frozen-feature validation probe."],
+ ["Candidate 3/10 · DINOv3", "Conditional probe only after account-level gated access and applicable model terms are cleared; otherwise record blocked with no download/use."],
+ ["Candidate 4/10 · RETFound-MAE", "Verify access, exact MAE checkpoint, weight terms, upstream obligations and hash before probing."],
+ ["Candidate 5/10 · RETFound-DINOv2", "Verify access, exact DINOv2 checkpoint, weight terms, upstream obligations and hash before probing."],
+ ["Candidate 6/10 · RETFound-DINOv3", "Probe only if gated access is granted and exact checkpoint plus inherited DINOv3 terms are documented; otherwise mark blocked."],
+ ["Candidate 7/10 · VisionFM", "Internal noncommercial research probe only under the checkpoint restrictions; do not redistribute weights or present as a clinical decision service."],
+ ["Candidate 8/10 · UrFound", "Verify official checkpoint availability, exact weight terms and source obligations; probe only if cleared."],
+ ["Candidate 9/10 · OPENEye-FM", "Check exact checkpoint and source-specific restrictions. Pretraining overlap means any result is exploratory, not independent transfer evidence."],
+ ["Candidate 10/10 · RETFound-Green", "Read and record the model-specific checkpoint terms before download/use; do not infer permission from related licenses."],
  ["Select candidates using nested patient-grouped validation", "Compare eligible candidate probes without consulting exposed or reserved test data for selection."],
  ["Adapt leading candidate, part 1", "Masked multi-label training with source-balanced sampling and resumable checkpoints."],
  ["Adapt leading candidate, part 2", "Continue the leading candidate under frozen splits and config; stop if validation deteriorates."],
