@@ -1,0 +1,498 @@
+{
+  "project": "Golden Retina",
+  "plan": "Research model rerun with expanded licensed/noncommercial foundation-model candidates",
+  "total_blocks": 38,
+  "planned_work_hours": 74,
+  "current_block": 36,
+  "blocks": [
+    {
+      "id": 1,
+      "name": "Cloud project, billing, quota and baseline cost gate",
+      "status": "complete",
+      "status_label": "Complete \u00b7 cloud and budget gate verified",
+      "evidence": "Golden Retina-only project; one L4 VM; RTX unused. Spend limit: \u20ba1,900 planned + \u20ba80 protected reserve = \u20ba1,980 hard operational ceiling. No separate time cap; VM max-run-duration and termination action were cleared and verified absent."
+    },
+    {
+      "id": 2,
+      "name": "Expanded model access and license inventory",
+      "status": "complete",
+      "status_label": "Complete \u00b7 expanded candidate roster screened; unresolved gates recorded",
+      "evidence": "Added UrFound, OPENEye-FM, RETFound-Green, EyeCLIP, RET-CLIP, EyeFound and DINOv3-derived RFM, plus the existing FLAIR, DINOv2, RETFound and VisionFM candidates. Exact terms/access/availability are recorded; unverified/gated checkpoints will not be used."
+    },
+    {
+      "id": 3,
+      "name": "Data provenance, duplicate audit and split freeze",
+      "status": "complete",
+      "status_label": "Complete \u00b7 split, overlap and transfer integrity audited",
+      "evidence": "Train/validation-only manifest frozen locally: 7,671 unique exact-image hashes (6,793 train; 878 validation), zero test rows. Sources: DDR 3,002; DeepDRiD 1,377; DRTiD 2,666; HYGD 626. Verified patient groups are disjoint in DeepDRiD, DRTiD and HYGD; DDR contributes training rows only because patient identity is unverified. Cross-source exact duplicates are deduplicated before transfer. Local 3.80-GB archive SHA-256 verified: 0c7031e3c97133331c724bec156dd2c445681b4c8d08a6ae374f9700c8091ea5. Remote transfer still incomplete; model training has not started. Frozen label inventory: DR grades 0\u20134 are available for DDR (3,002 train only), DeepDRiD (1,377 total: 1,124 train/253 valid), and DRTiD paired (2,666 total: 2,166 train/500 valid); quality labels exist for 3,002 DDR training images (2,434 gradable, 568 ungradable); glaucoma labels exist for 626 HYGD images (459 positive/167 negative; 501 train/125 valid); no lesion labels are present. No AMD/RVO/other-disease label cohort is staged, so those conditions cannot be evaluated as disease tasks in this run. Remote verification PASS: manifest SHA exact; 7,671/7,671 image SHA-256 match; 0 missing; 0 test rows."
+    },
+    {
+      "id": 4,
+      "name": "Reproduce ConvNeXt-Tiny reference",
+      "status": "complete",
+      "status_label": "Complete \u00b7 8 epochs, early-stopped at best epoch 3",
+      "evidence": "ConvNeXt-Tiny full fine-tune completed on the frozen train/validation manifest; early stopping after epoch 8, best aggregate validation-loss checkpoint epoch 3. Checkpoint SHA-256 fdea49afda1d3d20b982661c968bd5e4d3453985a679d4ba581ddcf2148106ce. No test rows were loaded. Full 8-epoch history is in remote run_summary.json."
+    },
+    {
+      "id": 5,
+      "name": "Baseline disease/source/quality error audit",
+      "status": "complete",
+      "status_label": "Complete \u00b7 source-wise errors and patient-bootstrap intervals recorded",
+      "evidence": "Private epoch-3 checkpoint predictions audited at fixed 0.5. DeepDRiD referable DR: 8/88 positive images missed, 19 false positives; patient-cluster bootstrap sensitivity 0.909 (95% CI 0.809\u20130.977), specificity 0.885 (0.811\u20130.946), AUROC 0.962 (0.930\u20130.985). DRTiD: 48/246 missed, 28 false positives; sensitivity 0.805 (0.742\u20130.864), specificity 0.890 (0.841\u20130.935), AUROC 0.915 (0.883\u20130.943). Five-grade accuracy: 0.692 DeepDRiD and 0.656 DRTiD. HYGD glaucoma: n=125 images/43 patients, accuracy 0.976, sensitivity 0.968, specificity 1.000, AUROC 0.999 (patient-bootstrap). All are internal validation, not independent clinical validation."
+    },
+    {
+      "id": 6,
+      "name": "Candidate 1/14 \u00b7 FLAIR",
+      "status": "complete",
+      "status_label": "Complete \u00b7 FLAIR probe and readouts finished",
+      "evidence": "Frozen FLAIR projected embeddings extracted for 7,671 train/validation rows in 293.1 s. Internal validation: referable-DR AUROC 0.9251, AUPRC 0.9169, accuracy 0.8513, sensitivity 0.8593, specificity 0.8449 (n=753); source AUROC 0.9475 DeepDRiD (n=253), 0.9263 DRTiD (n=500). Five-grade DR accuracy 0.6228 (macro-F1 0.5696); HYGD glaucoma accuracy 0.848 (AUROC 0.9435; n=125). Quality head not estimable because validation has zero DDR quality labels. Compared with ConvNeXt, FLAIR improves DRTiD referable AUROC modestly but is weaker on several other metrics. Development validation only, no test/external evaluation. Checkpoint SHA-256 050334cd934fa3126435c202c41f493ca222fc3fe3ea9c50cf21f67c792a1440; source commit d6652d5."
+    },
+    {
+      "id": 7,
+      "name": "Candidate 2/14 \u00b7 DINOv2",
+      "status": "complete",
+      "status_label": "Complete \u00b7 DINOv2 probe finished",
+      "evidence": "Official frozen ViT-B/14 features and train-only readouts, 7,671 train/validation rows. Validation (n=753): referable DR accuracy 0.799, sensitivity 0.778, specificity 0.816, AUROC 0.871, AUPRC 0.859; DeepDRiD AUROC 0.897, DRTiD 0.859. Five-grade accuracy 0.548; HYGD glaucoma accuracy 0.936, AUROC 0.984. Against ConvNeXt, DR metrics regress; glaucoma remains high but below baseline. Development validation only; no test or independent external validation. Checkpoint SHA-256 0b8b82f85de91b424aded121c7e1dcc2b7bc6d0adeea651bf73a13307fad8c73; repo commit 7764ea0; embeddings/predictions private on VM."
+    },
+    {
+      "id": 8,
+      "name": "Candidate 3/14 \u00b7 DINOv3",
+      "status": "complete",
+      "status_label": "Complete \u00b7 DINOv3 excluded; gated access not confirmed",
+      "evidence": "Exact account access and licensee acceptance were not confirmed. No DINOv3 weights were downloaded or used. Candidate is recorded as gated and excluded; the block time is reallocated to the next accessible candidate."
+    },
+    {
+      "id": 9,
+      "name": "Candidate 4/14 \u00b7 RETFound-MAE",
+      "status": "complete",
+      "status_label": "Complete \u00b7 authorized RETFound-MAE probe completed",
+      "evidence": "Account-level official RETFound-MAE checkpoint access is verified for Burak8159; the official weight file hash is verified. Frozen-feature validation probe completed on the train/validation-only manifest. Referable DR: accuracy 0.749, sensitivity 0.701, specificity 0.788, AUROC 0.835, AUPRC 0.822 (n=753); five-grade accuracy 0.487. HYGD glaucoma: accuracy 0.968, AUROC 0.991 (n=125). Development validation only, no test rows. Partial supervised adaptation is tracked separately in Block 38."
+    },
+    {
+      "id": 10,
+      "name": "Candidate 5/14 \u00b7 RETFound-DINOv2",
+      "status": "complete",
+      "status_label": "Complete \u00b7 excluded because required access is gated",
+      "evidence": "Official RETFound-DINOv2 Shanghai checkpoint is Hugging Face gated and listed as CC BY-NC 4.0; no weights accessed. Slot reallocated."
+    },
+    {
+      "id": 11,
+      "name": "Candidate 6/14 \u00b7 RETFound-DINOv3",
+      "status": "complete",
+      "status_label": "Complete \u00b7 excluded because required access is gated",
+      "evidence": "Official RETFound-DINOv3 is access-gated and CC BY-NC 4.0; DINOv3 upstream obligations also apply. No weights accessed; slot reallocated."
+    },
+    {
+      "id": 12,
+      "name": "Candidate 7/14 \u00b7 VisionFM",
+      "status": "complete",
+      "status_label": "Complete \u00b7 VisionFM probe and aggregate report saved",
+      "evidence": "Official VisionFM ViT-Base/16 fundus checkpoint, hash verified against prior run card; all 150 backbone tensors loaded, 7,671 train/validation rows, frozen CLS blocks plus train-only balanced logistic readouts. Current-manifest validation: referable DR accuracy 0.793, sensitivity 0.769, specificity 0.811, AUROC 0.865, AUPRC 0.867 (n=753); five-grade accuracy 0.563; HYGD glaucoma accuracy 0.944, AUROC 0.963 (n=125). Validation-only; no test rows; internal research and no clinical claims. Aggregate saved locally; weights and row-level outputs stay private on VM."
+    },
+    {
+      "id": 13,
+      "name": "Candidate 8/14 \u00b7 UrFound",
+      "status": "complete",
+      "status_label": "Complete \u00b7 UrFound probe reported",
+      "evidence": "Official UrFound ViT-B/16 frozen-feature probe completed on train/validation only (7,671 manifest rows; 753 DR validation, 125 glaucoma validation; no test rows). Referable DR AUROC 0.8922, AUPRC 0.8960, accuracy 0.8449 at 0.5; glaucoma accuracy 0.9680, AUROC 0.9968. Five-grade DR accuracy 0.5286. Model card reports FLAIR pretraining and RETFound fine-tuning; source-level overlap with development data is unknown, so results are exploratory. Aggregate: results/technical_dev_20261108_rerun/urf/aggregate_summary.json."
+    },
+    {
+      "id": 14,
+      "name": "Candidate 9/14 \u00b7 OPENEye-FM",
+      "status": "complete",
+      "status_label": "Complete \u00b7 OPENEye-FM validation-only probe",
+      "evidence": "Official OPENEye-FM epoch-9 checkpoint SHA-256 6625ff53dfa9dbce9507dd42310efbf06ea12e4307dab5f443a203c4ac8958d0; official 224px transform and 36-label output order used. Frozen validation only: DRTiD referable DR (n=500; 246 positive), AUROC 0.922, AUPRC 0.923, accuracy 0.822, sensitivity 0.890, specificity 0.756 at 0.5 (27 false-negative images); HYGD glaucoma (n=125; 95 positive), AUROC 0.787, accuracy 0.464, sensitivity 0.295, specificity 1.000 at 0.5 (67 false-negative images). Naive five-way grade argmax accuracy 0.110 and is not selected as a valid grade comparator. DeepDRiD/DDR validation omitted because both are declared pretraining sources; OPENEye released pretraining manifest CSV was absent, so exact image overlap with DRTiD/HYGD remains unverified. No test rows loaded. Aggregate summary is local; case-level predictions remain private on L4. Exploratory model comparison only, not clinical validation."
+    },
+    {
+      "id": 15,
+      "name": "Candidate 10/14 \u00b7 RETFound-Green",
+      "status": "complete",
+      "status_label": "Complete \u00b7 RETFound-Green usable for non-commercial research only",
+      "evidence": "Official license reviewed. User confirms the project is nonprofit-funded with no commercial involvement; use is treated as non-commercial research for this run. The license also excludes industry-involved projects and requires prior written permission in those cases. This review does not authorize commercial deployment or checkpoint redistribution."
+    },
+    {
+      "id": 16,
+      "name": "Candidate 11/14 \u00b7 EyeCLIP",
+      "status": "blocked",
+      "status_label": "Blocked \u00b7 EyeCLIP released-weight license not established",
+      "evidence": "Official repository links a checkpoint via Google Drive, but the reviewed materials provide no explicit weight-use license. The paper reports private pretraining data and no redistribution permission; no weights accessed."
+    },
+    {
+      "id": 17,
+      "name": "Candidate 12/14 \u00b7 RET-CLIP",
+      "status": "blocked",
+      "status_label": "Blocked \u00b7 RET-CLIP weight terms and cohort overlap unresolved",
+      "evidence": "Official repo links pretrained weights but provides no explicit checkpoint license in the reviewed materials; pretraining used clinical-report data from 193,865 patients, and exact source overlap is unresolved. No checkpoint accessed."
+    },
+    {
+      "id": 18,
+      "name": "Candidate 13/14 \u00b7 EyeFound",
+      "status": "blocked",
+      "status_label": "Blocked \u00b7 EyeFound checkpoint unavailable",
+      "evidence": "Paper located; no official usable checkpoint/access route verified. No weights accessed."
+    },
+    {
+      "id": 19,
+      "name": "Candidate 14/14 \u00b7 RFM (Lightweight Retinal Foundation Model)",
+      "status": "blocked",
+      "status_label": "Blocked \u00b7 RFM depends on gated DINOv3 terms",
+      "evidence": "RFM inherits the DINOv3 license and access gate; do not use it as a workaround. No weights accessed."
+    },
+    {
+      "id": 20,
+      "name": "Select candidates with nested patient-grouped validation",
+      "status": "complete",
+      "status_label": "Complete \u00b7 nested patient-grouped ranking saved",
+      "evidence": "Nested 5-outer \u00d7 3-inner GroupStratified CV completed on verified-patient training rows only (3,791 images; DDR excluded because patient IDs unverified; 0 validation/test rows). Inner folds selected C\u2208{0.1,1,10}; outer OOF image-level AUROC: UrFound\u2014DR 0.9098, glaucoma 0.9879, mean 0.9489; FLAIR\u2014DR 0.9397, glaucoma 0.9560, mean 0.9479; DINOv2\u20140.8894/0.9619, mean 0.9256; RETFound-MAE\u20140.8535/0.9734, mean 0.9135; VisionFM\u20140.8753/0.9474, mean 0.9113. Selection uses mean task AUROC, so lead=UrFound and runner-up=FLAIR; FLAIR remains the stronger DR specialist. Internal development estimate only. RETFound-Green was not included in the frozen-feature ranking while its license was unresolved; it will be evaluated as a separate eligible non-commercial research candidate in the adaptation sequence, with results compared on the same validation manifests."
+    },
+    {
+      "id": 21,
+      "name": "Adapt candidate \u00b7 RETFound-Green \u00b7 part 1",
+      "status": "complete",
+      "status_label": "Complete \u00b7 16 epochs; best validation checkpoint epoch 9",
+      "evidence": "RETFound-Green ViT-S/14 reg4, 392px, last transformer block + task heads trained; 1,778,695 trainable parameters. 16 epochs completed; best epoch 9. Validation: DR referable n=753, AUROC .9325, AUPRC .9329, accuracy .8539, sensitivity .8533, specificity .8544; DeepDRiD AUROC .9585, DRTiD .9216. 5-grade accuracy .6720. HYGD glaucoma n=125, AUROC .9951, accuracy .9520, sensitivity .9368, specificity 1.000. Patient-grouped train=3,791 images/1,566 patients; validation=878 images/357 patients; overlap 0; test rows loaded 0. Training loss continued downward while validation AUROC peaked at epoch 9 and was lower in later epochs, consistent with overfit onset. Best checkpoint private on L4; SHA-256 3432ca58b1eaa94685d46aee42b5082abe2eb9cfd29142670779fbe7b2b36839."
+    },
+    {
+      "id": 22,
+      "name": "Patient-level validation audit for RETFound-Green",
+      "status": "complete",
+      "status_label": "Complete \u00b7 corrected patient-cluster comparison recorded",
+      "evidence": "Validation patient-level comparison aligned across 314 DR patients (150 positive; DRTiD+DeepDRiD). Patient score=max image score; positive=any referable image. RETFound-Green: accuracy .8439, sensitivity .9267, specificity .7683, AUROC .9511 (patient bootstrap 95% CI .9273\u2013.9708). ConvNeXt-Tiny: .8694/.8800/.8598/.9406 (95% CI .9151\u2013.9626); FLAIR .8280/.9133/.7500/.9371; UrFound .7930/.8533/.7378/.8953. Overlapping CIs; not evidence of superiority. By-source: RFG DeepDRiD n=64 AUROC .9870; DRTiD n=250 AUROC .9434. Glaucoma: 43 patients/28 positive, RFG metrics 100%; sample too small for a broad claim. All are exposed internal validation; no test rows used. A label-mapping QA fix was applied before accepting results."
+    },
+    {
+      "id": 23,
+      "name": "Paired patient-bootstrap comparison and lead decision",
+      "status": "complete",
+      "status_label": "Complete \u00b7 paired patient-bootstrap differences computed",
+      "evidence": "Paired bootstrap on the same 314 internal-validation DR patients: RETFound-Green minus ConvNeXt AUROC +0.0105 (95% CI \u22120.0030 to +0.0257), sensitivity +0.0467 (0.0070 to 0.0897), specificity \u22120.0915 (\u22120.1506 to \u22120.0311), accuracy \u22120.0255 (\u22120.0605 to +0.0127). RFG minus FLAIR AUROC +0.0140 (\u22120.0052 to +0.0328); no clear superiority. RFG exceeds UrFound AUROC by +0.0558 (0.0268 to 0.0858). Source-specific RFG-vs-ConvNeXt tradeoff persists. Bootstrap uses exposed validation; no clinical/external claim."
+    },
+    {
+      "id": 24,
+      "name": "Lead-candidate stop decision \u00b7 RETFound-Green",
+      "status": "complete",
+      "status_label": "Complete \u00b7 stop RFG hyperparameter cycling",
+      "evidence": "Paired patient bootstrap shows a sensitivity/specificity tradeoff versus ConvNeXt, with AUROC interval including zero; no evidence justifies another RFG training variant. Preserve epoch-9 checkpoint and proceed to the prespecified FLAIR runner-up comparison."
+    },
+    {
+      "id": 25,
+      "name": "RETFound-Green seed-stability comparison",
+      "status": "complete",
+      "status_label": "Complete \u00b7 second-seed patient comparison finished",
+      "evidence": "Same RETFound-Green recipe, two seeds, common fixed validation cohort: 314 DR patients (150 positive). Seed 1: accuracy 84.39%, sensitivity 92.67%, specificity 76.83%, AUROC 0.95108. Seed 2: accuracy 81.53%, sensitivity 93.33%, specificity 70.73%, AUROC 0.95098. Paired 2,000-resample patient bootstrap for seed2\u2212seed1: accuracy \u22122.87 pp (95% CI \u22125.41 to \u22120.32), sensitivity +0.67 pp (0.00 to +2.19), specificity \u22126.10 pp (\u221210.86 to \u22121.28), AUROC \u22120.01 pp (\u22120.71 to +0.65). No seed2 ranking gain; same exposed validation only, not external confirmation."
+    },
+    {
+      "id": 26,
+      "name": "RETFound-Green adaptation with labeled DDR train-only data",
+      "status": "complete",
+      "status_label": "Complete \u00b7 DDR train-only adaptation and patient-level readout recorded",
+      "evidence": "One material change from the seed-stability run: include 2,434 labeled DDR images as train-only source-balanced training data. DDR contributes zero validation/test rows; 568 unlabeled DDR rows are excluded. Fixed validation remains 878 images from DeepDRiD/DRTiD/HYGD; 0 test rows; missing image files 0. Seed 20261110, same base checkpoint and loss. L4 run active. Epoch 11 on the fixed validation set: image-level referable-DR accuracy 87.52%, sensitivity 79.94%, specificity 93.56%, AUROC 0.9245 (n=753); DeepDRiD accuracy 90.91%, sensitivity 85.23%, specificity 93.94% (n=253); DRTiD accuracy 85.80%, sensitivity 78.05%, specificity 93.31% (n=500). AUROC has not improved over epoch 10; specificity rose while sensitivity fell. Patient-level evaluation awaits the frozen best checkpoint after the run completes. Epoch 12: referable-DR AUROC 0.9257, accuracy 85.79%, sensitivity 72.46%, specificity 96.42% (image-level, fixed 0.5, n=753); per-source sensitivity/specificity: DeepDRiD 81.82%/95.15%, DRTiD 69.11%/97.24%. Epoch 12 is specificity-heavy with reduced sensitivity; patient-level evaluation pending run completion. Epoch 13: referable-DR AUROC 0.9216, accuracy 83.00%, sensitivity 88.32%, specificity 78.76% at fixed threshold 0.5 (n=753 images); the AUROC is below the epoch-10 peak and metrics vary substantially across epochs. Patient-level evaluation remains pending. Run completed 16 epochs; best epoch 10 by validation AUROC 0.92953. Patient-level internal validation on 314 patients/150 positives at fixed 0.5: accuracy 84.71% (95% CI 80.89\u201388.54), sensitivity 95.33% (91.77\u201398.56), specificity 75.00% (68.36\u201381.60), AUROC 0.94711 (92.26\u201396.82). Paired source-patient bootstrap vs seed 1: AUROC delta \u22120.40 pp (95% CI \u22121.36 to +0.57), sensitivity +2.67 pp (+0.62 to +5.52), specificity \u22121.83 pp (\u22127.69 to +3.90). Vs ConvNeXt: AUROC +0.65 pp (\u22120.93 to +2.20), sensitivity +7.33 pp (+2.80 to +12.16), specificity \u221210.98 pp (\u221217.42 to \u22124.40). Exposed internal validation only; not external or clinical validation. Aggregate JSONs to be copied to repo; private predictions/checkpoints remain on VM."
+    },
+    {
+      "id": 27,
+      "name": "Runner-up stop decision",
+      "status": "complete",
+      "status_label": "Complete \u00b7 stopped DDR-only RFG tuning after paired comparison",
+      "evidence": "The DDR-added best checkpoint did not show a resolved AUROC gain versus RFG seed 1 (delta \u22120.40 pp, paired 95% CI \u22121.36 to +0.57) or ConvNeXt (+0.65 pp, \u22120.93 to +2.20). It increased sensitivity over ConvNeXt by 7.33 pp (2.80 to 12.16) but reduced specificity by 10.98 pp (\u221217.42 to \u22124.40). The seed-1 comparison also showed sensitivity +2.67 pp (0.62 to 5.52), with accuracy and AUROC intervals spanning zero. Stop further DDR-only recipe variations; preserve results as exploratory internal validation evidence."
+    },
+    {
+      "id": 28,
+      "name": "Quality-supervision ablation",
+      "status": "complete",
+      "status_label": "Complete \u00b7 quality-supervision ablation shows no clear patient-level gain",
+      "evidence": "Prepare matched control and auxiliary-quality runs with the same RETFound-Green base, DDR-inclusive training rows, seed, sampler, fixed validation cohort and selection metric. Quality target is DDR gradability (568 ungradable vs 2,434 gradable). Validation quality labels are absent; only downstream disease metrics can be compared. Matched no-quality control is progressing on the L4; through epoch 8: AUROC 0.92974, accuracy 86.85%, sensitivity 82.04%, specificity 90.69% at fixed 0.5 (image-level validation, n=753). Metrics are not patient-level and are not external validation. Control progress update: epoch 9 completed; best validation AUROC remains epoch 5 at 0.93130. Epoch 9: AUROC 0.92583, accuracy 86.19%, sensitivity 82.63%, specificity 89.02%, fixed threshold 0.5, image-level n=753. This is internal validation only. Control update: epoch 10 completed. AUROC 0.92942, accuracy 86.59%, sensitivity 82.93%, specificity 90.45% (fixed 0.5, image-level n=753); best epoch remains 5 at AUROC 0.93130. Patient-level analysis awaits completion. Epoch 11: AUROC 0.93014, accuracy 82.87%, sensitivity 90.12%, specificity 77.09%, fixed threshold 0.5 (image-level n=753). Current best checkpoint remains epoch 5 (AUROC 0.93130). Epoch 12: AUROC 0.92446, accuracy 86.32%, sensitivity 79.04%, specificity 92.12%, fixed threshold 0.5 (image-level n=753); checkpoint selection still favors epoch 5 AUROC 0.93130. Epoch 13: AUROC 0.92126, accuracy 85.26%, sensitivity 83.23%, specificity 86.87%, fixed threshold 0.5 (image-level n=753); best remains epoch 5 AUROC 0.93130. Epoch 14: AUROC 0.92371, accuracy 84.60%, sensitivity 82.93%, specificity 85.92%, fixed threshold 0.5 (image-level n=753); best remains epoch 5 AUROC 0.93130. The matched no-quality control completed all 16 epochs; best epoch 5 by validation AUROC. Source-aware patient-cluster evaluation is running before the matched auxiliary-quality arm begins. The control checkpoint is selected by epoch-5 validation AUROC; source-aware patient-cluster evaluation is underway. Patient-cluster control result: n=314 (150 positive), accuracy 80.89%, sensitivity 94.67%, specificity 68.29%, AUROC 0.94870 at fixed 0.5; patient-bootstrap CIs are recorded in the remote private summary. Quality-auxiliary candidate has started with matched settings. Quality-auxiliary arm epoch 1: AUROC 0.90213, accuracy 83.00%, sensitivity 79.94%, specificity 85.44%, fixed 0.5 (image-level n=753); early epoch only, no comparison or selection yet. Quality-auxiliary run through epoch 3: AUROC 0.91977, accuracy 84.86%, sensitivity 83.83%, specificity 85.68% at fixed 0.5 (image-level n=753); best so far epoch 3. No between-run conclusion until completion and patient-level bootstrap. Quality-auxiliary epoch 5 best AUROC 0.93143, accuracy 84.60%, sensitivity 88.32%, specificity 81.62% at fixed 0.5 (image-level n=753); control best AUROC 0.93130. Tiny apparent gain is provisional and not interpreted before patient-level paired analysis. Quality-auxiliary epoch 6 AUROC 0.92847, accuracy 86.85%, sensitivity 82.63%, specificity 90.22% (image-level n=753); best remains epoch 5. Control best AUROC 0.93130. Quality-auxiliary epoch 7: AUROC 0.92780, accuracy 86.85%, sensitivity 78.14%, specificity 93.79% (image-level n=753); higher specificity accompanied by lower sensitivity, and the best AUROC remains 0.93143 at epoch 5. Quality-auxiliary epoch 9: AUROC 0.92646, accuracy 86.32%, sensitivity 83.23%, specificity 88.78% at fixed 0.5 (image-level n=753); best remains epoch 5. Quality-auxiliary epoch 11 sets new best AUROC 0.93238, accuracy 83.67%, sensitivity 91.02%, specificity 77.80% (image-level n=753). Compared with the control image-best AUROC 0.93130, this is a small change with a sensitivity/specificity tradeoff; paired patient-level inference pending. Quality-auxiliary epoch 12: AUROC 0.92472, accuracy 86.32%, sensitivity 77.25%, specificity 93.56% at fixed 0.5 (image-level n=753); best epoch 11 remains 0.93238. Quality-auxiliary epoch 13: AUROC 0.92270, accuracy 84.73%, sensitivity 82.93%, specificity 86.16% at fixed 0.5; best still epoch 11. Quality-auxiliary epoch 14: AUROC 0.92325, accuracy 84.73%, sensitivity 82.04%, specificity 86.87% at fixed 0.5; best remains epoch 11. Quality-supervised arm completed 16 epochs; best epoch 11 by image-level validation AUROC 0.93238. Patient-level evaluation and paired comparison against the matched control are underway. Final source-patient paired bootstrap (n=314; 150 positive): quality aux minus matched control accuracy \u22120.32 pp (95% CI \u22123.82,+3.18), sensitivity +1.33 pp (\u22121.28,+4.20), specificity \u22121.83 pp (\u22127.73,+4.24), AUROC \u22120.21 pp (\u22121.40,+0.95), AUPRC \u22120.27 pp (\u22121.19,+0.58). All intervals include zero; no disease-transfer gain established. Do not claim quality-head performance because validation has no quality labels."
+    },
+    {
+      "id": 29,
+      "name": "Source-invariance ablation",
+      "status": "complete",
+      "status_label": "Complete \u00b7 source-invariance ablation and paired patient analysis finished",
+      "evidence": "Corrected 16-epoch run; best checkpoint epoch 8. Patient-level internal validation (314 source-patient groups; 150 positive): candidate vs matched control accuracy 89.81% vs 80.89%, sensitivity 90.00% vs 94.67%, specificity 89.63% vs 68.29%, AUROC 0.94911 vs 0.94870, AUPRC 0.95460 vs 0.95370. Paired 5,000-draw bootstrap: accuracy +8.92pp [5.10,13.06], sensitivity \u22124.67pp [\u22128.23,\u22121.48], specificity +21.34pp [15.29,28.00], AUROC +0.04pp [\u22120.61,0.70], AUPRC +0.09pp [\u22120.55,0.73]. This is a clear fixed-threshold sensitivity-specificity tradeoff, not improved ranking/transfer; internal development validation only. Aggregate artifacts and interpretation are documented; row outputs/weights remain private."
+    },
+    {
+      "id": 30,
+      "name": "Paired-view fusion eligibility audit / second-seed replication",
+      "status": "complete",
+      "status_label": "Complete \u00b7 second-seed replication and paired patient comparison finished",
+      "evidence": "Paired-view fusion excluded because no laterality/eye map exists. Second-seed source-invariance run completed 16 epochs (best epoch 5). Across 314 patient-source groups/150 positives, seed1 vs seed2: accuracy 89.81% vs 82.17%, sensitivity 90.00% vs 92.67%, specificity 89.63% vs 72.56%, AUROC 0.94911 vs 0.94681, AUPRC 0.95460 vs 0.95431. Paired 5,000-draw CI for seed2\u2212seed1: accuracy \u221210.83 to \u22124.14pp; sensitivity +0.62 to +5.44pp; specificity \u221222.88 to \u221211.46pp; AUROC \u22120.94 to +0.49pp; AUPRC \u22120.66 to +0.67pp. Fixed-threshold specificity did not reproduce; ranking metrics similar. Internal exposed validation only. See docs/retfound_green_source_invariance_seed_stability_20261108.md."
+    },
+    {
+      "id": 31,
+      "name": "Freeze candidate, preprocessing and thresholds",
+      "status": "complete",
+      "status_label": "Complete \u00b7 frozen RETFound-Green research comparator recorded",
+      "evidence": "Frozen seed-1 RETFound-Green checkpoint, epoch 8, fixed 0.5 research threshold, checkpoint/base-weight/manifest/trainer/evaluator hashes, training configuration, and nonclinical scope recorded in results/technical_dev_20261108_rerun/retfound_green_research_model_freeze.json."
+    },
+    {
+      "id": 32,
+      "name": "Exploratory Zhejiang transfer check",
+      "status": "complete",
+      "status_label": "Complete \u00b7 frozen candidate exploratory Zhejiang transfer scored",
+      "evidence": "Reconstructed 200 DR/Healthy images across 152 patients from the previously exposed Zhejiang source (53 DR, 99 healthy). Frozen RETFound-Green seed-1 checkpoint hash de221fc19b6e76fede71593d92363bac8d814ea3ef287b2cf586d9f97602e176; patient max-score AUROC 0.9897 (stratified patient bootstrap 95% CI 0.9773\u20130.9981), AUPRC 0.9826 (0.9629\u20130.9967). No referral threshold applied. Aggregate summary stored at results/technical_dev_20261108_rerun/zhejiang_retfound_green_source_invariance_summary.json (SHA-256 0c62371fa8c41a6c2753e149a2599e8a41a8b9a10a99256331495f742a97e522). Previously exposed, source-defined DR diagnosis versus healthy; not referable-DR or independent/clinical validation."
+    },
+    {
+      "id": 33,
+      "name": "Patient-level uncertainty and error reporting",
+      "status": "complete",
+      "status_label": "Complete \u00b7 seed and transfer uncertainty/failure boundaries documented",
+      "evidence": "Stage 33 report summarizes patient-cluster paired intervals, quality-ablation null result, seed-2 specificity instability, and Zhejiang exploratory patient-bootstrap intervals; supported claims and limitations are explicit in docs/stage33_patient_uncertainty_error_report_20261108.md."
+    },
+    {
+      "id": 34,
+      "name": "Package versioned research inference service",
+      "status": "complete",
+      "status_label": "Complete \u00b7 authenticated loopback RETFound-Green research API running",
+      "evidence": "Added src/golden_retina/retfound_green_research_api.py and docs/retfound_green_research_api_runbook.md. L4 runtime dependencies installed; route schema verified. Service started on 127.0.0.1:8768 with hash-pinned RETFound-Green base/adapted weights and a private 0600 bearer-token file; health reports loaded model. No public bind and no clinical use."
+    },
+    {
+      "id": 35,
+      "name": "End-to-end API failure checks",
+      "status": "complete",
+      "status_label": "Complete \u00b7 API contract and failure-path checks passed",
+      "evidence": "Synthetic-only smoke passed after service restart: health 200, auth enforcement 401, authenticated inference 200 with request-ID preservation, clinical intended-use blocked 403, corrupt 415, oversized 413, incomplete-upload client disconnect recovery PASS, and post-restart model reload/inference PASS. No patient data used. Quality/ungradable head is not present and is not claimed. Summary: results/technical_dev_20261108_rerun/retfound_green_research_api_smoke_summary.json."
+    },
+    {
+      "id": 36,
+      "name": "Pull, checksum, safe publish and cloud shutdown",
+      "status": "complete",
+      "status_label": "Complete \u00b7 safe release pushed and Golden Retina compute stopped",
+      "evidence": "Published 64 selected source, documentation and aggregate-result files in commit 1d3dacf; remote main SHA verified. No images, row-level prediction files, secrets, or model weights were published. Frozen RETFound-Green model/base weights were pulled to a Git-ignored private local directory and their SHA-256 values match the freeze card. Research API stopped; VM TERMINATED; no external address, forwarding rule, or GCS bucket. The 150-GB persistent disk remains READY to preserve private source/cache files and may continue storage charges."
+    },
+    {
+      "id": 37,
+      "name": "RETFound-MAE frozen-feature probe",
+      "status": "complete",
+      "status_label": "Complete \u00b7 RETFound-MAE probe and convergence-checked metrics",
+      "evidence": "RETFound-MAE ViT-L/16 frozen-feature readout completed using 5,000-iteration training-only logistic regression on the frozen 7,671-row train/validation manifest. Referable DR n=753: accuracy 0.749, sensitivity 0.701, specificity 0.788, AUROC 0.835, AUPRC 0.822; five-grade accuracy 0.487. HYGD glaucoma n=125: accuracy 0.968, sensitivity 0.958, specificity 1.000, AUROC 0.991. This is development validation only; no test rows were used. The 5,000-iteration refit removed the initial convergence warning. Aggregate: results/technical_dev_20261108_rerun/retfound_mae_aggregate_summary.json; weights and row-level predictions remain private on the L4."
+    },
+    {
+      "id": 38,
+      "name": "RETFound-MAE partial supervised adaptation",
+      "status": "complete",
+      "status_label": "Complete \u00b7 12-epoch RETFound-MAE adaptation finished",
+      "evidence": "RETFound-MAE ViT-L/16 partial supervised adaptation completed for 12 epochs on frozen patient-grouped training rows only; final norm, last transformer block and four task heads trainable (12,606,472 parameters). Best validation checkpoint: epoch 11, DR AUROC 0.8721 (n=753); at fixed 0.5, accuracy 0.7902, sensitivity 0.7186, specificity 0.8473; 5-grade accuracy 0.5737. Epoch 12 DR AUROC 0.8670. HYGD glaucoma at epoch 11: accuracy 0.960, AUROC 0.9782 (n=125). Source AUROC at epoch 11: DeepDRiD 0.8973; DRTiD 0.8589. Baselines: frozen RETFound-MAE 0.835; ConvNeXt-Tiny 0.962. Development validation only; zero test rows loaded. Best checkpoint remains private on L4; SHA-256 41dd0a0fea9bd33653640fa33909338c42e664e43fe1ead2508539256ebc5330."
+    }
+  ],
+  "gate_title": "Source-invariance ablation is now active",
+  "gate_detail": "Quality-supervision did not show a patient-level disease-transfer improvement. One source-adversarial comparison is next; no held-out test partition is available.",
+  "gpu_status": "L4 active \u00b7 corrected source-invariance rerun starting; RTX unused",
+  "evidence": [
+    "Confirmed project golden-retina-dev-20261107 is ACTIVE and billing enabled.",
+    "Verified us-west1 has one unused NVIDIA L4 quota; no Compute instances are currently running.",
+    "Local project contains about 17 GB of external datasets and 966 MB of model artifacts; stage only files required by the frozen manifests.",
+    "Current HF login identity verified as Burak8159; gated DINOv3 weight access is not yet verified.",
+    "Previous run\u2019s Zhejiang set has already been scored; it cannot serve as a new independent confirmation set in this rerun.",
+    "Expanded license-screened model roster saved at configs/expanded_foundation_model_candidates_20261108.json; it records per-checkpoint terms, availability and conditional inclusion decisions.",
+    "Official-source screening found additional candidates; models with unverified weight terms remain inventory-only until terms are established.",
+    "Live gcloud inventory returned no Compute instances and us-west1 L4 quota usage 0/1. Previous-run billing notes are stale and must not be reused as this phase budget record.",
+    "The former VM auto-delete time limit and termination action were cleared and their absence verified. The current program has no separate elapsed-time cap.",
+    "IAP SSH was fixed with a firewall rule limited to TCP 22 from 35.235.240.0/20 and a tag on this Golden Retina VM; SSH verified.",
+    "NVIDIA driver 580.178.04 installed and verified; nvidia-smi reports NVIDIA L4 with 23,034 MiB memory.",
+    "Frozen train/validation manifest: 7,671 unique images; 6,793 train and 878 valid; no test rows. Verified patient group intersections are zero for DeepDRiD, DRTiD and HYGD. DDR validation excluded because patient IDs are not verified.",
+    "Verified first chunk; parallel transfer continues. Effective bytes 1,366,244,352/3,804,579,840 (35.9%). Recent aggregate throughput implies roughly 23 minutes remain; archive SHA-256 and full manifest-path check pending. Transfer contains train/validation-only bundle, code and aggregate inventory.",
+    "Aggregate label distribution saved at results/technical_dev_20261108_rerun/label_distribution_summary.json; all 7,671 rows are train/validation only and patient-group counts are reported by source/split.",
+    "ConvNeXt-Tiny ImageNet-1K pretrained weights downloaded from the official torchvision source on L4 and SHA-256 verified: 983f1562536e84ff750a1576fb08e54de751dbf2e17c0d8a4a13704341fdcd3d.",
+    "DINOv2 ViT-B/14 weights cached on L4 and model instantiated; official repo code loaded; checkpoint SHA-256 0b8b82f85de91b424aded121c7e1dcc2b7bc6d0adeea651bf73a13307fad8c73. xFormers optional acceleration is absent; model runs without it.",
+    "Frozen label inventory: DR grades 0\u20134 are available for DDR (3,002 train only), DeepDRiD (1,377 total: 1,124 train/253 valid), and DRTiD paired (2,666 total: 2,166 train/500 valid); quality labels exist for 3,002 DDR training images (2,434 gradable, 568 ungradable); glaucoma labels exist for 626 HYGD images (459 positive/167 negative; 501 train/125 valid); no lesion labels are present. No AMD/RVO/other-disease label cohort is staged, so those conditions cannot be evaluated as disease tasks in this run.",
+    "Removed the old VM auto-delete time limit: stopped the VM after the initial trainer exited, cleared max-run-duration and termination action, verified both fields absent, then restarted golden-retina-l4-01. No elapsed-time project cap remains.",
+    "Fixed the baseline failure by creating the remote models/checkpoint directory and changing the trainer\u2019s optional wall-clock timeout to default off (0); restarted the 24-epoch ConvNeXt-Tiny baseline with --skip-test and the frozen train/validation manifest.",
+    "ConvNeXt-Tiny epoch 1 completed on L4. Internal validation: referable-DR AUROC 0.931 on DeepDRiD (253 images), 0.875 on DRTiD (500 images); 5-grade DR accuracy 66.8% and 57.4%; HYGD glaucoma accuracy 97.6% on 125 images from 43 patients. Checkpoint SHA-256 at first save: a283afbde2ee65a5f9c1a805ff8522267ba739e0363616a56a501b3a4101be5d. No test data were scored.",
+    "Epoch 2 complete; training remains active. Current best checkpoint SHA-256: 0953c776efdb708afd85389e5633aaf603f96675359f47e537f746e3e60b9694. Internal validation at epoch 2: referable-DR AUROC 0.949 DeepDRiD (253 images / 64 patients) and 0.900 DRTiD (500 images / 250 patients); binary accuracy at fixed 0.5: 88.1% and 81.4%. Five-grade DR accuracy: 68.4% and 54.8%. HYGD glaucoma: 97.6% accuracy, 96.8% sensitivity, 100% specificity, AUROC 0.997 on 125 images / 43 patients. Development validation only; no test cohort.",
+    "Epoch 3 complete; best checkpoint at epoch 3 so far, SHA-256 fdea49afda1d3d20b982661c968bd5e4d3453985a679d4ba581ddcf2148106ce. Internal validation: referable-DR AUROC 0.962 DeepDRiD (253 images / 64 patients) and 0.915 DRTiD (500 images / 250 patients); accuracy at fixed 0.5 is 89.3% and 84.8%. Five-grade accuracy 69.2% and 65.6%. HYGD glaucoma accuracy 96.8%, sensitivity 95.8%, specificity 100%, AUROC 0.998 (125 images / 43 patients). Validation only, no held-out test cohort.",
+    "Golden Retina 2026-11-08 DINOv2 ViT-B/14 frozen-feature probe completed on the 7,671-row train/validation manifest. Referable DR n=753, accuracy 0.799, sensitivity 0.778, specificity 0.816, AUROC 0.871, AUPRC 0.859; five-grade accuracy 0.548; HYGD glaucoma n=125, accuracy 0.936, AUROC 0.984. The run remains internal development validation and not independent/external confirmation.",
+    "Golden Retina 2026-11-08 VisionFM ViT-Base/16 frozen-feature probe completed on current 7,671-row train/validation manifest. Referable DR: accuracy 0.793, AUROC 0.865; five-grade accuracy 0.563; HYGD glaucoma: accuracy 0.944, AUROC 0.963. Research-only and not independent clinical validation.",
+    "UrFound ViT-B/16 frozen-feature probe completed on train/validation only: referable DR accuracy 84.5%, AUROC 0.892, AUPRC 0.896 (n=753); five-grade accuracy 52.9%; HYGD glaucoma accuracy 96.8%, AUROC 0.997 (n=125). Exact training-source overlap remains unknown; exploratory development evidence, not independent confirmation.",
+    "RETFound access recheck: Burak8159 authenticated on Mac; official RETFound-MAE checkpoint access succeeded and the L4 download is SHA-256 verified. RETFound-DINOv2 file access returned 403 GatedRepoError on both Mac and L4; no checkpoint downloaded or gate bypassed.",
+    "RETFound-MAE ViT-L/16 frozen-feature probe is active on the L4; official checkpoint SHA-256 e1e4f66a1b792eeb6e2efaf158f33be35c8255f36b3d17ed67cd5129da246485. Results use only the frozen train/validation manifest; no test rows or Zhejiang set.",
+    "RETFound-MAE ViT-L/16 frozen-feature readout completed using 5,000-iteration training-only logistic regression on the frozen 7,671-row train/validation manifest. Referable DR n=753: accuracy 0.749, sensitivity 0.701, specificity 0.788, AUROC 0.835, AUPRC 0.822; five-grade accuracy 0.487. HYGD glaucoma n=125: accuracy 0.968, sensitivity 0.958, specificity 1.000, AUROC 0.991. This is development validation only; no test rows were used. The 5,000-iteration refit removed the initial convergence warning.",
+    "RETFound-MAE partial supervised adaptation epoch 1 completed on L4. Referable DR validation AUROC 0.718, accuracy 63.5%, sensitivity 38.9%, specificity 83.1% (n=753); five-grade accuracy 45.6%; HYGD glaucoma AUROC 0.968, accuracy 91.2% (n=125). Compared with frozen MAE DR AUROC 0.835, this first epoch is worse; run continues with validation-only checkpoint selection.",
+    "RETFound-MAE partial adaptation epoch 2: referable-DR development-validation AUROC 0.775, sensitivity 56.3%, specificity 78.8%, accuracy 68.8% (n=753); five-grade accuracy 46.9%; glaucoma AUROC 0.971, accuracy 96.0% (n=125). AUROC improved over epoch 1 but remains below the frozen RETFound probe (0.835) and ConvNeXt baseline (0.962).",
+    "RETFound-MAE partial adaptation epoch 3: validation DR AUROC 0.809, sensitivity 61.7%, specificity 80.4%, accuracy 72.1% (n=753); five-grade accuracy 48.6%; HYGD glaucoma AUROC 0.972, accuracy 96.0% (n=125). DR AUROC improved monotonically across the first three epochs but remains below the frozen RETFound-MAE probe and ConvNeXt baseline.",
+    "RETFound-MAE partial adaptation epoch 4: validation DR AUROC 0.824, accuracy 75.4%, sensitivity 67.4%, specificity 81.9% (n=753); five-grade accuracy 51.5%; glaucoma AUROC 0.973 and accuracy 96.0% (n=125). Source AUROC: DeepDRiD 0.846, DRTiD 0.823. Monotonic DR AUROC improvement continues; near frozen MAE (0.835) but below ConvNeXt (0.962).",
+    "RETFound-MAE partial adaptation epoch 5: validation DR AUROC 0.837 (slightly above frozen-MAE 0.835); fixed-0.5 accuracy 75.2%, sensitivity 56.3%, specificity 90.2% (n=753); five-grade accuracy 51.8%; glaucoma AUROC 0.975 and accuracy 96.0% (n=125). ConvNeXt baseline remains stronger on AUROC, and the operating-point sensitivity remains limited.",
+    "RETFound-MAE partial adaptation epoch 6: DR validation AUROC 0.850, accuracy 77.3%, sensitivity 68.6%, specificity 84.2% (n=753); five-grade accuracy 53.7%; HYGD glaucoma accuracy 96.0%, AUROC 0.974. DR AUROC is above the frozen RETFound-MAE probe but below ConvNeXt.",
+    "RETFound-MAE partial adaptation epoch 7: DR AUROC 0.853, accuracy 76.6%, sensitivity 70.7%, specificity 81.4% (n=753); five-grade accuracy 54.8%; glaucoma AUROC 0.976 and accuracy 96.0% (n=125). Improvements continue but are flattening.",
+    "RETFound-MAE partial adaptation epoch 8: validation DR AUROC 0.851; fixed-0.5 accuracy 76.0%, sensitivity 70.1%, specificity 80.7%; five-grade accuracy 55.6%. Best checkpoint remains epoch 7 at AUROC 0.853; no test data loaded.",
+    "RETFound-MAE partial adaptation epoch 9: DR validation AUROC 0.864, accuracy 76.5%, sensitivity 71.6%, specificity 80.4% (n=753); five-grade accuracy 55.2%; glaucoma AUROC 0.977 and accuracy 96.0%. Above frozen MAE but below ConvNeXt.",
+    "RETFound-MAE partial adaptation epoch 10: DR validation AUROC 0.869, accuracy 78.9%, sensitivity 68.6%, specificity 87.1% (n=753); five-grade accuracy 54.6%; glaucoma accuracy 96.0%, AUROC 0.978. Best checkpoint selection is validation-only.",
+    "RETFound-MAE partial adaptation epoch 11: DR validation AUROC 0.872, accuracy 79.0%, sensitivity 71.9%, specificity 84.7% (n=753); five-grade accuracy 57.4%; glaucoma accuracy 96.0%, AUROC 0.978. One fixed-run epoch remains.",
+    "RETFound-MAE 12-epoch adaptation completed; best epoch 11 and private checkpoint SHA-256 41dd0a0fea9bd33653640fa33909338c42e664e43fe1ead2508539256ebc5330. Stage 38 marked complete. Resumed parked OPENEye-FM candidate stage 14; audit output label order and source overlap before inference. Estimated L4 spend accrued conservatively from VM launch: \u20ba150.30 at 2026-11-08T10:24:41+00:00 UTC.",
+    "OPENEye-FM official checkpoint probe completed on frozen validation only: DRTiD referable DR AUROC 0.922/AUPRC 0.923, accuracy 0.822, sensitivity 0.890, specificity 0.756 (n=500, 27 false-negative images at 0.5); HYGD glaucoma AUROC 0.787, sensitivity 0.295, specificity 1.000 (n=125, 67 false-negative images). DeepDRiD/DDR validation excluded; exact overlap for DRTiD/HYGD unverified. RETFound-Green skipped due unresolved custom-license eligibility. EyeCLIP weight terms now being checked.",
+    "Estimated accrued Golden Retina L4 spend: \u20ba155.82 as of 2026-11-08T10:34:01+00:00 UTC (\u20ba1,900 planned; \u20ba1,980 hard operational cap).",
+    "Candidate access/terms gates resolved: RETFound-Green skipped under restrictive custom license eligibility; EyeCLIP and RET-CLIP weight terms/source overlap unresolved; EyeFound checkpoint not verified; RFM inherits gated DINOv3 terms. No restricted weights were accessed. Proceeding to nested patient-grouped selection over five already-probed models.",
+    "Nested patient-grouped candidate ranking completed: UrFound ranked first by mean OOF AUROC (DR 0.9098, glaucoma 0.9879); FLAIR second and strongest DR-only (0.9397). Only verified-patient training rows used; no validation/test rows. Stage 21 UrFound partial fine-tune begins.",
+    "Estimated spend \u20ba159.53 at 2026-11-08T10:40:18+00:00 UTC; planned ceiling \u20ba1,900, absolute operational cap \u20ba1,980.",
+    "2026-11-08: User confirmed no commercial activity/funding. This resolves the project-eligibility concern for RETFound-Green internal non-commercial research. It does not grant commercial deployment or redistribution rights. Started same-recipe seed-2 repeat (seed 20261109), fixed train/validation manifest, no test rows; output stays private on Golden Retina L4.",
+    "RETFound-Green seed-2 interim: epochs 1\u20132 completed on L4. Epoch 2 image-level internal validation: DR AUROC 0.9128 and fixed-threshold accuracy 0.8367 (n=753); HYGD glaucoma AUROC 0.9982 and accuracy 0.976 (n=125). Training remains active; these are interim validation metrics and do not establish external performance.",
+    "RETFound-Green seed 2: epoch 6 currently best on internal validation (DR AUROC 0.9339; fixed-0.5 accuracy 0.8420, sensitivity 0.8832, specificity 0.8091; n=753 images). HYGD glaucoma at epoch 6: AUROC 0.9986, accuracy 0.960; n=125 images. Run continues to its 1-hour wall cap/early stop; patient-level analysis pending.",
+    "RETFound-Green seed 2 reached epoch 8; the best remains epoch 6 (validation DR AUROC 0.9339). Epoch 8 AUROC is 0.9302 after interim fluctuations. No checkpoint update; fixed-seed run continues.",
+    "RETFound-Green seed-2 adaptation completed 16 epochs (seed 20261109). Best checkpoint epoch 6; validation AUROC 0.9339, fixed-0.5 accuracy 0.8420, sensitivity 0.8832, specificity 0.8091 (n=753 images). Final epoch 16 AUROC 0.9199, consistent with post-peak validation regression. Private patient-level scoring/paired bootstrap is now running.",
+    "Seed-stability paired patient bootstrap corrected and finalized: seed 2 minus seed 1 at fixed 0.5, n=314 patients. Accuracy \u22122.87 percentage points (95% CI \u22125.41 to \u22120.32), sensitivity +0.67 pp (0.00 to +2.19), specificity \u22126.10 pp (\u221210.86 to \u22121.28), AUROC \u22120.01 pp (\u22120.71 to +0.65). No consistent benefit from random seed alone; changed the next experiment to add unused labeled DDR training data only.",
+    "DDR expansion preflight PASS: 2,434 labeled DDR train images added to 3,791 prior train rows (6,225 total); the 568 DDR rows without DR grade are excluded; validation remains 878 rows; 0 test rows and 0 missing images.",
+    "DDR-added RETFound-Green epoch 1 completed (162.9 s): DR AUROC 0.8859, fixed-0.5 accuracy 0.7729, sensitivity 0.8623, specificity 0.7017 (753 validation images). HYGD glaucoma AUROC 0.9954, accuracy 0.976 (125 images). This is an early internal-validation point below the other runs; training continues under the fixed recipe.",
+    "DDR-added RETFound-Green epoch 2 completed (325.5 s): DR AUROC 0.9120, fixed-0.5 accuracy 0.8234, sensitivity 0.8563, specificity 0.7971 (n=753 validation images); HYGD glaucoma AUROC 0.9965 and accuracy 0.976 (n=125). AUROC improved from epoch 1; run continues.",
+    "DDR-added RETFound-Green epoch 3 completed (488.8 s cumulative): DR AUROC 0.9163, fixed-0.5 accuracy 0.8353, sensitivity 0.8653, specificity 0.8115 (n=753 validation images); best so far. HYGD glaucoma accuracy remains 0.976, AUROC 0.9965 (n=125).",
+    "DDR-added RETFound-Green epoch 4 completed (652.2 s cumulative): DR AUROC 0.9259, now best; fixed-threshold metrics and source-specific values are retained in the private epoch log.",
+    "DDR-added RETFound-Green epoch 6 completed (980.4 s cumulative): DR AUROC 0.9238, below the epoch-4 best 0.9259; fixed-threshold accuracy and source metrics retained in logs. Training continues; no independent test rows.",
+    "DDR-added RETFound-Green epoch 7 completed (1,146.1 s cumulative): DR AUROC 0.9288, now best; fixed-0.5 accuracy 0.8141 (n=753). The run continues with no recipe changes.",
+    "DDR-added RETFound-Green epoch 10 completed (1,642.5 s cumulative): DR AUROC 0.9295, new best; fixed-0.5 accuracy 0.83+ range recorded in private epoch log. Still below original RFG image-level best AUROC 0.9325; patient-level comparison pending after the fixed run.",
+    "Noncommercial research-use basis for RETFound-Green reconfirmed by project owner; no clinical/commercial deployment or weight redistribution rights inferred.",
+    "Block 26 completed: DDR train-only RFG patient-level comparison; best epoch10; current validation tradeoffs documented. Spend estimate at 2026-11-08T12:56:33.373536+00:00 is \u20ba240.15.",
+    "Block 27 completed: stop rule applied to DDR-only RFG path; moved to matched quality ablation. Spend estimate at 2026-11-08T12:58:06.412013+00:00 \u20ba241.07."
+  ],
+  "issues": [
+    {
+      "title": "DINOv3 gated-weight acceptance",
+      "status": "blocked",
+      "detail": "Meta/Hugging Face access is gated. Meta terms require the licensee to meet applicable legal-age requirements and include separate use obligations. Research-only use is authorized by the user, but the model access gate is not yet confirmed.",
+      "next_action": "Account holder must complete any required gated-access acceptance; do not download or use DINOv3 weights until access is granted."
+    },
+    {
+      "title": "RETFound checkpoint-specific access",
+      "status": "active",
+      "detail": "RETFound-MAE is accessed through the approved account and its CC BY-NC 4.0 frozen probe is complete. RETFound-DINOv2 exact file requests returned 403 GatedRepoError from both authenticated Mac and L4.",
+      "next_action": "Continue only with approved RETFound-MAE evidence; retry DINOv2 only after publisher approval."
+    },
+    {
+      "title": "VisionFM research-only conditions",
+      "status": "active",
+      "detail": "Official repository limits use to research and education and prohibits commercial use. This run is noncommercial; do not use it for a clinical decision service or redistribute its weights.",
+      "next_action": "Use only for internal research evaluation and preserve required attribution."
+    },
+    {
+      "title": "Previously exposed external cohort",
+      "status": "active",
+      "detail": "Zhejiang UWF was evaluated in the prior run and has diagnosis-vs-healthy labels rather than referable-grade labels. Results here are exploratory only.",
+      "next_action": "Do not label any rerun on Zhejiang as untouched external confirmation."
+    },
+    {
+      "title": "EyeCLIP and RET-CLIP weight-license status",
+      "status": "active",
+      "detail": "Official repositories provide or link weights, but an explicit weight license was not established in this screening. Code availability is not permission to use model weights.",
+      "next_action": "Keep listed as candidates; inspect official weight terms or obtain author permission before download/use."
+    },
+    {
+      "title": "OPENEye-FM training-data provenance",
+      "status": "active",
+      "detail": "Official model card lists 37 pretraining sources including DeepDRiD and DDR. These validation rows were excluded; the repository labels CSV was absent in the public checkout, so exact image-level overlap with DRTiD/HYGD could not be audited.",
+      "next_action": "Treat DRTiD/HYGD metrics as exploratory transfer only; do not call them independent confirmation."
+    },
+    {
+      "title": "RFM and RETFound-Green weight terms",
+      "status": "resolved",
+      "detail": "User confirmed Golden Retina has no commercial activity or commercial funding. RETFound-Green can be included for internal non-commercial research under its custom license. This does not establish rights for clinical/commercial deployment, sublicensing or redistribution of weights.",
+      "next_action": "Continue internal research only; keep base/derived weights and row-level outputs private; verify any future deployment or redistribution rights separately."
+    },
+    {
+      "title": "EyeFound usable checkpoint availability",
+      "status": "active",
+      "detail": "A paper is available, but a clearly official downloadable checkpoint with reusable terms was not confirmed.",
+      "next_action": "Do not allocate GPU training time unless an official weight release and terms are verified."
+    },
+    {
+      "title": "Current-phase cloud spend control",
+      "status": "active",
+      "detail": "Spend limit is \u20ba1,900 planned plus \u20ba80 protected reserve, \u20ba1,980 absolute operational ceiling. No elapsed-time cap. Billing is delayed and alerts are advisory; estimate is tracked conservatively.",
+      "next_action": "Continue with the VM while projected cumulative spend remains within \u20ba1,900; stop before the hard ceiling and retain the \u20ba80 margin."
+    },
+    {
+      "title": "Disease-label coverage is narrower than all retinal diseases",
+      "status": "active",
+      "detail": "The frozen manifest supports DR grade classification on DDR/DeepDRiD/DRTiD, HYGD glaucoma classification, and DDR image gradability. It contains zero labeled retinal-lesion rows and no AMD or retinal-vein-occlusion cohort.",
+      "next_action": "Run and report only supported tasks; do not imply an all-retinal-disease classifier. Seek/attach separately labeled disease cohorts only in a later authorized phase."
+    },
+    {
+      "title": "Frozen manifest has no untouched test partition",
+      "status": "active",
+      "detail": "The frozen 7,671-row manifest contains train and validation only (zero test rows). Prior Zhejiang and MMRDR-related cohorts are already exposed in project history and cannot be represented as independent confirmation.",
+      "next_action": "Use the frozen validation split only for candidate selection. At the held-out stage, use a genuinely new unused cohort if one becomes available; otherwise mark external confirmation unavailable and do not tune on exposed cohorts."
+    },
+    {
+      "title": "Baseline checkpoint path and old VM time limit",
+      "status": "resolved",
+      "detail": "The missing remote models/ directory was created, the optional trainer timeout was disabled, and the L4 baseline checkpoint/run were verified earlier in this phase.",
+      "next_action": "Historical blocker resolved; no remaining action."
+    },
+    {
+      "title": "Duplicate DINOv2 probe process",
+      "status": "resolved",
+      "detail": "A command-wrapper precedence mistake launched a duplicate against the same output path. The duplicate process was stopped promptly; the original single run completed and its aggregate result/checkpoint provenance were verified.",
+      "next_action": "Use explicit process-state verification after future background launches."
+    },
+    {
+      "title": "Matched quality-control empty-target batch failure",
+      "status": "resolved",
+      "detail": "The first no-quality control run stopped after epoch 1 when a batch contained only ungradable DDR images, leaving GradScaler without optimizer inf checks. No result from that failed attempt will be used.",
+      "next_action": "Skip batches without any disease or active quality supervision; restart in a fresh output directory."
+    },
+    {
+      "title": "Source-invariance empty-supervision batch",
+      "status": "resolved",
+      "detail": "Initial stage-29 run stopped after epoch 1 when a batch contained train-only DDR ungradable samples with no disease loss and no source-head label. The batch-skip condition now checks all three active objectives. Invalid first attempt is excluded.",
+      "next_action": "Restart from a fresh output directory and preserve the fixed script hash."
+    }
+  ],
+  "budget": {
+    "spent_try": 407.13,
+    "planned_total_try": 1900.0,
+    "protected_reserve_try": 80.0,
+    "hard_total_try": 1980.0,
+    "spent_percent": 20.56,
+    "basis": "Conservative live estimate at \u20ba35.50/hour for the Golden Retina g2-standard-4 L4 VM, accrued from launch (including short stop intervals conservatively); settled Google invoice is delayed and can include taxes, storage, networking, or other charges. Operational stop at \u20ba1,900 estimated spend preserves \u20ba80; \u20ba1,980 is the absolute ceiling. No project time cap. VM was stopped at Stage 36; conservative compute accrual is frozen at shutdown. The 150-GB persistent boot disk remains and may incur storage charges; exact settled invoice is still unavailable.",
+    "remaining_planned_try": 1492.87,
+    "remaining_hard_cap_try": 1572.87,
+    "elapsed_hours": 11.4684,
+    "updated_at_utc": "2026-11-08T17:40:57.223792+00:00",
+    "as_of_utc": "2026-11-08T17:40:57.223792+00:00",
+    "accrual_active": false,
+    "accrual_rate_try_per_hour": 35.5,
+    "vm_start_utc": "2026-11-08T06:10:40Z",
+    "actual_invoice_available": false,
+    "recorded_artifact_egress_try": 0.0,
+    "project_monthly_alert_try": null,
+    "billing_alert_is_not_hard_stop": true,
+    "display_label": "Final estimated compute spend \u00b7 invoice delayed",
+    "vm_stopped_utc": "2026-11-08T17:38:46.386041+00:00"
+  },
+  "current_block_estimate": "Stage 36 complete. Local tracker remains available; cloud VM and inference API are stopped.",
+  "current_stage_steps": [
+    {
+      "title": "Pull/checksum permitted aggregate artifacts and private frozen weights",
+      "status": "complete",
+      "evidence": "Zhejiang aggregate matches the remote SHA-256; private adapted and base weights match frozen hashes and are Git-ignored."
+    },
+    {
+      "title": "Review and publish selected code, docs and aggregate results",
+      "status": "complete",
+      "evidence": "64 selected files pushed to GitHub main as 1d3dacf; remote main SHA verified. Unrelated working-tree changes were not staged."
+    },
+    {
+      "title": "Stop Golden Retina service and compute; verify scoped cloud state",
+      "status": "complete",
+      "evidence": "Research API stopped; VM TERMINATED. No reserved external IP, forwarding rule, or Cloud Storage bucket. 150-GB boot disk deliberately retained; storage billing may continue."
+    }
+  ],
+  "overall_run_limits": {
+    "initial_program_time_cap_hours": null,
+    "initial_program_started_at": "2026-11-08T06:10:40Z",
+    "initial_program_deadline_at": null,
+    "initial_program_budget_planned_try": 1900,
+    "initial_program_contingency_try": 80,
+    "initial_program_absolute_cap_try": 1980,
+    "phase_order": "Continue the expanded 38-block program with no independent time limit; stop at the \u20ba1,900 planned spend ceiling, preserving \u20ba80 contingency within the \u20ba1,980 absolute operational ceiling; close out by pulling permitted artifacts and deleting only Golden Retina resources.",
+    "compute_scope": "One g2-standard-4 L4 VM only; RTX remains unauthorized.",
+    "overrun_policy": "No elapsed-time stop. Track conservative cumulative spend and stop at \u20ba1,900 estimated spend to preserve \u20ba80; never exceed the \u20ba1,980 absolute ceiling. Billing alerts are advisory and billing is delayed."
+  },
+  "last_update_utc": "2026-11-08T17:40:57.223792+00:00",
+  "updated_at": "2026-11-08T14:30:01+03:00",
+  "completed_blocks": 34,
+  "post_mbrset_followup": {
+    "title": "mBRSET follow-up remains separate",
+    "status": "queued_pending_user_notice",
+    "time_limit_hours": 12,
+    "planned_ceiling_try": 1400,
+    "protected_margin_try": 75,
+    "hard_ceiling_try": 1475,
+    "trigger": "Start only after Burak notifies that files arrived and this expanded 38-block program and its closeout checks are complete."
+  },
+  "updated_at_utc": "2026-11-08T17:40:57.223792+00:00"
+}

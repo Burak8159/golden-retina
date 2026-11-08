@@ -1,0 +1,335 @@
+{
+  "release": "Golden Retina technical development closeout",
+  "commit": "1d3dacf",
+  "remote_branch": "origin/main",
+  "published_file_count": 64,
+  "published_files": [
+    {
+      "path": "configs/expanded_foundation_model_candidates_20261108.json",
+      "sha256": "030404e68f07408ebd741d0cc249f1e72054d653d6d2d61df4b990f817b6a59d",
+      "bytes": 9850
+    },
+    {
+      "path": "docs/paired_view_fusion_eligibility_20261108.md",
+      "sha256": "a362249c299267d02b4a5295a33822556d6a7567fa3c77c1095bda52fade2558",
+      "bytes": 1548
+    },
+    {
+      "path": "docs/retfound_green_quality_ablation_20261108.md",
+      "sha256": "339c50c571ce70df80348056b259e1447be20daa25a3a20a4caf34baac5ae8c4",
+      "bytes": 3644
+    },
+    {
+      "path": "docs/retfound_green_research_api_runbook.md",
+      "sha256": "fd1e93baf4aff4916c929c169f21891213b9eab16280da369ca6a095855f6858",
+      "bytes": 1644
+    },
+    {
+      "path": "docs/retfound_green_source_invariance_ablation_20261108.md",
+      "sha256": "95f9303c816603f8ac96f071a2bf7d766d698bcbe2c407a0b3cbaf91e8358ffc",
+      "bytes": 3767
+    },
+    {
+      "path": "docs/retfound_green_source_invariance_seed_stability_20261108.md",
+      "sha256": "a47df43f714135f611c78f88bce7d8fb3a50fdcec2dbe619dfd7b401b9ff1374",
+      "bytes": 2453
+    },
+    {
+      "path": "docs/retfound_green_zhejiang_exploratory_transfer_20261108.md",
+      "sha256": "bc50c30c2e324cfde006de90a017e8d995ff5f2a22d9ecfd746a8ee06b9b6623",
+      "bytes": 2013
+    },
+    {
+      "path": "docs/stage33_patient_uncertainty_error_report_20261108.md",
+      "sha256": "278a1d97414717771d93f7616c0a45037955e06c3745f08c1f8a0412cbb1b2af",
+      "bytes": 3089
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/aggregate_delivery/retfound_green_ddr_train_only_patient_summary.json",
+      "sha256": "fe70dea4211024e21d1685343c4a243306ec007fd0e50e5b4c4cbde2842d9ce4",
+      "bytes": 19003
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/aggregate_delivery/retfound_green_ddr_train_only_summary.json",
+      "sha256": "ea23cfbeea0066819e0d516e4d07a3807269ddf6922ae9ff8d1c5115ba0d7fdd",
+      "bytes": 26649
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/aggregate_delivery/retfound_green_ddr_vs_convnext.json",
+      "sha256": "858b6a9bfd873af102e851cb5a517adf5128084e05442a97aef082f318ed68b3",
+      "bytes": 1464
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/aggregate_delivery/retfound_green_ddr_vs_seed1.json",
+      "sha256": "75c9fa9043b80b3ed7f4610d13caadbe4f3f44b793f3abc33675f08de3c0d65e",
+      "bytes": 1493
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/aggregate_delivery/retfound_green_ddr_vs_seed2.json",
+      "sha256": "06ff518c7a7dd41353b169496d410fb8c8a72b36c4152d576ac500ef886b2556",
+      "bytes": 1454
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/dinov2_aggregate_summary.json",
+      "sha256": "0916be05f7fd647ad46390c9cb0a1b1e66696487a120a89f66dc16874f680787",
+      "bytes": 3887
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/flair_aggregate_summary.json",
+      "sha256": "1d093279ce3ec0b195ea549a37fcaad86f36af3bbbdeaa606a9d43c79258bd5e",
+      "bytes": 3663
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/label_distribution_summary.json",
+      "sha256": "5421ac163dc347da453f6e7e6d66e33e7bdd60f505a56fbd0b97d052b6d76be7",
+      "bytes": 1992
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/nested_patient_cv_summary.json",
+      "sha256": "2a7930ff7fcdd66d28328c78cab97dda0a70bc3962aa82cbbe37aa2f8ba78dda",
+      "bytes": 32520
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/openeye_probe_summary.json",
+      "sha256": "cc02c56597d2d961b4c5432e08ab050ceca8546a61523d98e6a64ba022d0a652",
+      "bytes": 2422
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_adaptation/paired_patient_bootstrap.json",
+      "sha256": "cc8983b827629f1b41b67d733cfebf75f13c5e9c4f63f313e368ed9b0b68a06c",
+      "bytes": 7291
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_adaptation/patient_level_summary.json",
+      "sha256": "dbc50ab4b9f58183eface44ec233b6a2da15a15f5384860230ef9f06f8c63bf8",
+      "bytes": 18882
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_adaptation/progress.json",
+      "sha256": "309b3c27cf6290b85cbfbc2c75b86bf4b40620eef70f2dd645bf0ca48c7b615a",
+      "bytes": 24059
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_adaptation/run_card.json",
+      "sha256": "8e9fb67669aeae9f7aaad51e987d5862c662af64d8a7e2b6d21de76a496f92ea",
+      "bytes": 2086
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_adaptation/summary.json",
+      "sha256": "d0995f0fa13fb15ff1bf41fc2c5c25a18be665a6348578d6a9befd6b3cdce8b1",
+      "bytes": 26594
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_eligibility.json",
+      "sha256": "bc8930da74872cc04e6e5c1f51b912cedf411dc6526fbe3e920e627ca241e4fd",
+      "bytes": 512
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_quality_ablation_patient_summary.json",
+      "sha256": "2b5fe304e725701866b929354d721d463606a257026bc03ff5a5a2e7cef6cc0c",
+      "bytes": 2485
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_research_api_smoke_summary.json",
+      "sha256": "eb0898dee7451eda7b8d9b07c87ca52b371485b37c70ecf277713f80325ed3f7",
+      "bytes": 782
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_research_model_freeze.json",
+      "sha256": "4408a1d5399915bb869f460adf07c8e95a78f926f2394535d24a072c28aa4c57",
+      "bytes": 5236
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_source_invariance_01_v2/patient_level_summary.json",
+      "sha256": "3ba360464e7a1979a92879b0ccf1c2fc0f8f096a94f9e9346b9d17c40124d8a5",
+      "bytes": 18885
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_source_invariance_02/patient_level_summary.json",
+      "sha256": "a24cbb592ff5f6c6b5b4353c05da40a92184f96d8c80d9df23a7fe69b394fef9",
+      "bytes": 18914
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_source_invariance_02/source_invariance_seed_stability_patient.json",
+      "sha256": "159d3cf8e22c6d5b092f6a7b7aff4360654ebf1f2ba1c82b1ede418bb7310dba",
+      "bytes": 1885
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_green_source_invariance_02/summary.json",
+      "sha256": "c8d38f356aa35927d902f2d67fe04c94b437186bd7bdabb9fbf8ca8e71f040e1",
+      "bytes": 30895
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_mae_adaptation/progress.json",
+      "sha256": "b34fd87024c1a34bc03d2325c5a108f4f5aa7744b7c9758a062f81b9bb5f367b",
+      "bytes": 19812
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_mae_adaptation/summary.json",
+      "sha256": "a150f8581b1809e7c339e5cb82d3fa3a8556ef1ea5f337813b2d3757d76a248f",
+      "bytes": 20599
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/retfound_mae_aggregate_summary.json",
+      "sha256": "6f3fee42ce8d5879a2f4cc5240f731fff015c4d09a8ad42869ccd0edb0cf99df",
+      "bytes": 3979
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/source_invariance_vs_control_patient_paired.json",
+      "sha256": "bc0f01875a593c13f3a64338521bdc6c513b7a58a974f67f2340e2712beed9fa",
+      "bytes": 1497
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/stage3_manifest_summary.json",
+      "sha256": "ef6182d77a39702015ea41faca583f4c532fd35b28f31883497e5d32beaee70f",
+      "bytes": 1060
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/urf/aggregate_summary.json",
+      "sha256": "d589950b96463c0e9f50cac3df5f6947b18e252bb4b3ac483bca9ef3825b6a07",
+      "bytes": 4242
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/visionfm_aggregate_summary.json",
+      "sha256": "321b517053a995b8ba0b22a91dc9a6dd73d3878b45bfa69643508081eed0ce87",
+      "bytes": 3984
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/zhejiang_archive_verification.json",
+      "sha256": "74b209357e78acef5c9c167a303a50992f6c0ef5859235fec522dae2d023912c",
+      "bytes": 310
+    },
+    {
+      "path": "results/technical_dev_20261108_rerun/zhejiang_retfound_green_source_invariance_summary.json",
+      "sha256": "0c62371fa8c41a6c2753e149a2599e8a41a8b9a10a99256331495f742a97e522",
+      "bytes": 1328
+    },
+    {
+      "path": "src/golden_retina/compare_quality_ablation.py",
+      "sha256": "cb1731102380e150207d0479b7deb0bf394381c841431aac0ade0aeac80ee31c",
+      "bytes": 4228
+    },
+    {
+      "path": "src/golden_retina/retfound_green_research_api.py",
+      "sha256": "162b29159d99e8fc366cd9a431989fbdcfd31fce076c754faf06aee7ccfa0957",
+      "bytes": 9595
+    },
+    {
+      "path": "src/golden_retina/train_flair_multitask_adaptation.py",
+      "sha256": "529ac8f6a8859d42a749aec43dccf6b57ed6b2b67f6fba478f1c0e81d23f02b9",
+      "bytes": 15796
+    },
+    {
+      "path": "src/golden_retina/train_source_invariant_ablation.py",
+      "sha256": "42731f61c8ad8312024d7b9a2ca16d5c88eb742cd94e7ff632c23324aeb7733e",
+      "bytes": 10780
+    },
+    {
+      "path": "tools/progress_tracker/README.md",
+      "sha256": "bd777e610427e0fce8b39e224dc6c60748a6b400cf06db021fcb18d13492468d",
+      "bytes": 723
+    },
+    {
+      "path": "tools/progress_tracker/index.html",
+      "sha256": "5c4f81b335ac4a3267c52ec9a2f3b74b359d9d4e18bc54b5ed0677aa90bb864b",
+      "bytes": 22335
+    },
+    {
+      "path": "tools/progress_tracker/server.py",
+      "sha256": "9af3872582a1176019e5ebefd19ee02334dcf01216a689ff05e6bce51d6dd492",
+      "bytes": 2050
+    },
+    {
+      "path": "tools/technical_dev/audit_convnext_baseline_uncertainty.py",
+      "sha256": "58669a55c702e8eff22d15d190ae1af98643bcc1138e3f25edb78973ed834fa7",
+      "bytes": 7423
+    },
+    {
+      "path": "tools/technical_dev/compare_retfound_green_seeds.py",
+      "sha256": "0137b1e7e85d377e0e840bae2bb911ab6b632fde91bd2ed8c3dd98ffb7517bf2",
+      "bytes": 4782
+    },
+    {
+      "path": "tools/technical_dev/evaluate_retfound_green_patient_level.py",
+      "sha256": "90c8fe8071261735b6bce0359c8b64cd1b9d7787ffb1fcbf4d0ad5b5c35c23a0",
+      "bytes": 8990
+    },
+    {
+      "path": "tools/technical_dev/evaluate_retfound_green_zhejiang_exploratory.py",
+      "sha256": "4933f7987c5fb657ebc3999e4a0858b60e4625cb5300f3d70cddc4bdab133766",
+      "bytes": 7345
+    },
+    {
+      "path": "tools/technical_dev/nested_patient_cv_select.py",
+      "sha256": "02a857d7a70fd92e4b6691c146b22dec8e26bdec47246a78a307dc59c73b88af",
+      "bytes": 8885
+    },
+    {
+      "path": "tools/technical_dev/paired_patient_bootstrap.py",
+      "sha256": "46b5c1d0414756e29d505de5c8c2f6aed9851ca60028faed16f46c2c2aaf4e98",
+      "bytes": 4360
+    },
+    {
+      "path": "tools/technical_dev/paired_patient_compare.py",
+      "sha256": "45c3eca60f8f925dbfad82953a3464073bb93d4ba42c7ac727ff34711d394d4b",
+      "bytes": 3064
+    },
+    {
+      "path": "tools/technical_dev/probe_dinov2_frozen_features.py",
+      "sha256": "dd758f62c9d4de2653e5cc839afe9f8f301369ea44ae24b63cd520e62eb9db0e",
+      "bytes": 9548
+    },
+    {
+      "path": "tools/technical_dev/probe_flair_frozen_features.py",
+      "sha256": "b4ea0c4d98c7caf3e7ec9d60d5fc719e27444228ea3241701caaba0918e2456b",
+      "bytes": 10609
+    },
+    {
+      "path": "tools/technical_dev/probe_openeye_frozen_validation.py",
+      "sha256": "ea7eb7bbdb4c13a06f433cea7e3e2f0e810eeda0769290a4c05c47b1acdae4f4",
+      "bytes": 6819
+    },
+    {
+      "path": "tools/technical_dev/probe_retfound_frozen_features.py",
+      "sha256": "e12d9913a01447ee7afb58587559c24f86b7310dfb690218cf79e85a2606aa00",
+      "bytes": 13198
+    },
+    {
+      "path": "tools/technical_dev/probe_urf_frozen_features.py",
+      "sha256": "4ee2f0246de9704aba85d41d24a67cde53338ab6407ac474302af54f729bf3fa",
+      "bytes": 12164
+    },
+    {
+      "path": "tools/technical_dev/probe_visionfm_frozen_features.py",
+      "sha256": "53c4c23149894324198e2b4891f60c49cfeb5275cd310087a1d691f26b974a78",
+      "bytes": 11793
+    },
+    {
+      "path": "tools/technical_dev/smoke_retfound_green_research_api.py",
+      "sha256": "22a4e9dd57902a5dd0aca508b5863c716d1ab7e4f18af84c08b5cf1284b1cf18",
+      "bytes": 4515
+    },
+    {
+      "path": "tools/technical_dev/train_retfound_green_adaptation.py",
+      "sha256": "3a1716d821078779f5b78600c89d67c516d390d9c798439587866583c5d833e2",
+      "bytes": 16402
+    },
+    {
+      "path": "tools/technical_dev/train_retfound_mae_adaptation.py",
+      "sha256": "80ccd209d2bf1ae3baf9b8341366dfc82ad127171dec4a0804e96fa30badb69d",
+      "bytes": 11920
+    },
+    {
+      "path": "tools/technical_dev/verify_frozen_manifest.py",
+      "sha256": "80ba180d6bb94d7a6d8bfaca6449b5232bf6772f589356f03348cdc66e2a141c",
+      "bytes": 3165
+    }
+  ],
+  "excluded_private_artifacts": [
+    "retinal source images and archives",
+    "row-level/patient-level prediction exports",
+    "adapted and base model checkpoint binaries",
+    "API bearer token and runtime secret files"
+  ],
+  "note": "Checkpoint hashes are recorded in the freeze card, but checkpoint binaries remain private and are excluded from the public release."
+}
