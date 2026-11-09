@@ -1,0 +1,68 @@
+{
+  "project": "Golden Horn Retina Eye-Finding and Tracking AI",
+  "scope": "Synthetic eye-image generation and pupil/eye tracking model; separate from retinal disease analysis; no motor commands",
+  "total_blocks": 24,
+  "block_hours": 2,
+  "planned_hours": 48,
+  "completed_blocks": 0,
+  "current_block": 1,
+  "current_status": "Planning specification complete; implementation not started",
+  "gpu_status": "No active compute",
+  "hardware_status": "No target camera hardware or device-domain eye frames currently available",
+  "compute_recommendation": "RTX 3050 Ti 4 GB is suitable for the initial compact-model prototype; L4 optional if throughput or memory becomes limiting",
+  "budget": {
+    "planned_try": null,
+    "hard_ceiling_try": null,
+    "spent_try": 0,
+    "status": "No project-specific budget set; no cloud VM launched"
+  },
+  "gates": [
+    {
+      "title": "No target camera hardware yet",
+      "status": "open",
+      "detail": "Development can use synthetic and terms-cleared public eye data. Device-specific performance cannot be established until camera footage and calibration exist."
+    },
+    {
+      "title": "Synthetic-to-device domain gap",
+      "status": "open",
+      "detail": "Synthetic validation is feasibility evidence only. The future sensor requires a held-out device-domain evaluation."
+    },
+    {
+      "title": "Budget and compute authorization",
+      "status": "open",
+      "detail": "No spend ceiling or new cloud authorization has been supplied for this separate project phase. No compute is running."
+    },
+    {
+      "title": "Eye-tracking dataset terms",
+      "status": "open",
+      "detail": "LPW is listed for non-commercial scientific use; check exact current terms for each public dataset before use."
+    }
+  ],
+  "blocks": [
+    {"id":1,"name":"Scope and software boundary","status":"planned","detail":"Create a separate eye-tracking package. Do not modify retinal diagnosis or add motor commands."},
+    {"id":2,"name":"Observation schema and coordinates","status":"planned","detail":"Specify eye side, pupil mask/center, confidence, timestamp, track state, and calibration-gated stereo outputs."},
+    {"id":3,"name":"Synthetic scene parameter envelope","status":"planned","detail":"Define appearance, gaze, pupil, illumination, occlusion, camera, and motion ranges; identify assumptions."},
+    {"id":4,"name":"Public eye-data and terms screen","status":"planned","detail":"Check LPW, NVGaze, OpenEDS, label fit, access route, and exact terms before use."},
+    {"id":5,"name":"Static eye-image generator","status":"planned","detail":"Generate deterministic images with pixel masks, pupil centers, camera metadata, and seeds."},
+    {"id":6,"name":"Temporal sequence generator","status":"planned","detail":"Add motion, blinks, saccades, occlusion, and dropped-frame events with ground-truth tracks."},
+    {"id":7,"name":"Generator label audit","status":"planned","detail":"Verify labels against rendered geometry and inspect a visual sample sheet."},
+    {"id":8,"name":"Leakage-safe data manifests","status":"planned","detail":"Split by generated subject, eye, scene seed, and camera configuration."},
+    {"id":9,"name":"Classical vision baseline","status":"planned","detail":"Build threshold/contour/ellipse detector and measure errors by condition."},
+    {"id":10,"name":"Compact model selection","status":"planned","detail":"Choose pupil-segmentation model and resolution using training/validation only."},
+    {"id":11,"name":"Training and checkpoint pipeline","status":"planned","detail":"Create reproducible config, resume, checkpoint, and loss logging."},
+    {"id":12,"name":"First synthetic model training","status":"planned","detail":"Train compact segmentation candidate; select checkpoint on validation only."},
+    {"id":13,"name":"Frame-level detector evaluation","status":"planned","detail":"Report center/mask accuracy, detections, false detections, and confidence calibration."},
+    {"id":14,"name":"Temporal tracking and eye identity","status":"planned","detail":"Track both eyes through blinks, brief occlusions, and identity changes."},
+    {"id":15,"name":"Simulated stereo geometry","status":"planned","detail":"Triangulate only with known synthetic calibration; reject invalid depth and measure reprojection error."},
+    {"id":16,"name":"Confidence and unknown-state behavior","status":"planned","detail":"Emit lost/uncertain state when eye evidence is insufficient."},
+    {"id":17,"name":"Domain-randomization ablation","status":"planned","detail":"Compare matched training with and without randomization groups."},
+    {"id":18,"name":"Public IR benchmark evaluation","status":"planned","detail":"Evaluate on subject-held-out data only when terms and label compatibility are verified."},
+    {"id":19,"name":"Permitted-data adaptation","status":"planned","detail":"Adapt using development data only; preserve source tags and keep test data untouched."},
+    {"id":20,"name":"Runtime profiling","status":"planned","detail":"Measure latency, memory, and throughput on the selected compute target."},
+    {"id":21,"name":"Integration contract","status":"planned","detail":"Publish observations/status to a separate controller interface; no motor commands."},
+    {"id":22,"name":"Synthetic failure stress tests","status":"planned","detail":"Exercise occlusion, blur, light shifts, out-of-frame eyes, camera mismatch, and timestamp gaps."},
+    {"id":23,"name":"Freeze and locked evaluation","status":"planned","detail":"Freeze model/config and run one held-out evaluation with uncertainty and failure breakdowns."},
+    {"id":24,"name":"Package and hardware handoff","status":"planned","detail":"Package model, manifests, report, model card, and future camera-calibration/data requirements."}
+  ],
+  "last_update": "2026-11-09 Europe/Istanbul"
+}
