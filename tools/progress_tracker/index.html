@@ -23,7 +23,7 @@
 <main>
   <header class="top"><div><h1>Golden Retina</h1><p class="sub">Research-model rerun · 10 active candidates · 34 blocks · spend-controlled</p></div><span class="live" id="live">● Live local tracker</span></header>
   <section class="cards">
-    <div class="card"><div class="label">Completed blocks</div><div class="value" id="completed">—</div><div class="small">of 38 planned</div></div>
+    <div class="card"><div class="label">Completed blocks</div><div class="value" id="completed">—</div><div class="small">of <span id="plannedTotal">—</span> active stages planned</div></div>
     <div class="card"><div class="label">Current block</div><div class="value" id="current">—</div><div class="small" id="currentName">Loading</div></div>
     <div class="card"><div class="label">GPU use</div><div class="value" id="gpu">—</div><div class="small">L4 only · RTX not authorized</div></div>
     <div class="card"><div class="label">Budget · hard ceiling</div><div class="value" id="budgetValue">— / ₺1,980</div><div class="small" id="spend">Estimated spend · loading</div><div class="budgetbar"><i id="budgetBar"></i></div><div class="small" id="budgetPercent">—% used · ₺1,900 planned · ₺80 reserve</div></div>
@@ -105,7 +105,7 @@ function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function stateFor(i){const b=(data.blocks||[]).find(x=>x.id===i+1);return b?.status||'planned'}
 function render(){if(!data)return;
  const done=(data.blocks||[]).filter(x=>x.status==='complete').length;
- const cur=data.current_block||1;if(lastCurrent!==cur){selected=cur-1;lastCurrent=cur}document.querySelector('#completed').textContent=done;document.querySelector('#current').textContent=`${cur} / ${data.total_blocks||stages.length}`;document.querySelector('#currentName').textContent=stages[cur-1]?.[0]||'';
+ const cur=data.current_block||1;if(lastCurrent!==cur){selected=cur-1;lastCurrent=cur}document.querySelector('#completed').textContent=done;document.querySelector('#plannedTotal').textContent=data.total_blocks||stages.length;document.querySelector('#current').textContent=`${cur} / ${data.total_blocks||stages.length}`;document.querySelector('#currentName').textContent=stages[cur-1]?.[0]||'';
  document.querySelector('#gpu').textContent=data.gpu_status||'Not started';
  const budget=data.budget||{};let spent=Number(budget.spent_try??budget.estimated_spent_try??0);if(budget.accrual_active&&budget.as_of_utc&&Number.isFinite(Number(budget.accrual_rate_try_per_hour))){spent+=Math.max(0,Date.now()-Date.parse(budget.as_of_utc))/3600000*Number(budget.accrual_rate_try_per_hour)}const limit=Number(budget.hard_total_try??budget.hard_ceiling_try??1980),planned=Number(budget.planned_total_try??budget.planned_ceiling_try??1900),reserve=Number(budget.protected_reserve_try??80),pct=limit?Math.min(100,spent/limit*100):0;
  document.querySelector('#budgetValue').textContent=`₺${spent.toFixed(2)} / ₺${limit.toLocaleString('en-US')}`;

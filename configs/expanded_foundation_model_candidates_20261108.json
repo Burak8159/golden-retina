@@ -32,8 +32,8 @@
       "family": "retinal masked-autoencoder foundation encoder",
       "official_source": "https://github.com/rmaphoh/RETFound",
       "terms_status": "Model card states CC BY-NC 4.0; account-level gated access is approved for Burak8159. Use only for noncommercial research; not for clinical/commercial deployment; do not redistribute the checkpoint.",
-      "availability_status": "Official checkpoint access verified and frozen-feature probe complete; starting last-block supervised adaptation on L4. Checkpoint remains private.",
-      "decision": "Continue noncommercial research adaptation. Frozen development metrics are below ConvNeXt for DR; fine-tuning is exploratory and validation-selected only."
+      "availability_status": "Official checkpoint access verified; frozen-feature probe and 12-epoch partial supervised adaptation complete. Best epoch 11; weights remain private.",
+      "decision": "Internal development comparator only. Validation remained below the ConvNeXt DR AUROC; no test or clinical validation."
     },
     {
       "name": "RETFound-DINOv2",
@@ -64,8 +64,8 @@
       "family": "multimodal retinal foundation encoder (fundus and OCT)",
       "official_source": "https://github.com/yukkai/UrFound",
       "terms_status": "Official repository exposes an MIT license for the code; verify the exact checkpoint and its training-data obligations separately.",
-      "availability_status": "Official public MIT checkpoint staged and hash verified; probe running on L4, 1,024/7,671 embeddings extracted; checkpoint reports epoch 199.",
-      "decision": "Add as a candidate; include only after checkpoint provenance and terms check."
+      "availability_status": "Frozen-feature probe complete on the current train/validation manifest; aggregate metrics are recorded.",
+      "decision": "Exploratory comparator. Exact source overlap remains unknown; no independent-transfer claim."
     },
     {
       "name": "OPENEye-FM",
@@ -80,8 +80,8 @@
       "family": "compact retinal self-supervised encoder",
       "official_source": "https://github.com/justinengelmann/RETFound_Green",
       "terms_status": "Public checkpoint; repository has a model-specific custom license. Read and record its exact restrictions before use; do not infer terms from RETFound or DINOv2.",
-      "availability_status": "Not downloaded: official custom licence excludes some industry-involved projects; eligibility for this sponsored/pilot project remains unresolved.",
-      "decision": "Blocked unless the project is demonstrably eligible or the licensor grants prior written permission; continue to next candidate."
+      "availability_status": "Internal non-commercial research adaptation, source-invariance seed comparison, quality ablation, and exploratory Zhejiang scoring complete. Frozen seed-1 comparator remains private.",
+      "decision": "Research comparator only. Source-invariance specificity was seed-sensitive; not for clinical or commercial deployment and no weight redistribution."
     },
     {
       "name": "EyeCLIP",

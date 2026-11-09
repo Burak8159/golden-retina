@@ -362,9 +362,9 @@
     },
     {
       "title": "Current-phase cloud spend control",
-      "status": "active",
-      "detail": "Spend limit is ₺1,900 planned plus ₺80 protected reserve, ₺1,980 absolute operational ceiling. No elapsed-time cap. Billing is delayed and alerts are advisory; estimate is tracked conservatively.",
-      "next_action": "Continue with the VM while projected cumulative spend remains within ₺1,900; stop before the hard ceiling and retain the ₺80 margin."
+      "status": "resolved",
+      "detail": "The Golden Retina L4 VM and research API are stopped. Estimated compute spend is frozen at ₺407.13; invoice settlement is delayed. The 150-GB disk remains and may continue to incur storage charges.",
+      "next_action": "No further compute in this phase. Reconcile the settled invoice separately; preserve the disk until the private-artifact retention decision."
     },
     {
       "title": "Disease-label coverage is narrower than all retinal diseases",
@@ -454,8 +454,8 @@
     "compute_scope": "One g2-standard-4 L4 VM only; RTX remains unauthorized.",
     "overrun_policy": "No elapsed-time stop. Track conservative cumulative spend and stop at ₺1,900 estimated spend to preserve ₺80; never exceed the ₺1,980 absolute ceiling. Billing alerts are advisory and billing is delayed."
   },
-  "last_update_utc": "2026-11-08T20:39:15+00:00",
-  "updated_at": "2026-11-08 20:38:31 UTC",
+  "last_update_utc": "2026-11-09T05:54:44+00:00",
+  "updated_at": "2026-11-09 08:54:44 Europe/Istanbul",
   "completed_blocks": 34,
   "post_mbrset_followup": {
     "title": "mBRSET follow-up remains separate",
@@ -466,7 +466,7 @@
     "hard_ceiling_try": 1475,
     "trigger": "Start only after Burak notifies that files arrived and this expanded 34-block program and its closeout checks are complete."
   },
-  "updated_at_utc": "2026-11-08T20:38:31+00:00",
+  "updated_at_utc": "2026-11-09T05:54:44+00:00",
   "removed_blocks": [
     {
       "id": 16,
