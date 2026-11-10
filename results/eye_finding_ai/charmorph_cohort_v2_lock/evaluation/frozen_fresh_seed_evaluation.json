@@ -1,0 +1,46 @@
+{
+  "status": "FRESH_SEED_SYNTHETIC_EVALUATION_ONLY",
+  "device": "cuda",
+  "n_samples": 24,
+  "seed_start": 816170,
+  "checkpoint_sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab",
+  "fresh_cohort_manifest_sha256": "688ee28ab41079acb23cdc81616993420f473f48bd7c01287205b0695e20fa6f",
+  "metrics": {
+    "class_dice": {
+      "iris": 0.8086218158066623,
+      "pupil": 0.8997271487039563
+    },
+    "class_iou": {
+      "iris": 0.6787280701754386,
+      "pupil": 0.8177309361438314
+    },
+    "foreground_macro_dice": 0.8541744822553092,
+    "pupil_detection_recall": {
+      "image_left": 1.0,
+      "image_right": 1.0
+    },
+    "pupil_open_frame_counts": {
+      "image_left": 24,
+      "image_right": 24
+    },
+    "pupil_center_error_px_at_input_size_mean": {
+      "image_left": 0.43371214624494314,
+      "image_right": 0.5394638491173586
+    },
+    "pupil_center_error_px_at_input_size_p95": {
+      "image_left": 0.7614237755537031,
+      "image_right": 1.170133680105209
+    },
+    "n_frames": 24
+  },
+  "selection_used_this_cohort": false,
+  "independent_identity_count": 1,
+  "limitations": [
+    "single synthetic base identity",
+    "held-out renderer seeds only",
+    "not person-held-out",
+    "not real-camera or real-world tracking validation",
+    "no physical eyeball-rotation or temporal tracking evaluation"
+  ],
+  "rejected": []
+}

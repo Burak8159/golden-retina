@@ -1,0 +1,1221 @@
+{
+  "status": "SYNTHETIC_TRANSLATION_SEQUENCE_EVALUATION_ONLY",
+  "device": "cuda",
+  "frames": 32,
+  "fresh_sequence_seed": 817001,
+  "checkpoint_sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab",
+  "frames_manifest_sha256": "cbc8579278e42c9ac229615d9668aa13ca2be21a5594776407260b68c132d3b4",
+  "pupil_detection_coverage": {
+    "left": 1.0,
+    "right": 1.0
+  },
+  "measurement_center_error_mean_model_px": {
+    "left": 1.2195300404627933,
+    "right": 1.048457806978477
+  },
+  "measurement_center_error_p95_model_px": {
+    "left": 2.492316686066984,
+    "right": 1.7894557339762942
+  },
+  "measurement_center_error_mean_render_px": {
+    "left": 1.626040053950391,
+    "right": 1.397943742637969
+  },
+  "alpha_beta_track_error_mean_model_px": {
+    "left": 1.1951575368468468,
+    "right": 1.0358999243696845
+  },
+  "synthetic_movement": "labelled iris/pupil geometry translation; not physical gaze rotation",
+  "limits": [
+    "single synthetic identity",
+    "fixed camera and face",
+    "no blink, head movement, hardware, or real humans",
+    "not a camera performance estimate"
+  ],
+  "trace": [
+    {
+      "frame": 0,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            153.42424242424244,
+            165.57575757575756
+          ],
+          "measurement_model_px": [
+            153.35294117647058,
+            165.5
+          ],
+          "measurement_confidence": 0.9542790651321411,
+          "track_state": "detected",
+          "track_model_px": [
+            153.35294117647058,
+            165.5
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            229.5,
+            165.64705882352942
+          ],
+          "measurement_model_px": [
+            229.30555555555554,
+            166.02777777777777
+          ],
+          "measurement_confidence": 0.8989522457122803,
+          "track_state": "detected",
+          "track_model_px": [
+            229.30555555555554,
+            166.02777777777777
+          ]
+        }
+      }
+    },
+    {
+      "frame": 1,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            153.82758620689654,
+            165.17241379310346
+          ],
+          "measurement_model_px": [
+            153.42857142857142,
+            165.42857142857142
+          ],
+          "measurement_confidence": 0.9463382363319397,
+          "track_state": "detected",
+          "track_model_px": [
+            153.40739495798317,
+            165.44857142857143
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            230.34375,
+            165.375
+          ],
+          "measurement_model_px": [
+            229.44117647058823,
+            165.73529411764707
+          ],
+          "measurement_confidence": 0.9295403957366943,
+          "track_state": "detected",
+          "track_model_px": [
+            229.40320261437907,
+            165.81718954248367
+          ]
+        }
+      }
+    },
+    {
+      "frame": 2,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            154.60714285714286,
+            164.39285714285714
+          ],
+          "measurement_model_px": [
+            154.0,
+            165.5
+          ],
+          "measurement_confidence": 0.9237192869186401,
+          "track_state": "detected",
+          "track_model_px": [
+            153.8374588235294,
+            165.48239999999998
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            231.23333333333335,
+            164.53333333333333
+          ],
+          "measurement_model_px": [
+            229.70967741935485,
+            165.5483870967742
+          ],
+          "measurement_confidence": 0.9456795454025269,
+          "track_state": "detected",
+          "track_model_px": [
+            229.6299402909551,
+            165.610548513599
+          ]
+        }
+      }
+    },
+    {
+      "frame": 3,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            155.44827586206895,
+            163.68965517241378
+          ],
+          "measurement_model_px": [
+            154.1891891891892,
+            165.40540540540542
+          ],
+          "measurement_confidence": 0.9000516533851624,
+          "track_state": "detected",
+          "track_model_px": [
+            154.12009951033386,
+            165.4265798918919
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            231.97058823529412,
+            163.91176470588235
+          ],
+          "measurement_model_px": [
+            230.9375,
+            165.59375
+          ],
+          "measurement_confidence": 0.8883180022239685,
+          "track_state": "detected",
+          "track_model_px": [
+            230.59021703900484,
+            165.5754044891419
+          ]
+        }
+      }
+    },
+    {
+      "frame": 4,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.31034482758622,
+            163.55172413793105
+          ],
+          "measurement_model_px": [
+            154.22857142857143,
+            165.57142857142858
+          ],
+          "measurement_confidence": 0.9179999232292175,
+          "track_state": "detected",
+          "track_model_px": [
+            154.23864846361118,
+            165.5270990233205
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            232.1818181818182,
+            163.6969696969697
+          ],
+          "measurement_model_px": [
+            232.03333333333333,
+            165.26666666666668
+          ],
+          "measurement_confidence": 0.9059003591537476,
+          "track_state": "detected",
+          "track_model_px": [
+            231.703659802218,
+            165.33299944403123
+          ]
+        }
+      }
+    },
+    {
+      "frame": 5,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.5,
+            163.66666666666666
+          ],
+          "measurement_model_px": [
+            154.33333333333334,
+            165.5
+          ],
+          "measurement_confidence": 0.8746139407157898,
+          "track_state": "detected",
+          "track_model_px": [
+            154.34565841635106,
+            165.5109085363892
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            232.7,
+            164.0
+          ],
+          "measurement_model_px": [
+            232.36666666666667,
+            165.36666666666667
+          ],
+          "measurement_confidence": 0.936653733253479,
+          "track_state": "detected",
+          "track_model_px": [
+            232.30817154089615,
+            165.3265127870219
+          ]
+        }
+      }
+    },
+    {
+      "frame": 6,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.76666666666668,
+            164.36666666666667
+          ],
+          "measurement_model_px": [
+            154.85294117647058,
+            165.47058823529412
+          ],
+          "measurement_confidence": 0.8933041095733643,
+          "track_state": "detected",
+          "track_model_px": [
+            154.7477668368942,
+            165.48345336363792
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            233.125,
+            164.5
+          ],
+          "measurement_model_px": [
+            232.84375,
+            165.65625
+          ],
+          "measurement_confidence": 0.9393855333328247,
+          "track_state": "detected",
+          "track_model_px": [
+            232.83029404784932,
+            165.53962114380244
+          ]
+        }
+      }
+    },
+    {
+      "frame": 7,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.93333333333334,
+            165.16666666666666
+          ],
+          "measurement_model_px": [
+            155.0810810810811,
+            165.54054054054055
+          ],
+          "measurement_confidence": 0.8917948007583618,
+          "track_state": "detected",
+          "track_model_px": [
+            155.04144582029807,
+            165.52407315451
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            233.34375,
+            165.375
+          ],
+          "measurement_model_px": [
+            233.12121212121212,
+            165.63636363636363
+          ],
+          "measurement_confidence": 0.9450169801712036,
+          "track_state": "detected",
+          "track_model_px": [
+            233.17841402941303,
+            165.6036339188744
+          ]
+        }
+      }
+    },
+    {
+      "frame": 8,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.96875,
+            165.59375
+          ],
+          "measurement_model_px": [
+            155.2,
+            165.82857142857142
+          ],
+          "measurement_confidence": 0.9142237305641174,
+          "track_state": "detected",
+          "track_model_px": [
+            155.21563919899802,
+            165.7454637171013
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            233.38709677419354,
+            165.70967741935485
+          ],
+          "measurement_model_px": [
+            233.35294117647058,
+            165.73529411764707
+          ],
+          "measurement_confidence": 0.9160369634628296,
+          "track_state": "detected",
+          "track_model_px": [
+            233.43358023872483,
+            165.69802419721694
+          ]
+        }
+      }
+    },
+    {
+      "frame": 9,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.89285714285714,
+            166.32142857142858
+          ],
+          "measurement_model_px": [
+            155.13888888888889,
+            166.05555555555554
+          ],
+          "measurement_confidence": 0.917682409286499,
+          "track_state": "detected",
+          "track_model_px": [
+            155.21791107319433,
+            165.98417887989064
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            233.46666666666667,
+            166.63333333333333
+          ],
+          "measurement_model_px": [
+            233.52941176470588,
+            166.14705882352942
+          ],
+          "measurement_confidence": 0.9080897569656372,
+          "track_state": "detected",
+          "track_model_px": [
+            233.61918335090087,
+            166.02688725065696
+          ]
+        }
+      }
+    },
+    {
+      "frame": 10,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.73333333333332,
+            167.2
+          ],
+          "measurement_model_px": [
+            155.16666666666666,
+            166.22222222222223
+          ],
+          "measurement_confidence": 0.9036936163902283,
+          "track_state": "detected",
+          "track_model_px": [
+            155.22590364848043,
+            166.18243939357805
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            233.125,
+            167.5
+          ],
+          "measurement_model_px": [
+            233.5,
+            166.5
+          ],
+          "measurement_confidence": 0.9328262805938721,
+          "track_state": "detected",
+          "track_model_px": [
+            233.63561229793072,
+            166.39231400433857
+          ]
+        }
+      }
+    },
+    {
+      "frame": 11,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.5,
+            167.66666666666666
+          ],
+          "measurement_model_px": [
+            156.0909090909091,
+            166.54545454545453
+          ],
+          "measurement_confidence": 0.9222770929336548,
+          "track_state": "detected",
+          "track_model_px": [
+            155.8841181979249,
+            166.47704486272087
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            232.61290322580646,
+            167.93548387096774
+          ],
+          "measurement_model_px": [
+            233.22222222222223,
+            166.91666666666666
+          ],
+          "measurement_confidence": 0.8715745210647583,
+          "track_state": "detected",
+          "track_model_px": [
+            233.41851443543015,
+            166.81186325467525
+          ]
+        }
+      }
+    },
+    {
+      "frame": 12,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            156.38709677419354,
+            167.93548387096774
+          ],
+          "measurement_model_px": [
+            156.0,
+            166.58823529411765
+          ],
+          "measurement_confidence": 0.9001848697662354,
+          "track_state": "detected",
+          "track_model_px": [
+            156.03605026919226,
+            166.60128208235568
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            232.1764705882353,
+            168.1764705882353
+          ],
+          "measurement_model_px": [
+            232.63333333333333,
+            166.63333333333333
+          ],
+          "measurement_confidence": 0.9311039447784424,
+          "track_state": "detected",
+          "track_model_px": [
+            232.90232027981673,
+            166.74210559068814
+          ]
+        }
+      }
+    },
+    {
+      "frame": 13,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            155.53333333333333,
+            167.53333333333333
+          ],
+          "measurement_model_px": [
+            155.0,
+            166.5
+          ],
+          "measurement_confidence": 0.9018858075141907,
+          "track_state": "detected",
+          "track_model_px": [
+            155.35282320607635,
+            166.57045160597065
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            231.79411764705884,
+            168.0
+          ],
+          "measurement_model_px": [
+            232.13333333333333,
+            166.83333333333334
+          ],
+          "measurement_confidence": 0.8941767811775208,
+          "track_state": "detected",
+          "track_model_px": [
+            232.35474800480762,
+            166.84916988359498
+          ]
+        }
+      }
+    },
+    {
+      "frame": 14,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            154.60714285714286,
+            167.39285714285714
+          ],
+          "measurement_model_px": [
+            154.5151515151515,
+            166.3939393939394
+          ],
+          "measurement_confidence": 0.9310990571975708,
+          "track_state": "detected",
+          "track_model_px": [
+            154.75597700634077,
+            166.4741831792639
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            231.16129032258064,
+            167.4516129032258
+          ],
+          "measurement_model_px": [
+            231.0,
+            166.59375
+          ],
+          "measurement_confidence": 0.9055691361427307,
+          "track_state": "detected",
+          "track_model_px": [
+            231.35000142036918,
+            166.70411403756702
+          ]
+        }
+      }
+    },
+    {
+      "frame": 15,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            153.89285714285714,
+            166.32142857142858
+          ],
+          "measurement_model_px": [
+            153.83783783783784,
+            166.0810810810811
+          ],
+          "measurement_confidence": 0.9017699956893921,
+          "track_state": "detected",
+          "track_model_px": [
+            154.06266214415868,
+            166.2091310288761
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            230.4193548387097,
+            166.5483870967742
+          ],
+          "measurement_model_px": [
+            230.0,
+            166.35294117647058
+          ],
+          "measurement_confidence": 0.9178912043571472,
+          "track_state": "detected",
+          "track_model_px": [
+            230.29267214946736,
+            166.4724578017273
+          ]
+        }
+      }
+    },
+    {
+      "frame": 16,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            153.42424242424244,
+            165.57575757575756
+          ],
+          "measurement_model_px": [
+            153.35294117647058,
+            165.5
+          ],
+          "measurement_confidence": 0.9535292387008667,
+          "track_state": "detected",
+          "track_model_px": [
+            153.48343649755193,
+            165.69605005674194
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            229.5,
+            165.64705882352942
+          ],
+          "measurement_model_px": [
+            229.30555555555554,
+            166.02777777777777
+          ],
+          "measurement_confidence": 0.8989996314048767,
+          "track_state": "detected",
+          "track_model_px": [
+            229.44979240970005,
+            166.15435374859229
+          ]
+        }
+      }
+    },
+    {
+      "frame": 17,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            152.67857142857142,
+            165.10714285714286
+          ],
+          "measurement_model_px": [
+            152.6764705882353,
+            165.58823529411765
+          ],
+          "measurement_confidence": 0.9576441645622253,
+          "track_state": "detected",
+          "track_model_px": [
+            152.81331524159964,
+            165.58454878723037
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            228.78378378378378,
+            165.32432432432432
+          ],
+          "measurement_model_px": [
+            229.0,
+            165.73529411764707
+          ],
+          "measurement_confidence": 0.9241496324539185,
+          "track_state": "detected",
+          "track_model_px": [
+            228.9707081859021,
+            165.83444422309006
+          ]
+        }
+      }
+    },
+    {
+      "frame": 18,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            151.68965517241378,
+            164.44827586206895
+          ],
+          "measurement_model_px": [
+            151.77777777777777,
+            165.27777777777777
+          ],
+          "measurement_confidence": 0.8970825672149658,
+          "track_state": "detected",
+          "track_model_px": [
+            151.9567273218653,
+            165.33038886110438
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            228.23333333333335,
+            164.53333333333333
+          ],
+          "measurement_model_px": [
+            228.14705882352942,
+            165.3235294117647
+          ],
+          "measurement_confidence": 0.900469958782196,
+          "track_state": "detected",
+          "track_model_px": [
+            228.22713364643553,
+            165.43253495084323
+          ]
+        }
+      }
+    },
+    {
+      "frame": 19,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            151.0,
+            163.70967741935485
+          ],
+          "measurement_model_px": [
+            151.0,
+            165.1
+          ],
+          "measurement_confidence": 0.9061954021453857,
+          "track_state": "detected",
+          "track_model_px": [
+            151.12825077728567,
+            165.12280630845686
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            227.5,
+            164.0
+          ],
+          "measurement_model_px": [
+            227.0,
+            165.25714285714287
+          ],
+          "measurement_confidence": 0.889403223991394,
+          "track_state": "detected",
+          "track_model_px": [
+            227.18023845077872,
+            165.25476114903384
+          ]
+        }
+      }
+    },
+    {
+      "frame": 20,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            150.5,
+            163.5
+          ],
+          "measurement_model_px": [
+            150.7,
+            165.0
+          ],
+          "measurement_confidence": 0.9022627472877502,
+          "track_state": "detected",
+          "track_model_px": [
+            150.65975722043765,
+            164.98903418436245
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            226.55172413793105,
+            163.68965517241378
+          ],
+          "measurement_model_px": [
+            226.5151515151515,
+            165.3939393939394
+          ],
+          "measurement_confidence": 0.9334728121757507,
+          "track_state": "detected",
+          "track_model_px": [
+            226.5091787347793,
+            165.30385906431817
+          ]
+        }
+      }
+    },
+    {
+      "frame": 21,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            150.29032258064515,
+            163.70967741935485
+          ],
+          "measurement_model_px": [
+            150.33333333333334,
+            165.0
+          ],
+          "measurement_confidence": 0.8781174421310425,
+          "track_state": "detected",
+          "track_model_px": [
+            150.2710178692502,
+            164.953332520118
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            225.84375,
+            163.90625
+          ],
+          "measurement_model_px": [
+            226.1764705882353,
+            165.47058823529412
+          ],
+          "measurement_confidence": 0.9308664202690125,
+          "track_state": "detected",
+          "track_model_px": [
+            226.07838739177936,
+            165.38720649911258
+          ]
+        }
+      }
+    },
+    {
+      "frame": 22,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            149.9,
+            164.33333333333334
+          ],
+          "measurement_model_px": [
+            150.06060606060606,
+            165.42424242424244
+          ],
+          "measurement_confidence": 0.933282732963562,
+          "track_state": "detected",
+          "track_model_px": [
+            149.97577768880737,
+            165.25625739636524
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            225.68965517241378,
+            164.44827586206895
+          ],
+          "measurement_model_px": [
+            226.0,
+            165.5
+          ],
+          "measurement_confidence": 0.9403513669967651,
+          "track_state": "detected",
+          "track_model_px": [
+            225.8464003036429,
+            165.4450613292323
+          ]
+        }
+      }
+    },
+    {
+      "frame": 23,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            149.67857142857142,
+            165.10714285714286
+          ],
+          "measurement_model_px": [
+            149.64705882352942,
+            165.5
+          ],
+          "measurement_confidence": 0.9583855867385864,
+          "track_state": "detected",
+          "track_model_px": [
+            149.608928967076,
+            165.42249942072027
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            225.5,
+            165.35294117647058
+          ],
+          "measurement_model_px": [
+            225.64705882352942,
+            165.61764705882354
+          ],
+          "measurement_confidence": 0.9424681067466736,
+          "track_state": "detected",
+          "track_model_px": [
+            225.55190222332303,
+            165.55475675134159
+          ]
+        }
+      }
+    },
+    {
+      "frame": 24,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            149.58064516129033,
+            165.5483870967742
+          ],
+          "measurement_model_px": [
+            149.83333333333334,
+            165.66666666666666
+          ],
+          "measurement_confidence": 0.925934374332428,
+          "track_state": "detected",
+          "track_model_px": [
+            149.64642974908259,
+            165.60144728022442
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            225.5,
+            165.64705882352942
+          ],
+          "measurement_model_px": [
+            225.8857142857143,
+            165.74285714285713
+          ],
+          "measurement_confidence": 0.9099096655845642,
+          "track_state": "detected",
+          "track_model_px": [
+            225.65649974963958,
+            165.6856851792335
+          ]
+        }
+      }
+    },
+    {
+      "frame": 25,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            149.53333333333333,
+            166.46666666666667
+          ],
+          "measurement_model_px": [
+            149.86111111111111,
+            166.0
+          ],
+          "measurement_confidence": 0.9129845499992371,
+          "track_state": "detected",
+          "track_model_px": [
+            149.70683454152453,
+            165.90198778271636
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            225.5,
+            166.5
+          ],
+          "measurement_model_px": [
+            226.14705882352942,
+            165.6764705882353
+          ],
+          "measurement_confidence": 0.8963763117790222,
+          "track_state": "detected",
+          "track_model_px": [
+            225.91062945000706,
+            165.6836943338953
+          ]
+        }
+      }
+    },
+    {
+      "frame": 26,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            150.0,
+            167.29032258064515
+          ],
+          "measurement_model_px": [
+            150.03125,
+            166.15625
+          ],
+          "measurement_confidence": 0.9479578733444214,
+          "track_state": "detected",
+          "track_model_px": [
+            149.87093213454213,
+            166.11432107817947
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            225.68965517241378,
+            167.44827586206895
+          ],
+          "measurement_model_px": [
+            226.3125,
+            166.25
+          ],
+          "measurement_confidence": 0.9021331071853638,
+          "track_state": "detected",
+          "track_model_px": [
+            226.13873211293236,
+            166.0949222743656
+          ]
+        }
+      }
+    },
+    {
+      "frame": 27,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            150.375,
+            167.65625
+          ],
+          "measurement_model_px": [
+            150.5625,
+            166.3125
+          ],
+          "measurement_confidence": 0.9329577088356018,
+          "track_state": "detected",
+          "track_model_px": [
+            150.32503031906032,
+            166.29298302840044
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            225.93548387096774,
+            168.06451612903226
+          ],
+          "measurement_model_px": [
+            226.5483870967742,
+            166.41935483870967
+          ],
+          "measurement_confidence": 0.9436286687850952,
+          "track_state": "detected",
+          "track_model_px": [
+            226.4002424301597,
+            166.35681401766973
+          ]
+        }
+      }
+    },
+    {
+      "frame": 28,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            150.6,
+            167.83333333333334
+          ],
+          "measurement_model_px": [
+            150.82857142857142,
+            166.45714285714286
+          ],
+          "measurement_confidence": 0.8998731374740601,
+          "track_state": "detected",
+          "track_model_px": [
+            150.68174438824718,
+            166.45027394706108
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            226.63333333333333,
+            168.23333333333332
+          ],
+          "measurement_model_px": [
+            226.5,
+            166.5
+          ],
+          "measurement_confidence": 0.9359068870544434,
+          "track_state": "detected",
+          "track_model_px": [
+            226.46232975596422,
+            166.4982147532903
+          ]
+        }
+      }
+    },
+    {
+      "frame": 29,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            151.1,
+            167.66666666666666
+          ],
+          "measurement_model_px": [
+            151.15625,
+            166.625
+          ],
+          "measurement_confidence": 0.9336819052696228,
+          "track_state": "detected",
+          "track_model_px": [
+            151.04104522549997,
+            166.6162715727563
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            227.33333333333334,
+            167.9
+          ],
+          "measurement_model_px": [
+            227.83333333333334,
+            166.66666666666666
+          ],
+          "measurement_confidence": 0.9042069315910339,
+          "track_state": "detected",
+          "track_model_px": [
+            227.44574144623525,
+            166.65809259873762
+          ]
+        }
+      }
+    },
+    {
+      "frame": 30,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            151.60714285714286,
+            167.39285714285714
+          ],
+          "measurement_model_px": [
+            152.3939393939394,
+            166.21212121212122
+          ],
+          "measurement_confidence": 0.9322817325592041,
+          "track_state": "detected",
+          "track_model_px": [
+            152.0512185874871,
+            166.36687472903722
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            228.23333333333335,
+            167.36666666666667
+          ],
+          "measurement_model_px": [
+            228.13888888888889,
+            166.47222222222223
+          ],
+          "measurement_confidence": 0.8953268527984619,
+          "track_state": "detected",
+          "track_model_px": [
+            228.00311142144682,
+            166.56423024633153
+          ]
+        }
+      }
+    },
+    {
+      "frame": 31,
+      "eyes": {
+        "left": {
+          "truth_model_px": [
+            152.67857142857142,
+            166.32142857142858
+          ],
+          "measurement_model_px": [
+            152.74285714285713,
+            165.82857142857142
+          ],
+          "measurement_confidence": 0.9182775020599365,
+          "track_state": "detected",
+          "track_model_px": [
+            152.64012323709665,
+            165.99612720593348
+          ]
+        },
+        "right": {
+          "truth_model_px": [
+            228.85294117647058,
+            166.61764705882354
+          ],
+          "measurement_model_px": [
+            229.16216216216216,
+            166.0810810810811
+          ],
+          "measurement_confidence": 0.8985844254493713,
+          "track_state": "detected",
+          "track_model_px": [
+            228.91765616605355,
+            166.2416058821787
+          ]
+        }
+      }
+    }
+  ]
+}

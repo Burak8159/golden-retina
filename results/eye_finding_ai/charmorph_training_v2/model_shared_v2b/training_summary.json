@@ -1,0 +1,27 @@
+{
+  "status": "SYNTHETIC_SINGLE_ASSET_PIPELINE_SMOKE",
+  "device": "cuda",
+  "manifest_audit": {
+    "n_rows": 64,
+    "split_rows": {
+      "train": 45,
+      "validation": 10,
+      "test": 9
+    },
+    "split_sample_overlap": {
+      "train_validation": 0,
+      "train_test": 0,
+      "validation_test": 0
+    },
+    "shared_base_identity": true,
+    "manifest_sha256": "e152061a180c4a67ab38282daeb0e253edf4e3c02e132cad20c909e2e45b0104"
+  },
+  "dataset_identity_count": 1,
+  "split_scope": "held-out morph seeds from one base asset; not person-held-out",
+  "best_epoch": 24,
+  "best_validation_macro_dice": 0.8532184313160502,
+  "epochs_run": 28,
+  "elapsed_min": 0.79,
+  "test_used_for_selection": false,
+  "checkpoint": "/data/golden-retina/results/charmorph_training_v2/model_shared_v2b/best_checkpoint.pt"
+}

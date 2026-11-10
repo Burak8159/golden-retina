@@ -1,0 +1,16 @@
+{
+  "status": "SYNTHETIC_FIXED_SEQUENCE_BASELINE_ONLY",
+  "baseline": "fixed mean per-eye pupil coordinate from train masks, no image or temporal input",
+  "results": {
+    "left": {
+      "mean_model_px": 3.087467428730066,
+      "p95_model_px": 5.123662344918513,
+      "n": 32
+    },
+    "right": {
+      "mean_model_px": 3.2119480381193046,
+      "p95_model_px": 5.255647745783355,
+      "n": 32
+    }
+  }
+}

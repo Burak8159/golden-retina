@@ -1,0 +1,926 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 1.4007034699122112,
+    "validation": {
+      "class_dice": {
+        "iris": 0.02142001649082472,
+        "pupil": 0.014694508894044857
+      },
+      "class_iou": {
+        "iris": 0.010825954305286436,
+        "pupil": 0.007401636151149201
+      },
+      "foreground_macro_dice": 0.018057262692434788,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 127.88959350585938,
+        "image_right": 84.04479446411133
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 158.4157012939453,
+        "image_right": 113.3391143798828
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.05
+  },
+  {
+    "epoch": 2,
+    "train_loss": 1.2299660444259644,
+    "validation": {
+      "class_dice": {
+        "iris": 0.1028909396828634,
+        "pupil": 0.10136986301369863
+      },
+      "class_iou": {
+        "iris": 0.05423564824768867,
+        "pupil": 0.05339105339105339
+      },
+      "foreground_macro_dice": 0.10213040134828102,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 81.2764820098877,
+        "image_right": 52.7767617225647
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 139.52270278930663,
+        "image_right": 174.00338287353514
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.08
+  },
+  {
+    "epoch": 3,
+    "train_loss": 1.136028031508128,
+    "validation": {
+      "class_dice": {
+        "iris": 0.15489932346977697,
+        "pupil": 0.22833386632555164
+      },
+      "class_iou": {
+        "iris": 0.08395169187248396,
+        "pupil": 0.12888086642599278
+      },
+      "foreground_macro_dice": 0.1916165948976643,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 41.76326856613159,
+        "image_right": 39.66709671020508
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 117.40866966247559,
+        "image_right": 149.4503517150879
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.11
+  },
+  {
+    "epoch": 4,
+    "train_loss": 1.076184074083964,
+    "validation": {
+      "class_dice": {
+        "iris": 0.2144306157135808,
+        "pupil": 0.42672811059907834
+      },
+      "class_iou": {
+        "iris": 0.12009088955077225,
+        "pupil": 0.27123608670181604
+      },
+      "foreground_macro_dice": 0.32057936315632957,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 31.215310621261597,
+        "image_right": 12.498968380689622
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 98.21575622558592,
+        "image_right": 57.447614765167174
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.13
+  },
+  {
+    "epoch": 5,
+    "train_loss": 1.0370227893193562,
+    "validation": {
+      "class_dice": {
+        "iris": 0.2771605348945513,
+        "pupil": 0.624409979770735
+      },
+      "class_iou": {
+        "iris": 0.16087426629595306,
+        "pupil": 0.453921568627451
+      },
+      "foreground_macro_dice": 0.45078525733264313,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 21.35075591802597,
+        "image_right": 2.6838601410388945
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 81.57547607421874,
+        "image_right": 7.338218557834616
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.16
+  },
+  {
+    "epoch": 6,
+    "train_loss": 1.010644406080246,
+    "validation": {
+      "class_dice": {
+        "iris": 0.37190007293946026,
+        "pupil": 0.6386349786715417
+      },
+      "class_iou": {
+        "iris": 0.22842582740661926,
+        "pupil": 0.4691136974037601
+      },
+      "foreground_macro_dice": 0.505267525805501,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 9.129083371162414,
+        "image_right": 2.272683250904083
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 40.41277475357054,
+        "image_right": 2.8828263163566588
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.19
+  },
+  {
+    "epoch": 7,
+    "train_loss": 0.9889685412247976,
+    "validation": {
+      "class_dice": {
+        "iris": 0.4362482442906934,
+        "pupil": 0.7193098871930989
+      },
+      "class_iou": {
+        "iris": 0.27897538256819693,
+        "pupil": 0.5616580310880829
+      },
+      "foreground_macro_dice": 0.5777790657418962,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 9.266434246301651,
+        "image_right": 1.558999639749527
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 43.22313518524169,
+        "image_right": 2.2493876695632933
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.22
+  },
+  {
+    "epoch": 8,
+    "train_loss": 0.9705152213573456,
+    "validation": {
+      "class_dice": {
+        "iris": 0.48134723693748954,
+        "pupil": 0.7621951219512195
+      },
+      "class_iou": {
+        "iris": 0.31695674524491446,
+        "pupil": 0.6157635467980296
+      },
+      "foreground_macro_dice": 0.6217711794443546,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 6.630631458759308,
+        "image_right": 2.2983097791671754
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 28.229677295684795,
+        "image_right": 4.180760228633877
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.24
+  },
+  {
+    "epoch": 9,
+    "train_loss": 0.9565518995126089,
+    "validation": {
+      "class_dice": {
+        "iris": 0.5156513363833374,
+        "pupil": 0.7862266857962698
+      },
+      "class_iou": {
+        "iris": 0.34739232703382267,
+        "pupil": 0.6477541371158393
+      },
+      "foreground_macro_dice": 0.6509390110898036,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 2.2406234592199326,
+        "image_right": 1.8558052897453308
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 6.830303049087521,
+        "image_right": 2.9698982000350944
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.27
+  },
+  {
+    "epoch": 10,
+    "train_loss": 0.9438338776429495,
+    "validation": {
+      "class_dice": {
+        "iris": 0.5313894300257651,
+        "pupil": 0.8067463106113844
+      },
+      "class_iou": {
+        "iris": 0.36183140778776207,
+        "pupil": 0.6760895170789164
+      },
+      "foreground_macro_dice": 0.6690678703185747,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.7784322127699852,
+        "image_right": 1.1801727294921875
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 1.3481524646282192,
+        "image_right": 2.1831465363502502
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.3
+  },
+  {
+    "epoch": 11,
+    "train_loss": 0.9321917394797007,
+    "validation": {
+      "class_dice": {
+        "iris": 0.5481174259607284,
+        "pupil": 0.8166189111747851
+      },
+      "class_iou": {
+        "iris": 0.3775218710944474,
+        "pupil": 0.6900726392251816
+      },
+      "foreground_macro_dice": 0.6823681685677567,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.7918291866779328,
+        "image_right": 1.0295884668827058
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 1.1775383234024046,
+        "image_right": 1.4357199549674986
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.32
+  },
+  {
+    "epoch": 12,
+    "train_loss": 0.9215966562430064,
+    "validation": {
+      "class_dice": {
+        "iris": 0.5635784443854526,
+        "pupil": 0.8417213712618526
+      },
+      "class_iou": {
+        "iris": 0.3923489188689706,
+        "pupil": 0.7267002518891688
+      },
+      "foreground_macro_dice": 0.7026499078236526,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.718821057677269,
+        "image_right": 0.7513898104429245
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.9901967436075209,
+        "image_right": 1.0801490694284435
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.35
+  },
+  {
+    "epoch": 13,
+    "train_loss": 0.9103278517723083,
+    "validation": {
+      "class_dice": {
+        "iris": 0.6234464714005379,
+        "pupil": 0.864406779661017
+      },
+      "class_iou": {
+        "iris": 0.4529039070749736,
+        "pupil": 0.7611940298507462
+      },
+      "foreground_macro_dice": 0.7439266255307775,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.6092132478952408,
+        "image_right": 0.5859247535467148
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.9123832941055297,
+        "image_right": 1.057388722896576
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.38
+  },
+  {
+    "epoch": 14,
+    "train_loss": 0.9003661870956421,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7130984042553191,
+        "pupil": 0.8701700154559505
+      },
+      "class_iou": {
+        "iris": 0.5541203823301473,
+        "pupil": 0.7701778385772914
+      },
+      "foreground_macro_dice": 0.7916342098556348,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.5002980411052704,
+        "image_right": 0.5977857649326325
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.6911664485931397,
+        "image_right": 0.9956922352313994
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.4
+  },
+  {
+    "epoch": 15,
+    "train_loss": 0.890904019276301,
+    "validation": {
+      "class_dice": {
+        "iris": 0.734070108789501,
+        "pupil": 0.8641063515509602
+      },
+      "class_iou": {
+        "iris": 0.5798663211021688,
+        "pupil": 0.7607282184655396
+      },
+      "foreground_macro_dice": 0.7990882301702306,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.49173359721899035,
+        "image_right": 0.5296052023768425
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.7437167227268219,
+        "image_right": 0.9408665895462035
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.43
+  },
+  {
+    "epoch": 16,
+    "train_loss": 0.880324920018514,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7509377998778679,
+        "pupil": 0.8773584905660378
+      },
+      "class_iou": {
+        "iris": 0.6012012850956837,
+        "pupil": 0.7815126050420168
+      },
+      "foreground_macro_dice": 0.8141481452219528,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.48423034101724627,
+        "image_right": 0.536852840334177
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.71287182867527,
+        "image_right": 1.1082225352525708
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.46
+  },
+  {
+    "epoch": 17,
+    "train_loss": 0.870853453874588,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7577014740930356,
+        "pupil": 0.8720748829953198
+      },
+      "class_iou": {
+        "iris": 0.609918999573682,
+        "pupil": 0.7731673582295989
+      },
+      "foreground_macro_dice": 0.8148881785441777,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.4913312286138535,
+        "image_right": 0.5801073223352432
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.7498798042535781,
+        "image_right": 1.0359140157699585
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.49
+  },
+  {
+    "epoch": 18,
+    "train_loss": 0.8615905046463013,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7600323188796122,
+        "pupil": 0.8552727272727273
+      },
+      "class_iou": {
+        "iris": 0.6129452649869679,
+        "pupil": 0.747141041931385
+      },
+      "foreground_macro_dice": 0.8076525230761697,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.48882010132074355,
+        "image_right": 0.5831027418375015
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.7786855816841125,
+        "image_right": 1.0100036859512327
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.52
+  },
+  {
+    "epoch": 19,
+    "train_loss": 0.85200434923172,
+    "validation": {
+      "class_dice": {
+        "iris": 0.767577250335871,
+        "pupil": 0.8805513016845329
+      },
+      "class_iou": {
+        "iris": 0.6228197674418605,
+        "pupil": 0.786593707250342
+      },
+      "foreground_macro_dice": 0.8240642760102019,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.43604922443628313,
+        "image_right": 0.51636803150177
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.6921528100967407,
+        "image_right": 0.8948144316673279
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.54
+  },
+  {
+    "epoch": 20,
+    "train_loss": 0.8418092926343282,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7930939480209386,
+        "pupil": 0.8885350318471338
+      },
+      "class_iou": {
+        "iris": 0.6571298128138792,
+        "pupil": 0.7994269340974212
+      },
+      "foreground_macro_dice": 0.8408144899340362,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.4821619912981987,
+        "image_right": 0.5024353126063943
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.8551833182573317,
+        "image_right": 1.3400248587131496
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.57
+  },
+  {
+    "epoch": 21,
+    "train_loss": 0.8321266074975332,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7756277562775628,
+        "pupil": 0.8813291139240507
+      },
+      "class_iou": {
+        "iris": 0.6334901499558954,
+        "pupil": 0.7878359264497878
+      },
+      "foreground_macro_dice": 0.8284784351008068,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.4684034585952759,
+        "image_right": 0.5287124902009964
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.6939131498336791,
+        "image_right": 0.8045798659324646
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.6
+  },
+  {
+    "epoch": 22,
+    "train_loss": 0.8230152328809103,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7978040383362799,
+        "pupil": 0.8822170900692841
+      },
+      "class_iou": {
+        "iris": 0.6636222910216718,
+        "pupil": 0.7892561983471075
+      },
+      "foreground_macro_dice": 0.840010564202782,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.38144781440496445,
+        "image_right": 0.5304671406745911
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.6521603554487228,
+        "image_right": 1.0262815207242961
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.63
+  },
+  {
+    "epoch": 23,
+    "train_loss": 0.8142552077770233,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7828947368421053,
+        "pupil": 0.8757668711656442
+      },
+      "class_iou": {
+        "iris": 0.6432432432432432,
+        "pupil": 0.7789904502046384
+      },
+      "foreground_macro_dice": 0.8293308040038747,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.44362171441316606,
+        "image_right": 0.480934739112854
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.7224124819040297,
+        "image_right": 0.8692301064729686
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.65
+  },
+  {
+    "epoch": 24,
+    "train_loss": 0.8046504855155945,
+    "validation": {
+      "class_dice": {
+        "iris": 0.799705313564785,
+        "pupil": 0.9067315490673155
+      },
+      "class_iou": {
+        "iris": 0.6662574804357834,
+        "pupil": 0.8293768545994066
+      },
+      "foreground_macro_dice": 0.8532184313160502,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.3397679053246975,
+        "image_right": 0.41445221602916715
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.6743784070014951,
+        "image_right": 1.0622117251157759
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.68
+  },
+  {
+    "epoch": 25,
+    "train_loss": 0.7967834075291952,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7990024016257159,
+        "pupil": 0.903739061256961
+      },
+      "class_iou": {
+        "iris": 0.6652822642670358,
+        "pupil": 0.8243831640058055
+      },
+      "foreground_macro_dice": 0.8513707314413385,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.3458401083946228,
+        "image_right": 0.3700521394610405
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.6639381885528564,
+        "image_right": 0.7811883687973022
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.71
+  },
+  {
+    "epoch": 26,
+    "train_loss": 0.787843773762385,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7939198526024873,
+        "pupil": 0.8825396825396825
+      },
+      "class_iou": {
+        "iris": 0.6582645890620226,
+        "pupil": 0.7897727272727273
+      },
+      "foreground_macro_dice": 0.8382297675710849,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.4528782367706299,
+        "image_right": 0.5035266757011414
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.7778121322393418,
+        "image_right": 0.7689211457967756
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.73
+  },
+  {
+    "epoch": 27,
+    "train_loss": 0.7798366447289785,
+    "validation": {
+      "class_dice": {
+        "iris": 0.807775785599698,
+        "pupil": 0.8803030303030303
+      },
+      "class_iou": {
+        "iris": 0.6775368054456229,
+        "pupil": 0.7861975642760487
+      },
+      "foreground_macro_dice": 0.8440394079513641,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.4120901972055435,
+        "image_right": 0.46326633244752885
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.9194591999053949,
+        "image_right": 1.2017893016338348
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.76
+  },
+  {
+    "epoch": 28,
+    "train_loss": 0.7711937725543976,
+    "validation": {
+      "class_dice": {
+        "iris": 0.7991772625280479,
+        "pupil": 0.8848758465011287
+      },
+      "class_iou": {
+        "iris": 0.6655247586421675,
+        "pupil": 0.7935222672064778
+      },
+      "foreground_macro_dice": 0.8420265545145883,
+      "pupil_detection_recall": {
+        "image_left": 1.0,
+        "image_right": 1.0
+      },
+      "pupil_open_frame_counts": {
+        "image_left": 10,
+        "image_right": 10
+      },
+      "pupil_center_error_px_at_input_size_mean": {
+        "image_left": 0.30307870022952554,
+        "image_right": 0.42955522835254667
+      },
+      "pupil_center_error_px_at_input_size_p95": {
+        "image_left": 0.5197137519717216,
+        "image_right": 0.6583392024040221
+      },
+      "n_frames": 10
+    },
+    "elapsed_min": 0.79
+  }
+]
