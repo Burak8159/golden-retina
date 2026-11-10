@@ -1,0 +1,11 @@
+{
+  "status": "SYNTHETIC_INPUT_RUNTIME_PROFILE",
+  "device": "cuda",
+  "warmup_runs": 100,
+  "measured_runs": 500,
+  "batch_size": 1,
+  "latency_ms_median": 2.3396389999561507,
+  "latency_ms_p95": 2.4705127000174794,
+  "throughput_fps_median_inverse": 427.41636637906186,
+  "peak_allocated_gpu_mib": 11.380859375
+}

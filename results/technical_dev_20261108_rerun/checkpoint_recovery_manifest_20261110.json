@@ -1,0 +1,231 @@
+{
+  "recovery_date": "2026-11-10",
+  "source_project": "golden-retina-dev-20261107",
+  "source_zone": "us-west1-a",
+  "original_vm": "golden-retina-l4-01",
+  "original_vm_state_after_recovery": "TERMINATED; original boot disk preserved",
+  "source_snapshot": "retfound-rescue-20261110",
+  "method": "Stopped boot disk snapshot mounted read-only on temporary recovery VM; bundles downloaded over IAP; both archive hashes matched their source values.",
+  "bundles": [
+    {
+      "bundle": "disease_training_runs",
+      "local_directory": "external/recovered_l4_20261108/",
+      "archive_size_bytes": 1955279630,
+      "archive_sha256_verified": "95903c2cc5b74c26efeef8829ff231f333a23f0600e0c190456c7f8843889bbb",
+      "payload_file_count": 100,
+      "payload_bytes": 2102495068,
+      "local_all_files_sha256_inventory": "external/recovered_l4_20261108/RECOVERY_SHA256SUMS.json"
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "local_directory": "external/recovered_l4_aux_20261110/",
+      "archive_size_bytes": 1258974656,
+      "archive_sha256_verified": "ca577c2136de3aa4d57c89baf4e56714adfce1848f8a895e2a579e03cdd1e8c3",
+      "payload_file_count": 8167,
+      "payload_bytes": 1442497093,
+      "local_all_files_sha256_inventory": "external/recovered_l4_aux_20261110/RECOVERY_SHA256SUMS.json"
+    }
+  ],
+  "total_payload_files": 8267,
+  "total_payload_bytes": 3544992161,
+  "model_artifact_count": 19,
+  "model_artifacts": [
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_adaptation/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87402596,
+      "sha256": "3432ca58b1eaa94685d46aee42b5082abe2eb9cfd29142670779fbe7b2b36839",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_ddr_train_only/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87402596,
+      "sha256": "2d8e80eaa4b77c95ad9038f4349efee1bf7fcfebe9e395879da44e30c012f51d",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_quality_aux_025/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87404826,
+      "sha256": "5c069c25cb9e27db0e6dc256bc8309a11ea999e4ccbe65ae01c462a2ee4d35f0",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_quality_control/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87402596,
+      "sha256": "afb6dbe06a5ff8bdbeacb6142911f9083ac9fb4380614832e562face44dbdead",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_quality_control_v2/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87402596,
+      "sha256": "561054dc332a42c09bc1677b48e7ed48021d4064a27d5013192f9f5a9d699c91",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_seed2/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87402596,
+      "sha256": "ba0cca2cd879ee81566ee329b252bbf086ad41f1f7f0f2758a4cc754a4c075de",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_source_invariance_01/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87408026,
+      "sha256": "93c34a03689680d68d44e944792247f740556dbdb6e71f3c4fc2ad0f94bbb934",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_source_invariance_01_v2/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87408026,
+      "sha256": "de221fc19b6e76fede71593d92363bac8d814ea3ef287b2cf586d9f97602e176",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_green_source_invariance_02/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 87408026,
+      "sha256": "2f6e62a414f36f9632e00ce78bed9a5629435e7f6864f164d3c3984f7d5460ac",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "disease_training_runs",
+      "artifact": "results/technical_dev_20261108_rerun/retfound_mae_adaptation/best.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 1213344967,
+      "sha256": "41dd0a0fea9bd33653640fa33909338c42e664e43fe1ead2508539256ebc5330",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/external/OPENEye-FM/weights/OpenEye.pth",
+      "kind": "pretrained_foundation_weights",
+      "size_bytes": 461781163,
+      "sha256": "6625ff53dfa9dbce9507dd42310efbf06ea12e4307dab5f443a203c4ac8958d0",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/eye_finding_ai/artifacts/eye_pupil_unet.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 1963389,
+      "sha256": "bd5ef40c5a4a5c5a72cd464b1f2f5f11c5b0d4c1a5c43cb83def090523053cfe",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/results/charmorph_training_v1/model/best_checkpoint.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 1950069,
+      "sha256": "77d47e15bb0c686f62f6fb812f3d0a1f603bcb8f20eb3287116b102ffc8685e0",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/results/charmorph_training_v1/model/last_checkpoint.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 5855817,
+      "sha256": "8a43b277439fc3600b2b15b786c23b3933d07ce5329d5d8966dfd0e114aa8982",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/results/charmorph_training_v2/model_shared_v2b/best_checkpoint.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 1949813,
+      "sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/results/charmorph_training_v2/model_shared_v2b/last_checkpoint.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 5855433,
+      "sha256": "8b70000620891228fe8de992c227e224482fd6b2e01a741d5fa6b6ddd13af14b",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/results/realistic_3d_v3_smoke_model/best_checkpoint.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 1950069,
+      "sha256": "d960b4d0713df2c4d5868b3c187a216e00765db14c01293ce1690c7cb0da5235",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/results/realistic_3d_v3_smoke_model/last_checkpoint.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 5857673,
+      "sha256": "a80aaa8bdf3250f23239756fce6e6e9afa98edb9d5e4cab4476cd2da49f0f0b9",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    },
+    {
+      "bundle": "eye_tracking_and_project_outputs",
+      "artifact": "golden-retina/workspace/models/convnext_baseline.pt",
+      "kind": "trained_checkpoint_or_baseline",
+      "size_bytes": 111398555,
+      "sha256": "fdea49afda1d3d20b982661c968bd5e4d3453985a679d4ba581ddcf2148106ce",
+      "locally_recovered": true,
+      "checkpoint_load_verified": true
+    }
+  ],
+  "retfound_mae_hash_correction": {
+    "legacy_summary_field": "checkpoint_sha256",
+    "legacy_field_meaning": "SHA-256 of pretrained initialization weights, not trained model output.",
+    "trained_best_checkpoint_sha256": "41dd0a0fea9bd33653640fa33909338c42e664e43fe1ead2508539256ebc5330",
+    "selected_epoch": 11,
+    "size_bytes": 1213344967,
+    "state_tensors": 302,
+    "parameters": 303309832,
+    "private_local_path": "external/recovered_l4_20261108/results/technical_dev_20261108_rerun/retfound_mae_adaptation/best.pt"
+  },
+  "eye_pupil_unet_synthetic_test": {
+    "checkpoint_sha256": "bd5ef40c5a4a5c5a72cd464b1f2f5f11c5b0d4c1a5c43cb83def090523053cfe",
+    "selected_epoch": 10,
+    "held_out_synthetic_images": 600,
+    "foreground_macro_dice": 0.985412723933559,
+    "pupil_detection_rate": 1.0,
+    "pupil_center_error_px_mean": 0.17864521708494674,
+    "pupil_center_error_px_p95": 0.4828150942921626,
+    "temporal_eval_sequences": 50,
+    "frames_per_sequence": 50,
+    "visible_track_coverage": 1.0,
+    "blink_prediction_fraction": 1.0,
+    "warning": "Synthetic renderer-only evaluation; not real-person, camera, or clinical validation."
+  },
+  "excluded_from_public_git": "Raw images/datasets, row-level predictions and embeddings, private manifests, RETFound weights, large baseline weights, and pretrained OpenEye weights remain local. Checkpoint weights with unverified redistribution rights are not published.",
+  "evaluation_boundary": "Disease-model outputs are internal train/validation development estimates; no held-out test rows were loaded in the RETFound adaptation runs."
+}

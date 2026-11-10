@@ -626,5 +626,12 @@
     }
   ],
   "elapsed_seconds": 3140.6,
-  "warning": "Internal validation used for model selection; not independent clinical validation."
+  "warning": "Internal validation used for model selection; not independent clinical validation.",
+  "checkpoint_sha256_semantics": "Legacy field: SHA-256 of the pretrained RETFound-MAE initialization weights, not the trained model output.",
+  "trained_best_checkpoint_sha256": "41dd0a0fea9bd33653640fa33909338c42e664e43fe1ead2508539256ebc5330",
+  "trained_best_checkpoint_epoch": 11,
+  "trained_best_checkpoint_size_bytes": 1213344967,
+  "trained_best_checkpoint_recovered_path": "external/recovered_l4_20261108/results/technical_dev_20261108_rerun/retfound_mae_adaptation/best.pt (local-only; git-ignored)",
+  "trained_best_checkpoint_readability_check": "Passed with torch.load(weights_only=True); 302 state tensors, 303,309,832 parameters.",
+  "trained_best_checkpoint_publication_status": "Not committed: applicable pretrained-model terms do not establish weight redistribution rights."
 }

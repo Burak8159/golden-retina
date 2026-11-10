@@ -1,0 +1,228 @@
+{
+  "status": "SYNTHETIC_HELD_OUT_ONLY",
+  "device": "cuda",
+  "train_count": 3000,
+  "valid_count": 400,
+  "test_count": 600,
+  "best_epoch": 10,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.6837185773443668,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.8674463626596888,
+          "iris": 0.1017705563044191,
+          "pupil": 0.5425864373712923
+        },
+        "macro_dice_foreground": 0.6057450028958431,
+        "pupil_detection_rate": 0.9725,
+        "pupil_center_error_px_mean": 21.652267013310162,
+        "pupil_center_error_px_p95": 100.30170898437497,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 0.8
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.3630097299180132,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9713511463591545,
+          "iris": 0.801657310879444,
+          "pupil": 0.7754569904727173
+        },
+        "macro_dice_foreground": 0.9163026127819606,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.48217726380098613,
+        "pupil_center_error_px_p95": 1.4730291068553891,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 0.9
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.21332585177523025,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9048216326282226,
+          "iris": 0.852438014649015,
+          "pupil": 0.9123717464088994
+        },
+        "macro_dice_foreground": 0.9415176327994402,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.30659181921568235,
+        "pupil_center_error_px_p95": 0.754797974228859,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.01
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.13209763922272844,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9845715776157198,
+          "iris": 0.9439109891784789,
+          "pupil": 0.9720493132034544
+        },
+        "macro_dice_foreground": 0.9830662341082156,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.14335102386539803,
+        "pupil_center_error_px_p95": 0.4067146748304366,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.11
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.08666096492967706,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9321169451928856,
+          "iris": 0.8803388775318881,
+          "pupil": 0.9257480646201083
+        },
+        "macro_dice_foreground": 0.9542234857983537,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.20121225890470668,
+        "pupil_center_error_px_p95": 0.4916944310069084,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.22
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.06734290501063174,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9225866838100727,
+          "iris": 0.7676451740597613,
+          "pupil": 0.9103656216152923
+        },
+        "macro_dice_foreground": 0.9271220016581777,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.2863543575722724,
+        "pupil_center_error_px_p95": 0.5564691722393029,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.35
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.06136914513054046,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.98462124511384,
+          "iris": 0.8881105004367252,
+          "pupil": 0.9771822703352184
+        },
+        "macro_dice_foreground": 0.973816823641977,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.14659044051310047,
+        "pupil_center_error_px_p95": 0.341631966829299,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.47
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.052970180803156915,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9946403961002501,
+          "iris": 0.9317494871031902,
+          "pupil": 0.9270051131815533
+        },
+        "macro_dice_foreground": 0.974700699499195,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.14891535172937437,
+        "pupil_center_error_px_p95": 0.30794969201087935,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.59
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.047911846415793644,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9670647734650429,
+          "iris": 0.9562844374248434,
+          "pupil": 0.9692399931479473
+        },
+        "macro_dice_foreground": 0.9817634003523178,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.14398524913995062,
+        "pupil_center_error_px_p95": 0.3931438103318208,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.7
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.04691686207785251,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9896069841577277,
+          "iris": 0.9465308610035057,
+          "pupil": 0.9736716845878136
+        },
+        "macro_dice_foreground": 0.9846558810264198,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.18771103319711982,
+        "pupil_center_error_px_p95": 0.5452231854200348,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.82
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.03748802836746611,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.7715424543800911,
+          "iris": 0.0,
+          "pupil": 0.0
+        },
+        "macro_dice_foreground": 0.29034677378554985,
+        "pupil_detection_rate": 0.0,
+        "pupil_center_error_px_mean": null,
+        "pupil_center_error_px_p95": null,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 1.94
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.035089076734445196,
+      "valid": {
+        "class_iou": {
+          "sclera": 0.9484431646109848,
+          "iris": 0.858284043782718,
+          "pupil": 0.9397609421690982
+        },
+        "macro_dice_foreground": 0.9554076180490682,
+        "pupil_detection_rate": 1.0,
+        "pupil_center_error_px_mean": 0.1997847206192091,
+        "pupil_center_error_px_p95": 0.407502619922161,
+        "n_eval_images": 400
+      },
+      "elapsed_min": 2.05
+    }
+  ],
+  "test": {
+    "class_iou": {
+      "sclera": 0.9903332195662823,
+      "iris": 0.9488390163941768,
+      "pupil": 0.9750103302260519
+    },
+    "macro_dice_foreground": 0.985412723933559,
+    "pupil_detection_rate": 1.0,
+    "pupil_center_error_px_mean": 0.17864521708494674,
+    "pupil_center_error_px_p95": 0.4828150942921626,
+    "n_eval_images": 600
+  },
+  "elapsed_minutes": 2.08,
+  "checkpoint": "artifacts/eye_pupil_unet.pt"
+}

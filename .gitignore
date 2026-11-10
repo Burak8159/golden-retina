@@ -15,6 +15,7 @@ external/model_cache/
 *.pt
 *.pth
 *.onnx
+!eye_finding_ai/artifacts/eye_pupil_unet.pt
 *_rtx_patch.zip
 
 # Restricted or bulky datasets

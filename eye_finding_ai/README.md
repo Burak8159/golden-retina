@@ -12,6 +12,20 @@ This is **not** a real-person, camera, device, or clinical validation. The face 
 
 `realistic_3d_v3/` is the current frozen research candidate. The top-level scripts and `full_frame_v2/` preserve earlier experiments, not separate promoted candidates. Generated images and raw run bundles stay outside Git.
 
+## Additional compact eye-crop model
+
+The recovered `artifacts/eye_pupil_unet.pt` is a separate TinyUNet trained on procedurally generated grayscale eye crops. It is not the frozen `realistic_3d_v3` candidate, and its metrics are not directly comparable because the renderer and split differ. On its 600-image synthetic held-out split it reached 0.9854 foreground macro Dice and 100% pupil detection; mean pupil-center error was 0.179 px (p95 0.483 px). On 50 synthetic sequences of 50 frames, it tracked all 2,050 visible frames and predicted through all 450 synthetic blink frames. These are renderer-only results, not human-eye or camera results. The L4 runtime profile (2.34 ms median, 2.47 ms p95) is hardware-specific.
+
+Run one already-cropped eye image with:
+
+```sh
+python eye_finding_ai/predict_one.py \
+  --checkpoint eye_finding_ai/artifacts/eye_pupil_unet.pt \
+  --image path/to/eye_crop.png
+```
+
+Aggregate metrics and tracking/runtime summaries are in `eye_finding_ai/artifacts/`. The synthetic split manifest and generated run bundle are not published.
+
 ## Run inference
 
 From the repository root:

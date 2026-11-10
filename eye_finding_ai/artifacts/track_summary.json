@@ -1,0 +1,16 @@
+{
+  "status": "SYNTHETIC_TEMPORAL_EVALUATION_ONLY",
+  "device": "cuda",
+  "sequences": 50,
+  "frames_per_sequence": 50,
+  "visible_frames": 2050,
+  "tracked_visible_frames": 2050,
+  "visible_track_coverage": 1.0,
+  "tracked_center_error_px_mean": 1.4947381122817367,
+  "tracked_center_error_px_p95": 3.088915733328167,
+  "blink_frames": 450,
+  "blink_frames_with_prediction": 450,
+  "blink_prediction_fraction": 1.0,
+  "post_blink_reacquire_frames_median": 0.0,
+  "checkpoint": "artifacts/eye_pupil_unet.pt"
+}
