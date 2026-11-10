@@ -1,0 +1,55 @@
+{
+  "status": "SYNTHETIC_DEVELOPMENT_COMPARISON_ONLY",
+  "candidate": "shared-eye FaceEyeUNet base=16, frozen at epoch 24",
+  "checkpoint_sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab",
+  "fresh_seed_cohort": {
+    "n_frames": 24,
+    "macro_dice": 0.8541744822553092,
+    "iris_dice": 0.8086218158066623,
+    "pupil_dice": 0.8997271487039563,
+    "model_mean_center_error_px": {
+      "left": 0.43371214624494314,
+      "right": 0.5394638491173586
+    },
+    "baseline_mean_center_error_px": {
+      "left": 2.0422870317894803,
+      "right": 2.0801194430417413
+    },
+    "model_to_baseline_error_reduction_percent": {
+      "left": 78.76,
+      "right": 74.07
+    }
+  },
+  "translated_sequence": {
+    "n_frames": 32,
+    "model_detection_coverage": {
+      "left": 1.0,
+      "right": 1.0
+    },
+    "model_raw_mean_center_error_px": {
+      "left": 1.2195300404627933,
+      "right": 1.048457806978477
+    },
+    "model_filtered_mean_center_error_px": {
+      "left": 1.1951575368468468,
+      "right": 1.0358999243696845
+    },
+    "baseline_mean_center_error_px": {
+      "left": 3.087467428730066,
+      "right": 3.2119480381193046
+    },
+    "model_to_baseline_error_reduction_percent": {
+      "left": 60.5,
+      "right": 67.36
+    }
+  },
+  "api_smoke": {
+    "status": "RESEARCH_ONLY_SYNTHETIC_DOMAIN_INFERENCE",
+    "model_sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab",
+    "observed_both_image_sides": true,
+    "image_sha256": "17c2c309fc561ba0747ce488d138546baaa0786d31ed995ca6a39d696bb215c8",
+    "executed_on": "local CPU, one held-out synthetic frame"
+  },
+  "interpretation": "The frozen segmenter beats a train-only constant-coordinate baseline on these synthetic probes. All renders use one base mesh and one renderer; the sequence translates eye geometry rather than modeling physical eyeball rotation. No human, camera, or device-domain performance is established.",
+  "not_a_real_world_validation": true
+}

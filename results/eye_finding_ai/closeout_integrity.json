@@ -1,0 +1,43 @@
+{
+  "status": "LOCAL_ARTIFACTS_VERIFIED_VM_STOPPED",
+  "verified_at_utc": "2026-11-10T00:31:44Z",
+  "archive_contents_extracted": true,
+  "fresh_seed_images": 24,
+  "sequence_frames": 32,
+  "checkpoint_sha256_consistent": true,
+  "golden_retina_vm": "TERMINATED",
+  "runtime_estimate_try": 204.63,
+  "not_final_billing": true,
+  "artifacts": {
+    "closeout_archive": {
+      "path": "results/eye_finding_ai/charmorph_closeout_bundle.tar.gz",
+      "bytes": 108685711,
+      "sha256": "a320845fb49dc5e1ab38053f67732a02ec24e932ef80ca1935e220f1997bc423"
+    },
+    "frozen_checkpoint": {
+      "path": "results/eye_finding_ai/charmorph_training_v2/model_shared_v2b/best_checkpoint.pt",
+      "bytes": 1949813,
+      "sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab"
+    },
+    "frozen_run_card": {
+      "path": "results/eye_finding_ai/charmorph_training_v2/frozen_candidate_run_card.json",
+      "bytes": 1199,
+      "sha256": "dadb914ee39d95522f62f5d411482e35b3243b41599d164e24f2fbf6b1b76eb6"
+    },
+    "fresh_seed_evaluation": {
+      "path": "results/eye_finding_ai/charmorph_cohort_v2_lock/evaluation/frozen_fresh_seed_evaluation.json",
+      "bytes": 1379,
+      "sha256": "21a7d6fc6202b6b45dbf0d13ba4fa53cad95bb95bdc549e6c747f34ba5e579bc"
+    },
+    "sequence_evaluation": {
+      "path": "results/eye_finding_ai/charmorph_eye_sequence_v1b/tracking_evaluation.json",
+      "bytes": 30422,
+      "sha256": "16714738e71edf1729626687beabac16a7a5d4ef929badb5c491db53451a4818"
+    },
+    "baseline_comparison": {
+      "path": "results/eye_finding_ai/frozen_v2_model_baseline_comparison.json",
+      "bytes": 1990,
+      "sha256": "1a90e230ec3d58307390c5d895ebbb0aa85c7618c30691657a75396a906d3273"
+    }
+  }
+}

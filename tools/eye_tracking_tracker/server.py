@@ -4,6 +4,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 import json
 import os
+from urllib.parse import urlsplit
 
 WEB = Path(__file__).resolve().parent
 STATUS = WEB / "status.json"
@@ -11,10 +12,11 @@ STATUS = WEB / "status.json"
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == "/api/status":
+        path = urlsplit(self.path).path
+        if path == "/api/status":
             body = STATUS.read_bytes()
             content_type = "application/json; charset=utf-8"
-        elif self.path in ("/", "/index.html"):
+        elif path in ("/", "/index.html"):
             body = (WEB / "index.html").read_bytes()
             content_type = "text/html; charset=utf-8"
         else:

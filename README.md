@@ -109,3 +109,7 @@ redistributing data or derived artifacts.
 Golden Horn 8159 welcomes conversations with eye-care professionals,
 researchers, community health organizations, and technical collaborators who
 can help evaluate responsible ways to improve access to retinal care.
+
+## Separate eye-finding research prototype
+
+The repository also contains a separate synthetic eye-finding and tracking experiment; it does not diagnose retinal disease. Its current shared-eye segmentation candidate achieved 0.854 fresh-seed synthetic macro Dice and 24/24 pupil presence per image side on 24 held-out renderer seeds. It beat a train-only constant-coordinate baseline on a 32-frame synthetic translated-eye sequence. The candidate has only been evaluated on one synthetic base identity and has no human-camera validation. The research-only single-frame CLI and loopback API are documented in [`eye_finding_ai/realistic_3d_v3/README.md`](eye_finding_ai/realistic_3d_v3/README.md).

@@ -1,0 +1,32 @@
+{
+  "status": "CANDIDATE_FROZEN_BEFORE_FRESH_SEED_EVALUATION",
+  "candidate": "shared-eye-class full-frame FaceEyeUNet base=16, three classes",
+  "selected_epoch": 24,
+  "selection_metric": "validation foreground macro Dice only",
+  "validation_metric": 0.8532184313160502,
+  "validation_pupil_presence": {
+    "image_left": 1.0,
+    "image_right": 1.0
+  },
+  "validation_pupil_center_error_px": {
+    "image_left": 0.3397679053246975,
+    "image_right": 0.41445221602916715
+  },
+  "checkpoint_sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab",
+  "manifest_sha256": "e152061a180c4a67ab38282daeb0e253edf4e3c02e132cad20c909e2e45b0104",
+  "data_split_counts": {
+    "train": 45,
+    "validation": 10,
+    "test": 9
+  },
+  "training_dataset_identity_count": 1,
+  "fresh_seed_evaluation_seed": 816170,
+  "fresh_seed_evaluation_selection_used": false,
+  "limitations": [
+    "single synthetic base identity",
+    "train/validation samples are renderer-seed variants, not independent subjects",
+    "synthetic only, not real-camera or human performance",
+    "shared eye semantic; left/right recovered by image half",
+    "not temporally trained or physically gaze-rotated"
+  ]
+}

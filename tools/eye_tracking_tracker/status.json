@@ -1,68 +1,384 @@
 {
-  "project": "Golden Horn Retina Eye-Finding and Tracking AI",
-  "scope": "Synthetic eye-image generation and pupil/eye tracking model; separate from retinal disease analysis; no motor commands",
-  "total_blocks": 24,
-  "block_hours": 2,
-  "planned_hours": 48,
-  "completed_blocks": 0,
-  "current_block": 1,
-  "current_status": "Planning specification complete; implementation not started",
-  "gpu_status": "No active compute",
-  "hardware_status": "No target camera hardware or device-domain eye frames currently available",
-  "compute_recommendation": "RTX 3050 Ti 4 GB is suitable for the initial compact-model prototype; L4 optional if throughput or memory becomes limiting",
+  "project": "Golden Retina realistic 3D eye-finding and tracking AI",
+  "scope": "Build from scratch: a parameterized 3D human face and anatomically informed eye renderer with aligned segmentation/landmark labels, then train, evaluate, and package a full-frame eye-tracking pipeline. No motor commands; synthetic-only until checked against real camera recordings.",
+  "total_blocks": 12,
+  "block_hours": 0.5,
+  "planned_hours": 6,
+  "completed_blocks": 12,
+  "current_block": 12,
+  "current_status": "Closeout complete: frozen shared-eye model, fresh synthetic evaluation, baseline comparisons, loopback research API smoke check, local artifact integrity verification, and Golden Retina L4 shutdown verified. Synthetic-only evidence; one base identity; no real-camera/human validation.",
+  "gpu_status": "Golden Retina L4 stopped · closeout complete",
+  "hardware_status": "No target camera hardware or device-domain eye frames currently available; all v2 evidence is synthetic.",
+  "compute_recommendation": "Google Cloud L4 selected for this authorized sprint; RTX remains unused",
+  "execution_sprint": {
+    "work_hours": 7,
+    "closeout_safety_minutes": 30,
+    "planned_budget_try": 1900,
+    "protected_margin_try": 80,
+    "hard_ceiling_try": 1980,
+    "current_estimate_try": 204.63,
+    "estimate_basis": "Live estimate = elapsed dedicated Golden Retina VM runtime × ₺35.47/hour; excludes possible storage/network/tax and delayed final billing. ₺1,980 hard cap.",
+    "started_at": "2026-11-09T18:45:35.695Z",
+    "automatic_stop_after_minutes": 450,
+    "scope": "Fresh 3D-rendered synthetic human-face and eye-tracking pipeline from scratch; training/validation/test and inference; no physical-camera validation",
+    "block_started_at": "2026-11-10T00:31:44Z",
+    "rate_try_per_hour": 35.47,
+    "vm": "golden-retina-l4-01",
+    "project_id": "golden-retina-dev-20261107",
+    "zone": "us-west1-a",
+    "vm_stop_enforced": true,
+    "current_task": "Complete. Dedicated Golden Retina L4 instance is TERMINATED; local tracker remains available.",
+    "block_minutes": 0,
+    "pipeline_started_at": "2026-11-09T18:45:35.695Z",
+    "latest_render_progress": "Frozen v2 baseline audit and loopback inference service completed; no further GPU training is indicated.",
+    "latest_tracker_checkpoint": "2026-11-10T00:31:44Z",
+    "stopped_at": "2026-11-10T00:31:44Z"
+  },
   "budget": {
-    "planned_try": null,
-    "hard_ceiling_try": null,
+    "planned_try": 1900,
+    "hard_ceiling_try": 1980,
     "spent_try": 0,
-    "status": "No project-specific budget set; no cloud VM launched"
+    "status": "₺1,900 planned + ₺80 protected overhead = ₺1,980 hard ceiling. VM stopped at 2026-11-10T00:31:44Z; runtime estimate at shutdown ₺204.63. Final settled billing may differ; storage/network/tax may be separate."
   },
   "gates": [
     {
-      "title": "No target camera hardware yet",
+      "title": "Real-person representativeness not demonstrated",
       "status": "open",
-      "detail": "Development can use synthetic and terms-cleared public eye data. Device-specific performance cannot be established until camera footage and calibration exist."
+      "detail": "Only generated subjects are present. No real-person or camera recordings have been supplied; synthetic held-out scores cannot establish deployed tracking performance."
     },
     {
-      "title": "Synthetic-to-device domain gap",
+      "title": "Photorealistic face appearance not achieved",
       "status": "open",
-      "detail": "Synthetic validation is feasibility evidence only. The future sensor requires a held-out device-domain evaluation."
+      "detail": "Visual audit of 12 evenly spaced samples from the procedural generator showed mannequin-like faces, simplistic hair caps, and inconsistent eye geometry. Generation stopped at 780/1,620; partial outputs are preserved and excluded from training. CC0 Vitruvian + Bob hair is a better morphable base, but still a synthetic render. Material-index eye labels and meaningful subject variation must pass before regeneration."
     },
     {
-      "title": "Budget and compute authorization",
-      "status": "open",
-      "detail": "No spend ceiling or new cloud authorization has been supplied for this separate project phase. No compute is running."
+      "title": "3D render acceleration and pipeline smoke",
+      "status": "cleared",
+      "detail": "Blender 4.5.11 renders at 512×512 on the L4 and the trainer smoke-run completes; these establish pipeline wiring only. Full-scale renderer output failed visual realism review and was stopped at 780/1,620; partial data are preserved as a non-training baseline."
     },
     {
-      "title": "Eye-tracking dataset terms",
+      "title": "Closed-eye pupil/glint labels",
+      "status": "cleared",
+      "detail": "On two seeded closed-eye checks, pupil and glint labels are absent. Small iris/sclera remnants remain at eyelid edges; treat closed-eye appearance as approximate."
+    },
+    {
+      "title": "Spend ceiling",
+      "status": "cleared",
+      "detail": "₺1,900 planned plus ₺80 protected overhead = ₺1,980 hard ceiling. Runtime estimate uses elapsed L4 time at the configured hourly rate; final settled billing may differ."
+    },
+    {
+      "title": "Stylized renderer failed visual review",
       "status": "open",
-      "detail": "LPW is listed for non-commercial scientific use; check exact current terms for each public dataset before use."
+      "detail": "A contact sheet of 12 samples from the active generator showed mannequin-like faces and inconsistent eye appearance. The 780-frame partial output is preserved but excluded from training; switch to an asset-based generator only after ground-truth eye labels and appearance variation are verified."
     }
   ],
   "blocks": [
-    {"id":1,"name":"Scope and software boundary","status":"planned","detail":"Create a separate eye-tracking package. Do not modify retinal diagnosis or add motor commands."},
-    {"id":2,"name":"Observation schema and coordinates","status":"planned","detail":"Specify eye side, pupil mask/center, confidence, timestamp, track state, and calibration-gated stereo outputs."},
-    {"id":3,"name":"Synthetic scene parameter envelope","status":"planned","detail":"Define appearance, gaze, pupil, illumination, occlusion, camera, and motion ranges; identify assumptions."},
-    {"id":4,"name":"Public eye-data and terms screen","status":"planned","detail":"Check LPW, NVGaze, OpenEDS, label fit, access route, and exact terms before use."},
-    {"id":5,"name":"Static eye-image generator","status":"planned","detail":"Generate deterministic images with pixel masks, pupil centers, camera metadata, and seeds."},
-    {"id":6,"name":"Temporal sequence generator","status":"planned","detail":"Add motion, blinks, saccades, occlusion, and dropped-frame events with ground-truth tracks."},
-    {"id":7,"name":"Generator label audit","status":"planned","detail":"Verify labels against rendered geometry and inspect a visual sample sheet."},
-    {"id":8,"name":"Leakage-safe data manifests","status":"planned","detail":"Split by generated subject, eye, scene seed, and camera configuration."},
-    {"id":9,"name":"Classical vision baseline","status":"planned","detail":"Build threshold/contour/ellipse detector and measure errors by condition."},
-    {"id":10,"name":"Compact model selection","status":"planned","detail":"Choose pupil-segmentation model and resolution using training/validation only."},
-    {"id":11,"name":"Training and checkpoint pipeline","status":"planned","detail":"Create reproducible config, resume, checkpoint, and loss logging."},
-    {"id":12,"name":"First synthetic model training","status":"planned","detail":"Train compact segmentation candidate; select checkpoint on validation only."},
-    {"id":13,"name":"Frame-level detector evaluation","status":"planned","detail":"Report center/mask accuracy, detections, false detections, and confidence calibration."},
-    {"id":14,"name":"Temporal tracking and eye identity","status":"planned","detail":"Track both eyes through blinks, brief occlusions, and identity changes."},
-    {"id":15,"name":"Simulated stereo geometry","status":"planned","detail":"Triangulate only with known synthetic calibration; reject invalid depth and measure reprojection error."},
-    {"id":16,"name":"Confidence and unknown-state behavior","status":"planned","detail":"Emit lost/uncertain state when eye evidence is insufficient."},
-    {"id":17,"name":"Domain-randomization ablation","status":"planned","detail":"Compare matched training with and without randomization groups."},
-    {"id":18,"name":"Public IR benchmark evaluation","status":"planned","detail":"Evaluate on subject-held-out data only when terms and label compatibility are verified."},
-    {"id":19,"name":"Permitted-data adaptation","status":"planned","detail":"Adapt using development data only; preserve source tags and keep test data untouched."},
-    {"id":20,"name":"Runtime profiling","status":"planned","detail":"Measure latency, memory, and throughput on the selected compute target."},
-    {"id":21,"name":"Integration contract","status":"planned","detail":"Publish observations/status to a separate controller interface; no motor commands."},
-    {"id":22,"name":"Synthetic failure stress tests","status":"planned","detail":"Exercise occlusion, blur, light shifts, out-of-frame eyes, camera mismatch, and timestamp gaps."},
-    {"id":23,"name":"Freeze and locked evaluation","status":"planned","detail":"Freeze model/config and run one held-out evaluation with uncertainty and failure breakdowns."},
-    {"id":24,"name":"Package and hardware handoff","status":"planned","detail":"Package model, manifests, report, model card, and future camera-calibration/data requirements."}
+    {
+      "id": 1,
+      "name": "Build parameterized 3D face and eye geometry",
+      "status": "complete",
+      "detail": "Create an original 3D head with age presentation, face proportions, skin tone/texture, brows/hair, and detailed eyes: sclera, iris, dilating pupil, cornea, eyelids/blink, tear line, and corneal glints.",
+      "evidence": "L4 512×512 full-face render passes visual presence check for both eyes; scale invariant prevents oversized eye highlight. Procedural appearance still needs realism refinement and real-camera representativeness is unverified.",
+      "status_label": "Complete · parameterized face and eye geometry rendered"
+    },
+    {
+      "id": 2,
+      "name": "Implement beauty render and ground-truth label passes",
+      "status": "complete",
+      "detail": "Emit visible-light and IR-like frames plus aligned face/eye/iris/pupil/glint/landmark masks and gaze metadata; verify occlusion labels.",
+      "evidence": "L4 compositor writes raw IndexOB EXR; one 512×512 debug mask contains all classes 0–11. Multi-seed/occlusion audit remains in block 4.",
+      "status_label": "Complete · beauty and 12-class label export smoke-tested"
+    },
+    {
+      "id": 3,
+      "name": "Add subject and capture-condition parameter ranges",
+      "status": "complete",
+      "detail": "Vary age presentation from child to older adult, feminine/masculine facial morphology, continuous skin pigmentation, face geometry, eye geometry, gaze, blink, pose, camera, focus, exposure, and illumination.",
+      "evidence": "12-frame 512×512 seeded audit covered 12 unique subjects and varied age groups, pigmentation, visible/IR-like appearance, camera pose, gaze and focus. Landmark projection and exposure/DOF wiring are present. This is variation coverage, not proof of demographic representativeness.",
+      "status_label": "Complete · subject and capture variation audited"
+    },
+    {
+      "id": 4,
+      "name": "Render initial 3D sample set and visually audit",
+      "status": "complete",
+      "detail": "Render diverse samples; inspect full face and enlarged eye crops, labels, glints, blinks, and edge cases before scaling data.",
+      "evidence": "QA5 contact sheet inspected; the 12-subject audit passes disjoint splits, all class IDs 0–11, no duplicate images, valid open-pupil labels, zero pupil/glint mask pixels on both blink eyes, and mean projected-landmark-to-mask center error 0.70 px (p95 0.82). Synthetic QA only.",
+      "status_label": "Complete · full-frame and blink labels visually checked"
+    },
+    {
+      "id": 5,
+      "name": "Generate subject-disjoint train/validation/test dataset",
+      "status": "complete",
+      "detail": "Render deterministic split populations with no subject parameter/seed overlap; persist images, labels, manifest, and renderer settings.",
+      "evidence": "64/64 rendered at 512×512; renderer audit PASS; dataset preparation accepted 64/64, rejected 0. Deterministic split 45/10/9 across morph seeds of one base mesh; not independent subjects.",
+      "status_label": "Complete · 64-case synthetic cohort prepared"
+    },
+    {
+      "id": 6,
+      "name": "Build the fresh 3D-label trainer and resume pipeline",
+      "status": "complete",
+      "detail": "Train full-frame segmentation/localization with atomic latest/best checkpoints, per-epoch logs, validation-only early stopping, and resumable state.",
+      "evidence": "Five-class full-frame U-Net trainer and preprocessing scripts syntax-checked locally and remotely; CUDA available. Validation-only checkpoint selection and explicit post-freeze test path are implemented.",
+      "status_label": "Complete · five-class trainer and resume outputs prepared"
+    },
+    {
+      "id": 7,
+      "name": "Train and tune using train/validation only",
+      "status": "complete",
+      "detail": "Train the new model on 3D-rendered frames; inspect class, pupil/glint, and failure metrics; materially change the approach if learning stalls.",
+      "evidence": "V1 five-class failure preserved (validation Dice .557; exposed diagnostic test .542; left pupil 0/9). V2 shares iris/pupil labels, trained 28 epochs with best epoch 24; validation macro Dice .8532, pupil pixel presence 10/10 per side, mean center error 0.34/0.41 px at 384 input. Synthetic single-base result.",
+      "status_label": "Complete · shared semantic classes fixed pupil asymmetry"
+    },
+    {
+      "id": 8,
+      "name": "Freeze model, renderer, and configuration",
+      "status": "complete",
+      "detail": "Hash weights, split manifest, renderer code/parameters, class map, and preprocessing before test evaluation.",
+      "evidence": "Frozen checkpoint SHA-256 57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab; selected epoch 24 using validation foreground macro Dice only. Fresh evaluation seed 816170 was not used for selection.",
+      "status_label": "Complete · model/config frozen before fresh-seed run"
+    },
+    {
+      "id": 9,
+      "name": "Run locked synthetic test once",
+      "status": "complete",
+      "detail": "Report eye detection, pupil/glint localization, segmentation, gaze-coordinate error, blink/occlusion handling, and condition-stratified uncertainty.",
+      "evidence": "24/24 fresh morph seeds evaluated without selection use; macro Dice 0.854 (iris .809, pupil .900); pupil pixel-presence 24/24 each side; mean center error .434/.539 px at 384 input; checkpoint SHA 57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab. One synthetic base identity.",
+      "status_label": "Complete · frozen checkpoint fresh-seed synthetic evaluation"
+    },
+    {
+      "id": 10,
+      "name": "Run full-frame inference and temporal tracking",
+      "status": "complete",
+      "detail": "Exercise images and generated sequences through the same interface; measure tracking continuity and reacquisition after blinks.",
+      "evidence": "32/32 translated-label frames detected on each side; raw mean center error 1.220/1.048 model-input px, filtered 1.195/1.036 px. Sequence is fixed face/camera and one mesh; not physical gaze or camera validation.",
+      "status_label": "Complete · frozen model plus temporal filter sequence smoke"
+    },
+    {
+      "id": 11,
+      "name": "Stress and baseline comparisons",
+      "status": "complete",
+      "detail": "Compare against classical image processing on identical frames; test pose, lighting, focus, skin, eye shape, and IR-like conditions.",
+      "evidence": "Against a train-only constant-coordinate baseline: fresh 24-seed mean center error fell 78.76% (left) / 74.07% (right); on a 32-frame translated-geometry sequence it fell 60.50% / 67.36%. Frozen candidate also passed a local loopback API smoke check. These are same-renderer, one-base-mesh synthetic comparisons only.",
+      "status_label": "Complete · coordinate-prior comparison and inference interface verified"
+    },
+    {
+      "id": 12,
+      "name": "Package, pull, document, and close L4",
+      "status": "complete",
+      "detail": "Pull checksummed source/results, write model/data card, update tracker, verify spend, and stop only the dedicated VM within the existing safety window.",
+      "evidence": "Closeout archive SHA-256 a320845fb49dc5e1ab38053f67732a02ec24e932ef80ca1935e220f1997bc423 verified locally. Frozen checkpoint hash agrees across run card, evaluation, and summary. golden-retina-l4-01 verified TERMINATED; no other VM is listed in the Golden Retina project. Runtime estimate at stop ₺204.63, not a settled invoice.",
+      "status_label": "Complete · package verified and Golden Retina L4 stopped"
+    }
   ],
-  "last_update": "2026-11-09 Europe/Istanbul"
+  "last_update": "2026-11-10T00:31:44Z",
+  "active_steps": [
+    {
+      "title": "Model, baseline comparison, and inference packaging",
+      "status": "complete",
+      "evidence": "Fresh synthetic cohort, fixed sequence, train-only coordinate baseline, and loopback API smoke all documented."
+    },
+    {
+      "title": "Artifact transfer and integrity verification",
+      "status": "complete",
+      "evidence": "104 MiB closeout archive SHA-256 verified; 24 fresh cohort images and 32 sequence frames extracted; frozen checkpoint hash consistent."
+    },
+    {
+      "title": "Stop dedicated Golden Retina L4",
+      "status": "complete",
+      "evidence": "Cloud instance describe/list returned TERMINATED for golden-retina-l4-01 in us-west1-a."
+    }
+  ],
+  "activity_log": [
+    {
+      "time": "2026-11-09T21:56:15Z",
+      "kind": "issue",
+      "text": "Visual contact-sheet audit rejected the procedural generator: 12 samples were mannequin-like with inconsistent eye appearance. Stopped at 780/1,620; partial output/logs are preserved as a failed baseline and excluded from training. Pivoting to CC0 Vitruvian mesh with Bob hair; must verify eye-material masks and variation before generating training data. Estimated spend ~₺112.7 / ₺1,980 cap."
+    },
+    {
+      "time": "2026-11-09T21:52:50Z",
+      "kind": "asset_probe",
+      "text": "CC0 CharMorph/Vitruvian portrait probe PASS: imported 37,436-vertex mesh with 153 shape keys, added Bob hairstyle, and rendered face with visible eye materials. Visual inspection: more detailed than procedural bust, still synthetic studio-asset appearance; not used in active training dataset. Main render at 740/1,620. Runtime estimate ~₺110.9 / ₺1,980 cap."
+    },
+    {
+      "time": "2026-11-09T21:50:00Z",
+      "kind": "issue",
+      "text": "Portrait probe first attempt exited before rendering: incorrect CharMorph library import path. Fixed the import to the add-on’s actual charlib module and restarted the isolated probe; the 1,620-frame main render was not modified."
+    },
+    {
+      "time": "2026-11-09T21:49:01Z",
+      "kind": "progress",
+      "text": "Live L4 render reached 700/1,620 (~12.6/min). CharMorph portrait probe with CC0 hair/framing changes is active separately. Estimated runtime spend ~₺108.6 / ₺1,980 cap."
+    },
+    {
+      "time": "2026-11-09T21:43:41Z",
+      "kind": "progress",
+      "text": "Render checkpoint: log-confirmed generation reached 620/1,620 at ~12.6/min. Raw output folder count is 633 because it already contained 13 smoke images; tracker now reports the authoritative generation count. Runtime estimate ~₺105.3 / ₺1,980 cap."
+    },
+    {
+      "time": "2026-11-09T21:41:43Z",
+      "kind": "progress",
+      "text": "Live L4: 593/1,620 synthetic image files present; generation log at 580 and continuing (~12.6/min). Runtime estimate ₺104.0 against revised ₺1,980 cap (₺1,900 planned + ₺80 reserve). Visual CharMorph/Vitruvian probe confirmed textured morphable face and eye materials; still studio-like synthetic rendering, not integrated."
+    },
+    {
+      "time": "2026-11-09T21:33:47Z",
+      "kind": "progress",
+      "text": "Live L4 checkpoint: 504/1,620 synthetic frames rendered (~12.6/min). Runtime-based spend estimate ₺99.4/₺1,900. CC0 morphable-face material/import route under visual feasibility check; no pass claim yet."
+    },
+    {
+      "time": "2026-11-09T21:11:42Z",
+      "kind": "progress",
+      "text": "Live L4 render checkpoint: 224/1,620 frames at 12.6/min. Runtime-based spend estimate ₺86.4 of ₺1,900."
+    },
+    {
+      "time": "2026-11-09T21:07:12Z",
+      "kind": "progress",
+      "text": "Live L4 status: 160/1,620 synthetic frames rendered at 12.6/min; runtime-based spend estimate ₺83.7 of ₺1,900 cap (₺1,820 planned + ₺80 reserve)."
+    },
+    {
+      "time": "2026-11-09T21:03:41Z",
+      "kind": "audit",
+      "text": "QA5 12-subject dataset audit PASS: no train/validation/test subject overlap, no duplicate images, all 12 mask classes present, zero pupil/glint labels on 2 blink eyes, no missing open-eye pupil labels; mean landmark-mask center error 0.70 px, p95 0.82 px. These are renderer QA metrics, not learned-model metrics."
+    },
+    {
+      "time": "2026-11-09T21:03:41Z",
+      "kind": "progress",
+      "text": "Full L4 render reached 120/1,620 subjects at 12.5 frames/min; generated data remain on the VM until the full run and training complete."
+    },
+    {
+      "time": "2026-11-09T20:58:19Z",
+      "kind": "progress",
+      "text": "L4 full dataset render started. Initial throughput measured at 12.4 subjects/min for the first 40; 1,620 total planned. Rendering has not finished and no training metrics exist yet."
+    },
+    {
+      "time": "2026-11-09T20:53:19Z",
+      "kind": "dataset",
+      "text": "Geometry QA5 passed key blink invariants: both checked closed eyes have zero pupil and zero glint mask pixels. A corrected iris/cornea/lid depth stack is included; the 12-frame contact sheet was visually reviewed."
+    },
+    {
+      "time": "2026-11-09T20:53:19Z",
+      "kind": "model",
+      "text": "Added RGB 12-class full-frame U-Net trainer with train-only augmentation, validation checkpoint selection, patient/subject split audit, locked test metrics, per-eye pupil localization, blink false-positive reporting, single-frame inference and alpha-beta temporal tracking."
+    },
+    {
+      "time": "2026-11-09T20:53:19Z",
+      "kind": "budget",
+      "text": "Budget raised to ₺1,820 planned + ₺80 protected overhead = ₺1,900 hard ceiling."
+    },
+    {
+      "time": "2026-11-09T20:25:14Z",
+      "kind": "implementation",
+      "text": "Wired exposure/DOF and textured-material IR-like grayscale into the renderer; shortened oversized lashes and refined nose/eyebrow/skin/hair detail. Re-rendering 12-frame QA."
+    },
+    {
+      "time": "2026-11-09T20:15:33Z",
+      "kind": "budget",
+      "text": "Budget updated: ₺1,820 planned + ₺80 protected overhead reserve = ₺1,900 absolute ceiling."
+    },
+    {
+      "time": "2026-11-09T20:12:00Z",
+      "kind": "qa",
+      "text": "L4 inspection found and fixed a right-eye highlight that had retained unit scale and occluded the face. Added a runtime geometry invariant."
+    },
+    {
+      "time": "2026-11-09T20:08:00Z",
+      "kind": "qa",
+      "text": "L4 one-frame 512×512 face render and compositor EXR object-index mask verified; all 12 class IDs 0–11 appeared. Contact-sheet audit still required."
+    },
+    {
+      "time": "2026-11-09T20:04:00Z",
+      "kind": "fix",
+      "text": "Blender 4.5 render-pass API was unavailable through the expected in-memory collection; mask export now routes IndexOB through compositor to float EXR."
+    },
+    {
+      "time": "2026-11-09T19:58:00Z",
+      "kind": "setup",
+      "text": "Official Blender 4.5.11 LTS detected the dedicated L4 through OptiX. A first beauty render took about 9 seconds including startup; warmed dataset throughput remains unmeasured."
+    },
+    {
+      "time": "2026-11-09T22:34:46Z",
+      "kind": "qa",
+      "text": "Four-case CharMorph eye-label audit PASS: transparent-cornea pass exposed iris masks (1,739–2,289 pixels) and pupil masks (221–274 pixels) at 768×768. Single synthetic identity; no training or real-camera validation. Budget changed to ₺1,900 planned + ₺80 reserve = ₺1,980 hard cap; runtime estimate ~₺135 at configured rate."
+    },
+    {
+      "time": "2026-11-09T22:58:53.735317Z",
+      "kind": "progress",
+      "text": "V6 seed-driven probe completed: 8 color frames at 768x768; per-eye audit PASS for iris/pupil regions and pupil-inside-iris geometry. Four sub-20px iris edge specks reported; raw masks unchanged. Runtime cost estimate about ₺149.74; approved budget ₺1,900 planned + ₺80 protected reserve = ₺1,980 hard ceiling. Next: bounded age/gender morph label-retention probe; still one base identity."
+    },
+    {
+      "time": "2026-11-09T23:30:07Z",
+      "kind": "budget",
+      "text": "Budget updated: ₺1,900 planned + ₺80 protected reserve = ₺1,980 hard cap. Runtime estimate at checkpoint: ₺168.20; excludes possible storage/network/tax."
+    },
+    {
+      "time": "2026-11-09T23:30:07Z",
+      "kind": "progress",
+      "text": "V9 (5/5) and V10 (7/7) paired iris/pupil geometry audits PASS with dynamic camera reframe. V7/V8 crop failures excluded. Started 64-case 512×512 seeded render cohort; training not yet started."
+    },
+    {
+      "time": "2026-11-09T23:47:54Z",
+      "kind": "dataset",
+      "text": "64-case CharMorph cohort rendered and passed label-presence audit. Preprocessing accepted 64/64 and split 45/10/9 by sample seed; one base identity, no subject generalization."
+    },
+    {
+      "time": "2026-11-09T23:47:54Z",
+      "kind": "training",
+      "text": "Started five-class full-frame U-Net training on dedicated L4. Best checkpoint selected by validation macro Dice; held-out morph-seed test runs only after selection."
+    },
+    {
+      "time": "2026-11-09T23:55:26Z",
+      "kind": "diagnostic",
+      "text": "Candidate v1 5-class UNet diagnostic: validation macro Dice 0.557, exposed held-out morph-seed macro Dice 0.542; left pupil presence 0/9 and right pupil 9/9. Marked test exposed and not confirmatory."
+    },
+    {
+      "time": "2026-11-09T23:55:26Z",
+      "kind": "training",
+      "text": "Started candidate v2 on the same training/validation split: shared iris/pupil semantic classes and per-eye image-half localization to test the observed left/right pupil-class asymmetry."
+    },
+    {
+      "time": "2026-11-10T00:00:00Z",
+      "kind": "model",
+      "text": "Candidate v2 shared-eye semantic model selected and frozen at epoch 24 using validation macro Dice only: 0.8532; validation pupil presence 10/10 per side, mean center error 0.34/0.41 px at 384 input. Checkpoint and manifest hashes written to frozen run card. Fresh-seed synthetic evaluation started."
+    },
+    {
+      "time": "2026-11-10T00:07:37Z",
+      "kind": "locked_synthetic_evaluation",
+      "text": "Frozen shared-eye candidate fresh-seed evaluation PASS on 24/24 cases: macro Dice .854 (iris .809, pupil .900), pupil pixel-presence 24/24 each side, center error means .434/.539 pixels at 384 input; no rejected samples. Same single synthetic base identity."
+    },
+    {
+      "time": "2026-11-10T00:20:35Z",
+      "kind": "tracking",
+      "text": "Frozen candidate controlled 32-frame synthetic sequence: pupil detection coverage 32/32 per side; mean center error 1.220/1.048 model-input px raw and 1.195/1.036 px after alpha-beta tracking. Fixed face/camera; translation labels only."
+    },
+    {
+      "time": "2026-11-10T00:29:18Z",
+      "kind": "baseline_and_api",
+      "text": "Frozen v2 reduced mean center error versus a train-only constant-coordinate baseline by 78.76%/74.07% on fresh seeds and 60.50%/67.36% on the translated synthetic sequence. Added shared-eye CLI and loopback-only API; local CPU GET /health and POST /v1/frame smoke check passed with both eyes returned. Synthetic single-base limitations remain."
+    },
+    {
+      "time": "2026-11-10T00:29:18Z",
+      "kind": "budget",
+      "text": "Budget set to ₺1,900 planned + ₺80 protected overhead = ₺1,980 hard ceiling. Runtime-based VM estimate at update: ₺203.19; excludes possible disk/network/tax and billing lag."
+    },
+    {
+      "time": "2026-11-10T00:31:44Z",
+      "kind": "closeout",
+      "text": "Final closeout: frozen v2 checkpoint and transferred archive verified; model-versus-coordinate baseline report and loopback API smoke record saved locally. Dedicated VM golden-retina-l4-01 is TERMINATED. Estimated compute runtime spend at stop: ₺204.63, not final billing."
+    }
+  ],
+  "model_results": null,
+  "legacy_results": {
+    "model": "Tiny U-Net, 16 base channels",
+    "best_validation_epoch": 10,
+    "held_out_test_images": 600,
+    "foreground_macro_dice": 0.9854,
+    "pupil_iou": 0.975,
+    "pupil_detection_rate": 1.0,
+    "center_error_mean_px": 0.1786,
+    "center_error_p95_px": 0.4828,
+    "baseline_center_error_mean_px": 0.4621,
+    "tracking_visible_coverage": 1.0,
+    "tracking_center_error_mean_px": 1.4947,
+    "blink_prediction_fraction": 1.0,
+    "status": "Synthetic-only evaluation; not real-eye or camera performance. Validation collapsed at epoch 11, so the epoch-10 best-validation checkpoint was kept."
+  }
 }

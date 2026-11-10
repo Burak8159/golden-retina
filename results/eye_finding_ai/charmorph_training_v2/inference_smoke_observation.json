@@ -1,0 +1,47 @@
+{
+  "status": "RESEARCH_ONLY_SYNTHETIC_DOMAIN_INFERENCE",
+  "checkpoint_sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab",
+  "image_sha256": "17c2c309fc561ba0747ce488d138546baaa0786d31ed995ca6a39d696bb215c8",
+  "device": "cpu",
+  "input_size_px": [
+    512,
+    512
+  ],
+  "model_size_px": [
+    384,
+    384
+  ],
+  "class_names": [
+    "background",
+    "iris",
+    "pupil"
+  ],
+  "eye_side_rule": "left and right are image halves, not subject anatomy metadata",
+  "eyes": {
+    "image_left": {
+      "status": "synthetic_domain_candidate",
+      "pupil_center_xy_px": [
+        204.67,
+        220.86
+      ],
+      "pupil_pixels_at_model_size": 34,
+      "mean_pupil_probability": 0.95062
+    },
+    "image_right": {
+      "status": "synthetic_domain_candidate",
+      "pupil_center_xy_px": [
+        305.3,
+        221.37
+      ],
+      "pupil_pixels_at_model_size": 36,
+      "mean_pupil_probability": 0.90005
+    }
+  },
+  "limitations": [
+    "trained/evaluated on one synthetic base identity and renderer",
+    "not validated on real people or physical camera frames",
+    "square resize may distort non-square inputs",
+    "no calibrated confidence, blink recovery, or hardware calibration",
+    "must not drive motors or be used as a clinical result"
+  ]
+}
