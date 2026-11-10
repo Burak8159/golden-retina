@@ -4,7 +4,7 @@ This path builds a parameterized Blender full-face renderer, dense face/eye labe
 
 ## Frozen shared-eye candidate (current sprint)
 
-The current candidate is a compact `FaceEyeUNet` with shared `background/iris/pupil` classes; left/right estimates are assigned by image half. It was selected at epoch 24 from validation data and frozen before evaluation on a fresh 24-seed cohort and a separate 32-frame synthetic translation sequence. The checkpoint is kept locally at `results/eye_finding_ai/charmorph_training_v2/model_shared_v2b/best_checkpoint.pt` and is not committed to the repository.
+The current candidate is a compact `FaceEyeUNet` with shared `background/iris/pupil` classes; left/right estimates are assigned by image half. It was selected at epoch 24 from validation data and frozen before evaluation on a fresh 24-seed cohort and a separate 32-frame synthetic translation sequence. The checkpoint is included in the repository at `models/eye_finding/charmorph_shared_eye_v2b.pt`; SHA-256: `57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab`. The original local copy is at `results/eye_finding_ai/charmorph_training_v2/model_shared_v2b/best_checkpoint.pt`.
 
 Fresh seed cohort: macro Dice 0.8542 (iris 0.8086, pupil 0.8997), 24/24 pupil detections per side, mean center error 0.434/0.539 pixels at 384 model input. The 32-frame sequence had 32/32 detections per side; raw mean center error was 1.220/1.048 pixels and alpha-beta filtered mean error was 1.195/1.036 pixels. Against a train-only constant-coordinate baseline, the model reduced mean center error from 2.042/2.080 to 0.434/0.539 pixels on fresh seeds, and from 3.087/3.212 to 1.220/1.048 pixels on the sequence. This baseline has no image input and is intentionally simple.
 

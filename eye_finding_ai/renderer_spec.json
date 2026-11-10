@@ -1,0 +1,18 @@
+{
+  "spec_version": "0.1.0",
+  "image_size_wh": [192, 128],
+  "mask_ids": {"0": "background_or_occluded", "1": "sclera", "2": "iris", "3": "pupil"},
+  "randomized_parameters": {
+    "eye_opening_px": [25, 39],
+    "horizontal_eye_bounds_px": [7, 18],
+    "iris_radius_px": [20, 29],
+    "pupil_radius_px": [8, 14],
+    "gaze_horizontal_fraction": [-0.38, 0.38],
+    "gaze_vertical_jitter_px": [-3, 3],
+    "illumination_multiplier": [0.78, 1.18],
+    "sensor_noise_sigma": [1.5, 8.0],
+    "optional_blur_radius_px": [0.25, 1.25]
+  },
+  "sequence_conditions": ["smooth_horizontal_gaze", "short_blink_occlusion", "missed_detection_prediction"],
+  "limitations": ["stylized renderer; no real-camera optics or anatomical validation", "parameter ranges are synthetic assumptions", "stereo geometry not included in this sprint"]
+}

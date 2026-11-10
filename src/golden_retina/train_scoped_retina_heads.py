@@ -38,6 +38,40 @@ def csv_write(path: Path, rows: list[dict]) -> None:
         writer.writerows(rows)
 
 
+def read_prepared_rows(root: Path, manifest: Path) -> list[dict]:
+    """Read the already frozen Golden Retina manifest without re-splitting sources."""
+    path = manifest if manifest.is_absolute() else root / manifest
+    rows: list[dict] = []
+    for item in read_csv(path):
+        split = item["split"]
+        if split not in {"train", "valid"}:
+            raise ValueError(f"Prepared manifest may contain train/valid only, got {split!r}")
+        image = Path(item["image_path"])
+        if not image.is_absolute():
+            image = root / image
+        lesions = json.loads(item["lesions"])
+        if len(lesions) != len(LESIONS):
+            raise ValueError(f"Expected {len(LESIONS)} lesion labels: {item}")
+        rows.append({
+            "image_path": str(image.resolve()),
+            "source": item["source"],
+            "split": split,
+            "patient_id": item["patient_id"],
+            "patient_group_verified": item["patient_group_verified"].strip().lower() == "true",
+            "image_id": item["image_id"],
+            "dr_grade": int(item["dr_grade"]),
+            "ungradable": int(item["ungradable"]),
+            "lesions": [int(value) for value in lesions],
+            "gon": int(item["gon"]),
+        })
+    if not rows:
+        raise ValueError(f"Prepared manifest is empty: {path}")
+    missing = [row["image_path"] for row in rows if not Path(row["image_path"]).is_file()]
+    if missing:
+        raise FileNotFoundError(f"{len(missing)} prepared images missing; first: {missing[0]}")
+    return rows
+
+
 def stratified_patient_splits(rows: list[dict], seed: int) -> dict[str, str]:
     by_patient: dict[str, list[dict]] = defaultdict(list)
     for row in rows:
@@ -231,7 +265,7 @@ def safe_auc(y: np.ndarray, score: np.ndarray) -> float | None:
     return float(np.mean((pos[:, None] > neg[None, :]) + 0.5 * (pos[:, None] == neg[None, :])))
 
 
-def summarize(rows: list[dict], outputs: tuple[np.ndarray, ...]) -> dict:
+def summarize(rows: list[dict], outputs: tuple[np.ndarray, ...], include_quality: bool = True) -> dict:
     dr, quality, lesions, gon = outputs
     reports = {}
     sources = sorted({row["source"] for row in rows})
@@ -242,6 +276,8 @@ def summarize(rows: list[dict], outputs: tuple[np.ndarray, ...]) -> dict:
             ("ungradable", "ungradable", quality, 0.5),
             ("glaucoma", "gon", gon, 0.5),
         ):
+            if task == "ungradable" and not include_quality:
+                continue
             idx = [i for i in source_idx if rows[i][mask_key] >= 0]
             if not idx:
                 continue
@@ -305,7 +341,7 @@ def infer(model, loader, device):
 
 
 def validation_loss(model, loader, device, losses) -> float:
-    dr_loss, quality_loss, lesion_loss, gon_loss = losses
+    dr_loss, quality_loss, lesion_loss, gon_loss, include_quality = losses
     task_values = defaultdict(list)
     model.eval()
     with torch.inference_mode():
@@ -320,7 +356,7 @@ def validation_loss(model, loader, device, losses) -> float:
                 "gon": gon >= 0,
             }
             if masks["dr"].any(): task_values["dr"].append(float(dr_loss(dr_logits[masks["dr"]], grade[masks["dr"]])))
-            if masks["quality"].any(): task_values["quality"].append(float(quality_loss(q_logits[masks["quality"]], ungradable[masks["quality"]].float())))
+            if include_quality and masks["quality"].any(): task_values["quality"].append(float(quality_loss(q_logits[masks["quality"]], ungradable[masks["quality"]].float())))
             if masks["lesion"].any(): task_values["lesion"].append(float(lesion_loss(lesion_logits[masks["lesion"]], lesions[masks["lesion"]])))
             if masks["gon"].any(): task_values["gon"].append(float(gon_loss(gon_logits[masks["gon"]], gon[masks["gon"]].float())))
     means = [float(np.mean(values)) for values in task_values.values() if values]
@@ -331,6 +367,8 @@ def main():
     parser = argparse.ArgumentParser(description="Train retinal heads with source-specific masked labels.")
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--manifest", type=Path, default=Path("results/l4_development_combined_manifest.csv"))
+    parser.add_argument("--prepared-manifest", type=Path,
+                        help="Use a frozen train/valid manifest directly; do not re-split or append another source.")
     parser.add_argument("--mmrdr-manifest", type=Path, default=Path("results/mmrdr_uwf_manifest_20261013.csv"))
     parser.add_argument("--mmrdr-labels", type=Path, default=Path("external/MMRDR/MMRDR-UWF/UWF.csv"))
     parser.add_argument("--hygd", type=Path, default=Path("external/HYGD_v1_1_0"))
@@ -343,16 +381,25 @@ def main():
                         help="Optional model checkpoint for a fine-tuning stage.")
     parser.add_argument("--adaptive-task-weighting", action="store_true",
                         help="Learn bounded task-loss weights from training losses (not reinforcement learning).")
-    parser.add_argument("--max-seconds", type=int, default=6 * 60 * 60,
-                        help="Hard wall-clock limit; checked between batches and epochs.")
+    parser.add_argument("--max-seconds", type=int, default=0,
+                        help="Optional wall-clock limit checked between batches and epochs; 0 means no time limit.")
     parser.add_argument("--skip-mmrdr", action="store_true",
                         help="Skip MMRDR-UWF rows when its large image archive is not staged.")
+    parser.add_argument("--skip-test", action="store_true",
+                        help="Do not load, score, or export predictions for the internal test partition.")
+    parser.add_argument("--freeze-encoder", action="store_true",
+                        help="Freeze the ConvNeXt visual encoder and train only task heads.")
+    parser.add_argument("--disable-quality-loss", action="store_true",
+                        help="Exclude the image-quality task loss and its metrics for a quality-supervision ablation.")
     args = parser.parse_args()
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
     torch.cuda.manual_seed_all(args.seed)
     root = args.root.resolve()
-    rows = build_rows(root, args.manifest, args.mmrdr_manifest, args.mmrdr_labels,
-                      args.hygd, args.seed, include_mmrdr=not args.skip_mmrdr)
+    if args.prepared_manifest:
+        rows = read_prepared_rows(root, args.prepared_manifest)
+    else:
+        rows = build_rows(root, args.manifest, args.mmrdr_manifest, args.mmrdr_labels,
+                          args.hygd, args.seed, include_mmrdr=not args.skip_mmrdr)
     rows, duplicate_audit = deduplicate_exact_images(rows)
     split_rows = {s: [r for r in rows if r["split"] == s] for s in ("train", "valid", "test")}
     for split, selected in split_rows.items():
@@ -369,13 +416,16 @@ def main():
     print(json.dumps({"exact_duplicate_audit": duplicate_audit}), flush=True)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     if device.type != "cuda":
-        raise RuntimeError("This six-hour run requires the L4 CUDA device")
+        raise RuntimeError("This training run requires an available CUDA device")
     model = ScopedRetinaNet().to(device)
     if args.init_checkpoint:
         initial = torch.load(root / args.init_checkpoint, map_location=device, weights_only=False)
         model.load_state_dict(initial["state_dict"])
+    if args.freeze_encoder:
+        for parameter in model.encoder.parameters():
+            parameter.requires_grad_(False)
     task_weights = BoundedTaskWeights().to(device) if args.adaptive_task_weighting else None
-    optimizer_params = list(model.parameters())
+    optimizer_params = [parameter for parameter in model.parameters() if parameter.requires_grad]
     if task_weights is not None:
         optimizer_params += list(task_weights.parameters())
     optimizer = torch.optim.AdamW(optimizer_params, lr=args.lr, weight_decay=2e-4)
@@ -393,14 +443,15 @@ def main():
                      "persistent_workers": args.workers > 0}
     train_loader = DataLoader(train_ds, sampler=sampler, **loader_kwargs)
     valid_loader = DataLoader(RetinaRows(split_rows["valid"], args.size, False), shuffle=False, **loader_kwargs)
-    test_loader = DataLoader(RetinaRows(split_rows["test"], args.size, False), shuffle=False, **loader_kwargs)
+    test_loader = (None if args.skip_test else
+                   DataLoader(RetinaRows(split_rows["test"], args.size, False), shuffle=False, **loader_kwargs))
     scaler = torch.amp.GradScaler("cuda"); history = []; best = float("inf"); stale = 0
     started = time.time()
     timed_out = False
     for epoch in range(1, args.epochs + 1):
         model.train(); epoch_losses = []
         for x, grade, ungradable, lesions, gon in train_loader:
-            if time.time() - started >= args.max_seconds:
+            if args.max_seconds > 0 and time.time() - started >= args.max_seconds:
                 timed_out = True
                 break
             x=x.to(device, non_blocking=True); grade=grade.to(device); ungradable=ungradable.to(device)
@@ -412,7 +463,7 @@ def main():
                 dr_known = grade >= 0
                 if dr_known.any(): pieces["dr"] = dr_loss(dr_logits[dr_known], grade[dr_known])
                 q_known = ungradable >= 0
-                if q_known.any(): pieces["quality"] = quality_loss(q_logits[q_known], ungradable[q_known].float())
+                if not args.disable_quality_loss and q_known.any(): pieces["quality"] = quality_loss(q_logits[q_known], ungradable[q_known].float())
                 lesion_known = (lesions >= 0).all(dim=1)
                 if lesion_known.any(): pieces["lesion"] = lesion_loss(lesion_logits[lesion_known], lesions[lesion_known])
                 gon_known = gon >= 0
@@ -430,10 +481,11 @@ def main():
         valid_outputs = infer(model, valid_loader, device)
         # Use aggregate task loss for early stopping without selecting thresholds on test.
         val_loss = validation_loss(model, valid_loader, device,
-                                   (dr_loss, quality_loss, lesion_loss, gon_loss))
+                                   (dr_loss, quality_loss, lesion_loss, gon_loss, not args.disable_quality_loss))
         item = {"epoch": epoch, "validation_loss": val_loss,
                 "adaptive_task_weights": task_weights.weights() if task_weights is not None else None,
-                "validation_metrics": summarize(split_rows["valid"], valid_outputs)}
+                "validation_metrics": summarize(split_rows["valid"], valid_outputs,
+                                                  include_quality=not args.disable_quality_loss)}
         history.append(item); print(json.dumps(item), flush=True)
         if val_loss < best:
             best, stale = val_loss, 0
@@ -447,41 +499,53 @@ def main():
         else:
             stale += 1
             if stale >= 5: break
-        if timed_out or time.time() - started >= args.max_seconds:
+        if timed_out or (args.max_seconds > 0 and time.time() - started >= args.max_seconds):
             timed_out = True
             break
     if not (root / args.artifact).is_file():
-        raise RuntimeError("No checkpoint was saved before the time limit")
+        raise RuntimeError("No checkpoint was saved during the training run")
     checkpoint = torch.load(root / args.artifact, map_location=device, weights_only=False)
     model.load_state_dict(checkpoint["state_dict"])
-    test_outputs = infer(model, test_loader, device)
+    test_outputs = None if args.skip_test else infer(model, test_loader, device)
     report = {"status": "SCOPED_DEVELOPMENT_ONLY_NOT_CLINICAL_VALIDATION",
-              "test_metrics": summarize(split_rows["test"], test_outputs),
+              "internal_test_status": "not loaded or scored" if args.skip_test else "exposed development diagnostic",
+              "test_metrics": None if args.skip_test else summarize(split_rows["test"], test_outputs),
+              "trainable_info": {"mode": "heads_only" if args.freeze_encoder else "all_parameters",
+                                 "trainable_parameters": sum(p.numel() for p in model.parameters() if p.requires_grad)},
               "best_epoch": checkpoint["epoch"], "split_manifest_sha256": digest,
               "duplicate_audit": duplicate_audit,
               "elapsed_seconds": time.time()-started,
               "time_limit_reached": timed_out,
               "max_seconds": args.max_seconds,
-              "trained_heads": ["dr_grade_0_4", "ungradable", "hygd_gon"],
+              "trained_heads": ["dr_grade_0_4", "hygd_gon"] + ([] if args.disable_quality_loss else ["ungradable"]),
+              "quality_supervision_ablation": args.disable_quality_loss,
               "not_trained_heads": ["mmrdr_7_lesions"] if args.skip_mmrdr else [],
               "global_any_disease_binary": "NOT_TRAINED_INVALID_WITH_PARTIAL_SOURCE_LABELS",
               "label_scope": "Each head is scored only where its source supplied that label; HYGD split is patient-disjoint. Existing data were previously inspected/exposed.",
               "history": history}
     report["adaptive_task_weights"] = task_weights.weights() if task_weights is not None else None
     (outdir / "run_summary.json").write_text(json.dumps(report, indent=2, default=str))
-    dr, quality, lesions, gon = test_outputs
-    with (outdir / "test_predictions.csv").open("w", newline="", encoding="utf-8") as handle:
-        writer = csv.writer(handle)
-        writer.writerow(["source", "split", "image_id", "patient_id", "patient_group_verified",
-                         "dr_grade_true", "dr_grade_pred", "quality_ungradable_true", "quality_probability",
-                         "gon_true", "gon_probability", *[f"lesion_true_{name}" for name in LESIONS],
-                         *[f"lesion_probability_{name}" for name in LESIONS]])
-        for i, row in enumerate(split_rows["test"]):
-            writer.writerow([row["source"], row["split"], row["image_id"], row["patient_id"],
-                             row["patient_group_verified"], row["dr_grade"], int(dr[i].argmax()),
-                             row["ungradable"], float(1 / (1 + np.exp(-quality[i]))), row["gon"],
-                             float(1 / (1 + np.exp(-gon[i]))), *row["lesions"],
-                             *[float(1 / (1 + np.exp(-v))) for v in lesions[i]]])
+    if test_outputs is not None:
+        dr, quality, lesions, gon = test_outputs
+        dr_logits = dr - dr.max(axis=1, keepdims=True)
+        dr_probabilities = np.exp(dr_logits)
+        dr_probabilities /= dr_probabilities.sum(axis=1, keepdims=True)
+        with (outdir / "test_predictions.csv").open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.writer(handle)
+            writer.writerow(["source", "split", "image_id", "patient_id", "patient_group_verified",
+                             "dr_grade_true", "dr_grade_pred", "dr_probability_any_dr_ge_1",
+                             "dr_probability_referable_ge_2", *[f"dr_probability_grade_{grade}" for grade in range(5)],
+                             "quality_ungradable_true", "quality_probability",
+                             "gon_true", "gon_probability", *[f"lesion_true_{name}" for name in LESIONS],
+                             *[f"lesion_probability_{name}" for name in LESIONS]])
+            for i, row in enumerate(split_rows["test"]):
+                writer.writerow([row["source"], row["split"], row["image_id"], row["patient_id"],
+                                 row["patient_group_verified"], row["dr_grade"], int(dr[i].argmax()),
+                                 float(dr_probabilities[i, 1:].sum()),
+                                 float(dr_probabilities[i, 2:].sum()), *[float(x) for x in dr_probabilities[i]],
+                                 row["ungradable"], float(1 / (1 + np.exp(-quality[i]))), row["gon"],
+                                 float(1 / (1 + np.exp(-gon[i]))), *row["lesions"],
+                                 *[float(1 / (1 + np.exp(-v))) for v in lesions[i]]])
     print(json.dumps(report, indent=2, default=str), flush=True)
 
 

@@ -75,10 +75,13 @@ class EyeBags(Dataset):
         if self.max_views != pad_to_views:
             raise ValueError(f"A bag contains more than the configured {pad_to_views} views")
         for bag in grouped.values():
-            if bag["source_dataset"] in {"drtid_paired", "deepdrid_paired"}:
+            if bag["source_dataset"] in {"drtid_paired", "deepdrid_paired", "deepdrid"}:
                 fields = {view[0] for view in bag["views"]}
-                if fields != {"macula", "optic_disc"}:
-                    raise ValueError(f"Incomplete DRTiD pair {bag['eye_id']}: {sorted(fields)}")
+                # The matched single-view control deliberately contains only
+                # the macula image. A lone optic-disc image remains an
+                # incomplete pair and is rejected, as are all other field sets.
+                if fields not in ({"macula", "optic_disc"}, {"macula"}):
+                    raise ValueError(f"Invalid paired-view bag {bag['eye_id']}: {sorted(fields)}")
                 bag["views"].sort(key=lambda view: (view[0] != "macula", view[2]))
             elif bag["source_dataset"] == "mfiddr_paired":
                 field_order = {
@@ -423,8 +426,6 @@ class BoundaryPairBatchSampler(Sampler[list[int]]):
             raise ValueError("Boundary-pair sampling requires grade-1 and grade-2 eyes in at least one source")
         if not self.grade_zero or not self.grade_severe:
             raise ValueError("Sampler requires grade-0 and grade-3/4 training eyes")
-        if not self.ungradable:
-            raise ValueError("Sampler requires known ungradable training eyes for quality supervision")
         self.groups = groups
 
     def __iter__(self):
@@ -433,8 +434,12 @@ class BoundaryPairBatchSampler(Sampler[list[int]]):
         for step in range(self.batches_per_epoch):
             slot = step % 10
             if slot == 8:
-                # Retain a direct quality signal while the encoder is fine-tuned.
-                yield [rng.choice(self.ungradable), rng.choice(self.grade_zero)]
+                # Use quality labels when present; otherwise preserve in-domain
+                # grade controls rather than inventing an ungradable label.
+                if self.ungradable:
+                    yield [rng.choice(self.ungradable), rng.choice(self.grade_zero)]
+                else:
+                    yield [rng.choice(self.grade_zero), rng.choice(self.grade_severe)]
             elif slot == 9:
                 # Keep the ordinal head exposed to non-boundary grades.
                 yield [rng.choice(self.grade_zero), rng.choice(self.grade_severe)]

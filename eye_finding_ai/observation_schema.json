@@ -1,0 +1,20 @@
+{
+  "schema_version": "0.1.0",
+  "project": "Golden Retina eye finding and tracking AI",
+  "coordinate_frame": "input_eye_crop_pixel_xy_origin_top_left",
+  "observation": {
+    "timestamp_ns": "integer camera timestamp",
+    "eye_side": "left | right | unknown",
+    "pupil_center_xy": "[x, y] pixel coordinates or null",
+    "pupil_mask_rle": "optional run-length encoded mask",
+    "confidence": "float in [0,1] or null",
+    "track_state": "detected | predicted | uncertain | lost",
+    "frame_size_wh": "[width, height]",
+    "model_version": "immutable model identifier"
+  },
+  "stereo_extension": {
+    "enabled_only_when_calibrated": true,
+    "fields": ["camera_calibration_id", "pupil_center_3d_mm", "reprojection_error_px", "depth_confidence"]
+  },
+  "safety_boundary": "Perception output only; no motor commands or clinical diagnosis."
+}

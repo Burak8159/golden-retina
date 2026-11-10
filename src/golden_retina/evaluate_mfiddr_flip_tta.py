@@ -6,6 +6,7 @@ an explicitly exploratory test diagnostic; it is not independent confirmation.
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 from pathlib import Path
 
@@ -35,6 +36,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--batch-size", type=int, default=8)
     parser.add_argument("--workers", type=int, default=4)
+    parser.add_argument(
+        "--orientation-tta",
+        choices=("horizontal", "dihedral4"),
+        default="horizontal",
+        help="Use horizontal flip or identity plus horizontal/vertical/180-degree flips.",
+    )
+    parser.add_argument(
+        "--evaluate-test",
+        action="store_true",
+        help="Also compute the already-exposed test diagnostic after selecting on validation.",
+    )
+    parser.add_argument(
+        "--limit-batches",
+        type=int,
+        default=0,
+        help="Optional diagnostic cap; nonzero runs are not full evaluation results.",
+    )
+    parser.add_argument(
+        "--validation-predictions-out",
+        type=Path,
+        default=None,
+        help="Optional CSV path for full patient-level validation scores and labels.",
+    )
     return parser.parse_args()
 
 def main() -> None:
@@ -83,30 +107,28 @@ def main() -> None:
             "quality", "eye_id", "patient_id", "source_dataset", "image_ids",
         )
         columns = {key: [] for key in keys}
-        for batch in loader:
+        for batch_index, batch in enumerate(loader):
+            if args.limit_batches and batch_index >= args.limit_batches:
+                break
             images, mask, grade, ref, known, ungradable, eye, patient, source, ids, _, _ = batch
             images = images.to(device)
             mask = mask.to(device)
-            grade_logits, risk_logits, quality_logits = model(images, mask)
-            flip_grade_logits, flip_risk_logits, flip_quality_logits = model(
-                images.flip(-1), mask
-            )
+            variants = [images, images.flip(-1)]
+            if args.orientation_tta == "dihedral4":
+                variants.extend((images.flip(-2), images.flip((-1, -2))))
+            outputs = [model(variant, mask) for variant in variants]
+            grade_logits = torch.stack([item[0].float() for item in outputs])
+            risk_logits = torch.stack([item[1].float() for item in outputs])
+            quality_logits = torch.stack([item[2].float() for item in outputs])
 
-            # Sensitivity-oriented flip TTA: take the higher risk and quality
-            # score across the original and horizontally flipped inputs.
-            risk = torch.maximum(
-                torch.sigmoid(risk_logits.float()),
-                torch.sigmoid(flip_risk_logits.float()),
-            )
-            ordinal_risk = torch.maximum(
-                ordinal_referable_score(grade_logits),
-                ordinal_referable_score(flip_grade_logits),
-            )
-            mean_grade_logits = (grade_logits.float() + flip_grade_logits.float()) / 2
-            quality = torch.maximum(
-                torch.sigmoid(quality_logits.float()),
-                torch.sigmoid(flip_quality_logits.float()),
-            )
+            # Sensitivity-oriented TTA: take the maximum disease/quality risk
+            # across deterministic orientation variants.
+            risk = torch.sigmoid(risk_logits).amax(dim=0)
+            ordinal_risk = torch.stack(
+                [ordinal_referable_score(item[0]) for item in outputs]
+            ).amax(dim=0)
+            mean_grade_logits = grade_logits.mean(dim=0)
+            quality = torch.sigmoid(quality_logits).amax(dim=0)
             values = {
                 "grade": grade.numpy(),
                 "referable": ref.numpy(),
@@ -158,19 +180,34 @@ def main() -> None:
         return result
 
     validation = run("valid")
-    test = run("test")
+    test = run("test") if args.evaluate_test else None
+    if args.validation_predictions_out is not None:
+        args.validation_predictions_out.parent.mkdir(parents=True, exist_ok=True)
+        keys = sorted(validation)
+        with args.validation_predictions_out.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=keys)
+            writer.writeheader()
+            for index in range(len(validation["grade"])):
+                writer.writerow({
+                    key: (
+                        validation[key][index].item()
+                        if isinstance(validation[key][index], np.generic)
+                        else validation[key][index]
+                    )
+                    for key in keys
+                })
     validation_input = {
         key: validation[key]
         for key in ("grade", "risk", "quality", "quality_known", "ungradable")
     }
     policy = select_accuracy_floor_sensitivity_policy(validation_input, 0.90)
     output = {
-        "method": "Horizontal-flip TTA using the maximum risk across original/flipped inputs; threshold selected on patient-level validation.",
+        "method": f"{args.orientation_tta} orientation TTA using maximum risk across variants; threshold selected on patient-level validation.",
         "validation": metrics(validation, policy),
-        "already_exposed_test_diagnostic": metrics(test, policy),
+        "already_exposed_test_diagnostic": metrics(test, policy) if test is not None else None,
         "policy": policy,
         "n_validation": int(len(validation["grade"])),
-        "n_test": int(len(test["grade"])),
+        "n_test": int(len(test["grade"])) if test is not None else 0,
         "test_independent_confirmation": False,
     }
     output_path = Path(args.out)
