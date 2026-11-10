@@ -29,3 +29,7 @@ A second archive restored the project-level results and code, including the 8,16
 The eye-crop TinyUNet checkpoint (`eye_finding_ai/artifacts/eye_pupil_unet.pt`) is 1,963,389 bytes and loaded successfully. On its 600 generated held-out images it reached foreground macro Dice 0.9854 and pupil detection 100%; this is synthetic-only. The frozen `FaceEyeUNet` checkpoint already in GitHub was byte-for-byte identical to the recovered L4 v2b checkpoint (SHA-256 `57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab`).
 
 Across both bundles, 8,267 payload files (about 3.54 GB) were restored and covered by local SHA-256 inventories. The tracked recovery manifest records all 19 recovered model/weight files and the exact archive hashes. The original dataset store was not copied; the original boot disk remains preserved.
+
+## Required closeout rule for future GPU runs
+
+Do not stop, delete, or hand off a GPU VM until its project outputs have been inventoried and copied locally: best and last checkpoints, resumable state, configs/manifests, logs, metrics, and private row-level outputs needed for continued research. Verify the transferred archive and individual-file hashes, then publish only shareable code and aggregates to GitHub. Record any excluded weight/data rights explicitly. A shutdown is complete only after local recovery is verified and the final cloud inventory confirms the intended resources are stopped or removed.
