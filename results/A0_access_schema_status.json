@@ -1,4 +1,8 @@
 {
+  "csv_hashes": {
+    "test_fourpic_label.csv": "d48b25d47d7b1a8fc03198cdd473a79f62888a179038679f6ce4049313adb849",
+    "train_fourpic_label.csv": "56ba9a5af0ab3223f972c0f5b3d77a4995360ecc74ee89df8250d26c27c8f451"
+  },
   "field_mapping": {
     "F1": "macula_centered",
     "F2": "optic_disc_centered",
@@ -6,13 +10,14 @@
     "F4": "inferior_tangent_to_optic_disc_horizontal_line"
   },
   "gate": "A0",
-  "missing": [
-    "data/MFIDDR/train",
-    "data/MFIDDR/test",
-    "data/MFIDDR/train_fourpic_label.csv",
-    "data/MFIDDR/test_fourpic_label.csv"
+  "grades": [
+    0,
+    1,
+    2,
+    3,
+    4
   ],
-  "reason": "MFIDDR files are not present locally.",
-  "source": "https://github.com/mfiddr/MFIDDR",
-  "status": "BLOCKED"
+  "n_images": 34452,
+  "n_patients": 4341,
+  "status": "PASS"
 }
