@@ -261,12 +261,12 @@
       "description": "Stop only the named Golden Retina L4 and confirm it is stopped; leave unrelated cloud resources untouched.",
       "status": "complete",
       "status_label": "Complete · L4 stopped and verified",
-      "evidence": "Stopped only golden-retina-disease-l4-20261114 in us-west1-a; cloud API reports TERMINATED at 2026-11-14T12:53:33Z. RTX and unrelated cloud resources were untouched."
+      "evidence": "Stopped only golden-retina-disease-l4-20261114 in us-west1-a; cloud API reports TERMINATED at 2026-11-14T12:53:33Z. RTX and unrelated cloud resources were untouched. The associated 100-GB persistent disk remains READY and may incur storage charges; no disk deletion was authorized in this block."
     }
   ],
   "gate_title": "Research development run closed; clinical validation remains open",
-  "gate_detail": "All 32 planned work blocks are complete. RFMiD results are image-split development evidence only: patient independence, intended-camera validity, and clinical utility are not established. The complete private VM workspace archive is locally checksum-verified; safe source and aggregates are on GitHub; the Golden Retina L4 is TERMINATED.",
-  "gpu_status": "Golden Retina L4 TERMINATED and verified; RTX unused; no Golden Retina GPU job remains active.",
+  "gate_detail": "All 32 planned work blocks are complete. RFMiD results are image-split development evidence only: patient independence, intended-camera validity, and clinical utility are not established. The complete private VM workspace archive is locally checksum-verified; safe source and aggregates are on GitHub; the Golden Retina L4 is TERMINATED. The VM boot/data disk remains READY to preserve the verified source/cache and may incur ongoing storage charges.",
+  "gpu_status": "Golden Retina L4 TERMINATED and verified; 100-GB persistent disk remains READY; RTX unused.",
   "evidence": [
     "NEI describes dilation as enabling retinal and optic-nerve inspection and screening for DR, glaucoma and AMD; the camera still captures only its actual field of view.",
     "RFMiD is a 3,200-image, 46-condition multi-label fundus dataset from three cameras with expert consensus labels; patient-level separation is not established by the official image-level split.",
@@ -304,7 +304,8 @@
     "RFMiD MS image-split test at threshold 0.5: accuracy=0.9844, sensitivity=0.2857, specificity=0.9921, auroc=0.8934, average_precision=0.2276; missed positives=5/7; validation-selected convnext_tiny; patient independence and clinical validity not established.",
     "RFMiD RT image-split test at threshold 0.5: accuracy=0.9938, sensitivity=0.2000, specificity=1.0000, auroc=0.9318, average_precision=0.5192; missed positives=4/5; validation-selected convnext_tiny; patient independence and clinical validity not established.",
     "Full private project workspace archive pulled to results/remote_closeout_20261114/golden_retina_workspace_20261114.tar (11,444,756,480 bytes); SHA-256 matches remote: f36bc22214af09ca015e93358f90c8f08da361d96d7b07f27b17860a2655bdcf. Archive is local and Git-ignored; raw RFMiD images, local checkpoints, and environment are not published.",
-    "Final cloud closeout: golden-retina-disease-l4-20261114 is TERMINATED; estimated runtime spend at stop ₺238.85, not a settled invoice; billing can lag and ancillary charges may differ."
+    "Final cloud closeout: golden-retina-disease-l4-20261114 is TERMINATED; estimated runtime spend at stop ₺238.85, not a settled invoice; billing can lag and ancillary charges may differ.",
+    "A Golden Retina 100-GB pd-balanced persistent disk remains READY after VM shutdown to preserve the source/cache. It was not deleted; storage billing may continue and is excluded from the ₺238.85 runtime estimate."
   ],
   "issues": [
     {
@@ -342,6 +343,12 @@
       "detail": "Initial DINOv2 attempt failed because the project venv had an incompatible torchaudio build. Installed the matching torchaudio build only inside the project venv and verified the pinned DINOv2 checkpoint loads offline.",
       "status": "resolved",
       "next_action": "Resolved. Recovery completed using train/validation only; it did not exceed ConvNeXt validation AUROC and did not access DR test data."
+    },
+    {
+      "title": "Persistent disk remains after VM shutdown",
+      "detail": "The Golden Retina 100-GB pd-balanced disk is READY so the verified source/cache remains available. Storage charges may continue and are not included in the L4 runtime estimate.",
+      "status": "active",
+      "next_action": "Review whether to retain or delete the disk; the disk was preserved during this scoped VM-only closeout."
     }
   ],
   "budget": {
@@ -350,7 +357,7 @@
     "planned_total_try": 1900,
     "hard_total_try": 1980,
     "protected_reserve_try": 80,
-    "display_label": "Estimated L4 runtime at public on-demand rate; invoice may lag; excludes unrelated resources",
+    "display_label": "Estimated L4 runtime only; excludes persistent-disk storage, tax, network and unmetered extras; invoice may lag.",
     "accrual_active": false,
     "as_of_utc": "2026-11-14T12:53:33Z",
     "accrual_rate_try_per_hour": 35.6

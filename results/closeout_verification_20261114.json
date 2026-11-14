@@ -28,5 +28,12 @@
   "vm_status": "TERMINATED",
   "vm_last_stop_utc": "2026-11-14T12:53:33Z",
   "estimated_runtime_spend_try": 238.85,
-  "invoice_settled": false
+  "invoice_settled": false,
+  "persistent_disk_name": "golden-retina-disease-l4-20261114",
+  "persistent_disk_status": "READY",
+  "persistent_disk_size_gb": 100,
+  "persistent_disk_type": "pd-balanced",
+  "persistent_disk_deleted": false,
+  "persistent_disk_note": "Preserved after full private archive verification; may incur ongoing storage charges not included in runtime estimate.",
+  "estimated_runtime_spend_note": "L4 runtime estimate only; not settled invoice; excludes persistent disk, network, tax and unmetered extras."
 }
