@@ -21,11 +21,18 @@ enum BrandColor {
 
 enum AppTab: Hashable {
     case home
-    case about
+    case demo
+    case guide
+    case settings
 }
 
 struct RootView: View {
     @State private var selection: AppTab = .home
+    @AppStorage("goldenRetinaColorScheme") private var colorChoice = "system"
+
+    private var preferredScheme: ColorScheme? {
+        switch colorChoice { case "light": .light; case "dark": .dark; default: nil }
+    }
 
     var body: some View {
         TabView(selection: $selection) {
@@ -36,11 +43,20 @@ struct RootView: View {
             .tag(AppTab.home)
 
             NavigationStack {
-                AboutView()
+                DemoFlowView(onExit: { selection = .home })
             }
-            .tabItem { Label("About", systemImage: "info.circle.fill") }
-            .tag(AppTab.about)
+            .tabItem { Label("Demo", systemImage: "eye") }
+            .tag(AppTab.demo)
+
+            NavigationStack { HowToUseView() }
+                .tabItem { Label("How to use", systemImage: "questionmark.circle") }
+                .tag(AppTab.guide)
+
+            NavigationStack { SettingsView() }
+                .tabItem { Label("Settings", systemImage: "gearshape") }
+                .tag(AppTab.settings)
         }
+        .preferredColorScheme(preferredScheme)
     }
 }
 
@@ -233,12 +249,82 @@ struct GogglesUnavailableSheet: View {
     }
 }
 
-struct AboutView: View {
+struct HowToUseView: View {
+    var body: some View {
+        List {
+            Section {
+                Label("Guided walkthrough", systemImage: "list.number")
+                    .font(.headline)
+                Text("The demo is a simulation. It does not connect to goggles, capture images, track your gaze, or run a disease model.")
+                    .foregroundStyle(.secondary)
+            }
+            Section("How a real session is intended to work") {
+                manualStep("1", title: "Prepare the goggles", body: "Turn on the goggles and pair them from Settings once compatible hardware and its Bluetooth protocol are available.")
+                manualStep("2", title: "Start with the goggles button", body: "In the intended product flow, pressing the physical goggles button begins acquisition. The demo uses an on-screen button to represent that action.")
+                manualStep("3", title: "Hold still and look toward the guide", body: "The planned interface guides positioning and image capture. The current eye graphic is illustrative only; it does not track the user.")
+                manualStep("4", title: "Capture both eyes", body: "The flow scans the right eye and then switches automatically to the left eye.")
+                manualStep("5", title: "Review the summary", body: "The demo shows expandable condition groups and example group-priority labels. Every condition is marked Not analyzed.")
+            }
+            Section("Instructional video") {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16).fill(Color.secondary.opacity(0.12))
+                    VStack(spacing: 10) {
+                        Image(systemName: "play.rectangle").font(.system(size: 34)).foregroundStyle(BrandColor.green)
+                        Text("Instructional video coming soon").font(.headline)
+                        Text("Video placeholder · no playback available").font(.caption).foregroundStyle(.secondary)
+                    }
+                    .padding(24)
+                }
+                .frame(height: 170)
+                .accessibilityElement(children: .combine)
+            }
+            Section("Safety and current limitations") {
+                Label("No real scans or clinical results are produced", systemImage: "cross.case")
+                Label("Bluetooth goggles pairing is not implemented", systemImage: "eyeglasses")
+            }
+        }
+        .navigationTitle("How to use")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func manualStep(_ number: String, title: String, body: String) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            Text(number).font(.headline).foregroundStyle(.white)
+                .frame(width: 30, height: 30).background(BrandColor.green, in: Circle())
+            VStack(alignment: .leading, spacing: 5) {
+                Text(title).font(.subheadline.weight(.semibold))
+                Text(body).font(.footnote).foregroundStyle(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+}
+
+struct SettingsView: View {
     @StateObject private var registry = OnDeviceModelRegistry()
     @State private var registryURL = UserDefaults.standard.string(forKey: "goldenRetinaModelRegistryURL") ?? ""
+    @AppStorage("goldenRetinaColorScheme") private var colorChoice = "system"
+    @State private var showBluetoothInfo = false
 
     var body: some View {
         List {
+            Section("Appearance") {
+                Picker("Color", selection: $colorChoice) {
+                    Text("System").tag("system")
+                    Text("Light").tag("light")
+                    Text("Dark").tag("dark")
+                }
+                .pickerStyle(.segmented)
+                .accessibilityLabel("App color appearance")
+            }
+            Section("Goggles") {
+                Button { showBluetoothInfo = true } label: {
+                    Label("Connect goggles via Bluetooth", systemImage: "eyeglasses")
+                }
+                .foregroundStyle(.primary)
+                Label("Unavailable · hardware and Bluetooth protocol are not ready", systemImage: "lock.fill")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
             Section {
                 Label("Golden Retina", systemImage: "eye.circle.fill")
                     .font(.title3.bold())
@@ -289,8 +375,13 @@ struct AboutView: View {
                 Text("Golden Retina · Early concept")
             }
         }
-        .navigationTitle("About")
+        .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
+        .alert("Goggles connection unavailable", isPresented: $showBluetoothInfo) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Bluetooth pairing is not active because compatible goggles hardware and its connection protocol are not available yet.")
+        }
     }
 
     @ViewBuilder
@@ -502,6 +593,7 @@ enum DemoPhase: Equatable {
 struct DemoFlowView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    var onExit: (() -> Void)? = nil
     @State private var phase: DemoPhase = .welcome
     @State private var scanProgress = 0.0
     @State private var scanKey = UUID()
@@ -512,7 +604,7 @@ struct DemoFlowView: View {
                 HStack {
                     DemoBadge()
                     Spacer()
-                    Button("Exit demo") { dismiss() }
+                    Button("Exit demo", action: exitDemo)
                         .font(.subheadline.weight(.semibold))
                         .frame(minHeight: 44)
                 }
@@ -537,7 +629,7 @@ struct DemoFlowView: View {
                     case .leftScan: EyeScanView(eye: "Left", progress: scanProgress)
                     case .leftDone: CapturedView(eye: "Left", nextStep: "Preparing the example summary automatically…")
                     case .analyzing: AnalysisView()
-                    case .results: DemoResultsView(onReplay: reset, onDone: { dismiss() })
+                    case .results: DemoResultsView(onReplay: reset, onDone: exitDemo)
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -610,6 +702,10 @@ struct DemoFlowView: View {
     private func reset() {
         scanProgress = 0
         phase = .welcome
+    }
+
+    private func exitDemo() {
+        if let onExit { onExit() } else { dismiss() }
     }
 }
 
@@ -735,19 +831,18 @@ struct EyeScanView: View {
             }
             .padding(.top, 16)
             ZStack {
-                Circle().fill(Color(red: 0.07, green: 0.22, blue: 0.20))
-                RetinaArtwork().padding(18)
-                Circle().stroke(.white.opacity(0.75), lineWidth: 2)
-                    .frame(width: 220, height: 220)
-                    .overlay(alignment: .top) {
-                        Capsule().fill(.white).frame(width: 220, height: 2).shadow(color: BrandColor.mint, radius: 7)
-                            .offset(y: 110)
-                            .offset(y: -220 * progress)
-                    }
-                    .mask(Circle().frame(width: 220, height: 220))
+                RoundedRectangle(cornerRadius: 30).fill(Color(red: 0.07, green: 0.22, blue: 0.20))
+                EyeTrackingArtwork(progress: progress)
+                    .padding(20)
+                GeometryReader { proxy in
+                    Capsule().fill(.white).frame(width: proxy.size.width * 0.78, height: 2)
+                        .shadow(color: BrandColor.mint, radius: 7)
+                        .position(x: proxy.size.width / 2, y: proxy.size.height * (0.12 + 0.76 * progress))
+                }
+                .padding(20)
             }
-            .frame(width: 250, height: 250)
-            .clipShape(Circle())
+            .frame(width: 300, height: 220)
+            .clipShape(RoundedRectangle(cornerRadius: 30))
             .accessibilityHidden(true)
             VStack(spacing: 10) {
                 Text(scanStatus)
@@ -833,6 +928,8 @@ struct AnalysisView: View {
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
+                Label("Simulated eye tracking · demo only", systemImage: "scope")
+                    .font(.caption.weight(.medium)).foregroundStyle(.secondary)
             }
             Spacer()
         }
@@ -840,14 +937,49 @@ struct AnalysisView: View {
     }
 }
 
+private struct EyeTrackingArtwork: View {
+    let progress: Double
+    var body: some View {
+        Canvas { context, size in
+            let eye = CGRect(x: size.width * 0.08, y: size.height * 0.22, width: size.width * 0.84, height: size.height * 0.56)
+            var outline = Path()
+            outline.move(to: CGPoint(x: eye.minX, y: eye.midY))
+            outline.addQuadCurve(to: CGPoint(x: eye.maxX, y: eye.midY), control: CGPoint(x: eye.midX, y: eye.minY))
+            outline.addQuadCurve(to: CGPoint(x: eye.minX, y: eye.midY), control: CGPoint(x: eye.midX, y: eye.maxY))
+            context.fill(outline, with: .color(Color(red: 0.91, green: 0.96, blue: 0.92)))
+            context.stroke(outline, with: .color(BrandColor.mint), lineWidth: 3)
+            let irisCenter = CGPoint(x: eye.minX + eye.width * (0.42 + 0.16 * progress), y: eye.midY)
+            let irisRect = CGRect(x: irisCenter.x - eye.height * 0.25, y: irisCenter.y - eye.height * 0.25, width: eye.height * 0.5, height: eye.height * 0.5)
+            context.fill(Path(ellipseIn: irisRect), with: .color(Color(red: 0.18, green: 0.56, blue: 0.47)))
+            let pupilRect = irisRect.insetBy(dx: irisRect.width * 0.28, dy: irisRect.height * 0.28)
+            context.fill(Path(ellipseIn: pupilRect), with: .color(Color(red: 0.04, green: 0.16, blue: 0.15)))
+            let gaze = CGRect(x: irisCenter.x - 5, y: irisCenter.y - 5, width: 10, height: 10)
+            context.stroke(Path(ellipseIn: gaze.insetBy(dx: -9, dy: -9)), with: .color(.white), lineWidth: 1.5)
+            context.fill(Path(ellipseIn: gaze), with: .color(.white))
+        }
+    }
+}
+
 struct DemoResultsView: View {
-    private let conditions = [
-        "Diabetic retinopathy", "Age-related macular degeneration", "Drusen finding",
-        "Myopic fundus appearance", "Branch retinal vein occlusion",
-        "Optic-disc cupping finding", "Optic-disc pallor finding", "Optic-disc edema finding",
-        "Retinal tessellation", "Retinal laser-scar finding", "Central serous retinopathy",
-        "Retinitis finding", "Chorioretinitis finding", "Central retinal vein occlusion",
-        "Epiretinal membrane appearance", "Macular-scar finding", "Retinal traction finding"
+    private struct ExampleCondition: Identifiable {
+        let name: String
+        let sampleRisk: Int
+        var id: String { name }
+    }
+    private struct ExampleGroup: Identifiable {
+        let title: String
+        let conditions: [ExampleCondition]
+        var id: String { title }
+        var highestRisk: Int { conditions.map(\.sampleRisk).max() ?? 0 }
+    }
+    @State private var expandedGroups: Set<String> = ["Retina & macula"]
+    private let groups = [
+        ExampleGroup(title: "Retina & macula", conditions: [
+            .init(name: "Diabetic retinopathy", sampleRisk: 2), .init(name: "Age-related macular degeneration", sampleRisk: 2), .init(name: "Drusen finding", sampleRisk: 1), .init(name: "Myopic fundus appearance", sampleRisk: 1), .init(name: "Branch retinal vein occlusion", sampleRisk: 2), .init(name: "Retinal tessellation", sampleRisk: 1), .init(name: "Retinal laser-scar finding", sampleRisk: 1), .init(name: "Central serous retinopathy", sampleRisk: 2), .init(name: "Retinitis finding", sampleRisk: 2), .init(name: "Chorioretinitis finding", sampleRisk: 2), .init(name: "Central retinal vein occlusion", sampleRisk: 2), .init(name: "Epiretinal membrane appearance", sampleRisk: 1), .init(name: "Macular-scar finding", sampleRisk: 2), .init(name: "Retinal traction finding", sampleRisk: 2)
+        ]),
+        ExampleGroup(title: "Optic nerve", conditions: [
+            .init(name: "Optic-disc cupping finding", sampleRisk: 1), .init(name: "Optic-disc pallor finding", sampleRisk: 1), .init(name: "Optic-disc edema finding", sampleRisk: 2)
+        ])
     ]
     let onReplay: () -> Void
     let onDone: () -> Void
@@ -872,31 +1004,46 @@ struct DemoResultsView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Condition-by-condition breakdown", systemImage: "doc.text.magnifyingglass")
                         .font(.headline)
-                    Text("These are separate research labels, not mutually exclusive diagnoses. Each row shows where a future per-condition result could appear.")
+                    Text("Expand a group to see its individual conditions. The group badge shows the highest example priority within that group.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
-                    Divider()
-                    ForEach(conditions, id: \.self) { condition in
-                        HStack(alignment: .top, spacing: 12) {
-                            Image(systemName: "eye")
-                                .foregroundStyle(BrandColor.green)
-                                .frame(width: 22)
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(condition).font(.subheadline.weight(.semibold))
-                                Text("Right eye · Not analyzed     Left eye · Not analyzed")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
+                    ForEach(groups) { group in
+                        DisclosureGroup(isExpanded: Binding(
+                            get: { expandedGroups.contains(group.id) },
+                            set: { expanded in
+                                if expanded { expandedGroups.insert(group.id) } else { expandedGroups.remove(group.id) }
                             }
-                            Spacer(minLength: 0)
-                            Text("DEMO")
-                                .font(.caption2.weight(.bold))
-                                .foregroundStyle(BrandColor.green)
+                        )) {
+                            ForEach(group.conditions) { condition in
+                                HStack(alignment: .top, spacing: 10) {
+                                    Image(systemName: "eye").foregroundStyle(BrandColor.green).frame(width: 22)
+                                    VStack(alignment: .leading, spacing: 5) {
+                                        Text(condition.name).font(.subheadline.weight(.semibold))
+                                        Text("Right eye · Not analyzed  ·  Left eye · Not analyzed").font(.caption).foregroundStyle(.secondary)
+                                    }
+                                    Spacer(minLength: 0)
+                                    Text(condition.sampleRisk == 2 ? "HIGH" : "LOW")
+                                        .font(.caption2.weight(.bold)).foregroundStyle(condition.sampleRisk == 2 ? .orange : .secondary)
+                                }
+                                .padding(.vertical, 7)
+                            }
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(group.title).font(.subheadline.weight(.bold))
+                                    Text("\(group.conditions.count) conditions").font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text(group.highestRisk == 2 ? "HIGH RISK" : "LOW RISK")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundStyle(group.highestRisk == 2 ? .orange : BrandColor.green)
+                                    .padding(.horizontal, 9).padding(.vertical, 6)
+                                    .background((group.highestRisk == 2 ? Color.orange : BrandColor.green).opacity(0.12), in: Capsule())
+                            }
                         }
-                        .padding(.vertical, 5)
-                        if condition != conditions.last { Divider() }
+                        .tint(BrandColor.green)
                     }
-                    Divider()
-                    Text("No disease or eye image is analyzed in this demo. These rows are placeholders, not predictions, probabilities, or medical advice.")
+                    Text("Risk badges are illustrative group-priority labels only, not patient-specific risk. No disease or eye image is analyzed; every condition is Not analyzed.")
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(.primary)
                 }

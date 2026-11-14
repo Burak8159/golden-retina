@@ -51,6 +51,7 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -121,13 +122,22 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContent { GoldenRetinaTheme { GoldenRetinaApp() } }
+        setContent {
+            val prefs = getSharedPreferences("golden_retina_settings", Context.MODE_PRIVATE)
+            var colorChoice by rememberSaveable { mutableStateOf(prefs.getString("color", "system") ?: "system") }
+            GoldenRetinaTheme(colorChoice) {
+                GoldenRetinaApp(colorChoice, onColorChoice = {
+                    colorChoice = it
+                    prefs.edit().putString("color", it).apply()
+                })
+            }
+        }
     }
 }
 
 @Composable
-private fun GoldenRetinaTheme(content: @Composable () -> Unit) {
-    val dark = isSystemInDarkTheme()
+private fun GoldenRetinaTheme(colorChoice: String, content: @Composable () -> Unit) {
+    val dark = when (colorChoice) { "dark" -> true; "light" -> false; else -> isSystemInDarkTheme() }
     val context = LocalContext.current
     val scheme = if (android.os.Build.VERSION.SDK_INT >= 31) {
         if (dark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -139,26 +149,31 @@ private fun GoldenRetinaTheme(content: @Composable () -> Unit) {
     MaterialTheme(colorScheme = scheme, content = content)
 }
 
-private enum class Destination { HOME, ABOUT, DEMO }
+private enum class Destination { HOME, DEMO, GUIDE, SETTINGS }
 private enum class DemoPhase { WELCOME, SEARCHING, CONNECTED, RIGHT_SCAN, RIGHT_DONE, LEFT_SCAN, LEFT_DONE, ANALYZING, RESULTS }
+private data class ConditionItem(val name: String, val highRisk: Boolean)
+private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>) {
+    val highestRisk: Boolean get() = conditions.any { it.highRisk }
+}
 
 @Composable
-private fun GoldenRetinaApp() {
+private fun GoldenRetinaApp(colorChoice: String, onColorChoice: (String) -> Unit) {
     var destination by rememberSaveable { mutableStateOf(Destination.HOME.name) }
     BackHandler(enabled = destination == Destination.DEMO.name) { destination = Destination.HOME.name }
 
     when (Destination.valueOf(destination)) {
-        Destination.HOME, Destination.ABOUT -> MainTabs(
+        Destination.HOME, Destination.DEMO, Destination.GUIDE, Destination.SETTINGS -> MainTabs(
             selected = Destination.valueOf(destination),
             onSelect = { destination = it.name },
             onStartDemo = { destination = Destination.DEMO.name },
+            colorChoice = colorChoice,
+            onColorChoice = onColorChoice,
         )
-        Destination.DEMO -> DemoExperience(onExit = { destination = Destination.HOME.name })
     }
 }
 
 @Composable
-private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onStartDemo: () -> Unit) {
+private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onStartDemo: () -> Unit, colorChoice: String, onColorChoice: (String) -> Unit) {
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -169,18 +184,31 @@ private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onS
                     label = { Text("Home") },
                 )
                 NavigationBarItem(
-                    selected = selected == Destination.ABOUT,
-                    onClick = { onSelect(Destination.ABOUT) },
+                    selected = selected == Destination.DEMO,
+                    onClick = { onSelect(Destination.DEMO) },
+                    icon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                    label = { Text("Demo") },
+                )
+                NavigationBarItem(
+                    selected = selected == Destination.GUIDE,
+                    onClick = { onSelect(Destination.GUIDE) },
                     icon = { Icon(Icons.Filled.Info, contentDescription = null) },
-                    label = { Text("About") },
+                    label = { Text("How to use") },
+                )
+                NavigationBarItem(
+                    selected = selected == Destination.SETTINGS,
+                    onClick = { onSelect(Destination.SETTINGS) },
+                    icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
+                    label = { Text("Settings") },
                 )
             }
         },
     ) { insets ->
         when (selected) {
             Destination.HOME -> HomeScreen(Modifier.padding(insets), onStartDemo)
-            Destination.ABOUT -> AboutScreen(Modifier.padding(insets))
-            Destination.DEMO -> Unit
+            Destination.DEMO -> DemoExperience(modifier = Modifier.padding(insets), onExit = { onSelect(Destination.HOME) })
+            Destination.GUIDE -> HowToUseScreen(Modifier.padding(insets))
+            Destination.SETTINGS -> SettingsScreen(Modifier.padding(insets), colorChoice, onColorChoice)
         }
     }
 }
@@ -294,7 +322,48 @@ private fun DemoPill() {
 }
 
 @Composable
-private fun AboutScreen(modifier: Modifier = Modifier) {
+private fun HowToUseScreen(modifier: Modifier = Modifier) {
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 18.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Text("How to use", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
+            Text("A quick guide to the intended Golden Retina flow. This app currently provides a simulation only.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(15.dp)) {
+                    GuideStep("1", "Prepare goggles", "Pair compatible goggles in Settings after the hardware and Bluetooth protocol are available.")
+                    GuideStep("2", "Press the goggles button", "In the intended product, the physical button starts acquisition. In the demo, tap the on-screen control to simulate it.")
+                    GuideStep("3", "Position and hold still", "The planned flow guides positioning. The animated eye is an illustration; it does not track your gaze.")
+                    GuideStep("4", "Scan both eyes", "The demo proceeds from the right eye to the left eye automatically.")
+                    GuideStep("5", "Review grouped conditions", "Expand a condition group to inspect its rows. The group badge represents the highest example priority among its rows.")
+                }
+            }
+            Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)) {
+                Column(Modifier.fillMaxWidth().heightIn(min = 170.dp).padding(22.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp))
+                    Spacer(Modifier.height(8.dp))
+                    Text("Instructional video coming soon", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("Video placeholder · no playback available", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            Text("No Bluetooth scan, camera capture, eye tracking, or disease inference is active in this version.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun GuideStep(number: String, title: String, description: String) {
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.Top) {
+        Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(30.dp)) {
+            Box(contentAlignment = Alignment.Center) { Text(number, color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.Bold) }
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Text(description, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, onColorChoice: (String) -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("model_registry", Context.MODE_PRIVATE) }
     var registryUrl by rememberSaveable { mutableStateOf(prefs.getString("url", "") ?: "") }
@@ -307,10 +376,43 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
             }
     }
     var modelStates by remember { mutableStateOf(initialModelStates) }
+    var showBluetoothInfo by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     BoxWithConstraints(modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp).padding(bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text("About", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
+            Text("Settings", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
+            Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("Color appearance", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                        listOf("system" to "System", "light" to "Light", "dark" to "Dark").forEach { (value, label) ->
+                            if (colorChoice == value) Button(onClick = { onColorChoice(value) }, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) { Text(label) }
+                            else androidx.compose.material3.OutlinedButton(onClick = { onColorChoice(value) }, modifier = Modifier.weight(1f).heightIn(min = 48.dp)) { Text(label) }
+                        }
+                    }
+                }
+            }
+            Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("Goggles", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Button(onClick = { showBluetoothInfo = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+                        Icon(Icons.Filled.Lock, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Connect goggles via Bluetooth")
+                    }
+                    Text("Unavailable · goggles hardware and Bluetooth protocol are not ready", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            if (showBluetoothInfo) {
+                Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text("Bluetooth pairing unavailable", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer)
+                        Text("No real Bluetooth discovery or pairing is implemented because compatible goggles and their connection protocol are not available.", color = MaterialTheme.colorScheme.onErrorContainer)
+                        TextButton(onClick = { showBluetoothInfo = false }) { Text("Got it") }
+                    }
+                }
+            }
+            Text("About Golden Retina", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
             Text("An early software concept from Golden Horn 8159.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -469,7 +571,7 @@ private fun AboutFact(text: String, icon: androidx.compose.ui.graphics.vector.Im
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DemoExperience(onExit: () -> Unit) {
+private fun DemoExperience(modifier: Modifier = Modifier, onExit: () -> Unit) {
     var phaseName by rememberSaveable { mutableStateOf(DemoPhase.WELCOME.name) }
     val phase = DemoPhase.valueOf(phaseName)
     val scanning = phase == DemoPhase.RIGHT_SCAN || phase == DemoPhase.LEFT_SCAN
@@ -488,6 +590,7 @@ private fun DemoExperience(onExit: () -> Unit) {
     }
 
     Scaffold(
+        modifier = modifier,
         topBar = {
             CenterAlignedTopAppBar(
                 navigationIcon = {
@@ -605,13 +708,7 @@ private fun EyeScan(eye: String, progress: Float) {
             }
         }
         Box(Modifier.size(250.dp), contentAlignment = Alignment.Center) {
-            RetinaArtwork(Modifier.size(236.dp).clip(CircleShape))
-            Canvas(Modifier.size(236.dp)) {
-                drawCircle(Color.White.copy(alpha = .55f), style = Stroke(1.dp.toPx()))
-                val y = size.height * progress.coerceIn(0f, 1f)
-                drawLine(Color.White, Offset(size.width * .13f, y), Offset(size.width * .87f, y), strokeWidth = 2.dp.toPx(), cap = StrokeCap.Round)
-                drawLine(SoftMint.copy(alpha = .42f), Offset(size.width * .13f, y + 4.dp.toPx()), Offset(size.width * .87f, y + 4.dp.toPx()), strokeWidth = 5.dp.toPx(), cap = StrokeCap.Round)
-            }
+            EyeTrackerGraphic(progress, Modifier.fillMaxWidth().height(190.dp))
         }
         Text(
             when {
@@ -626,8 +723,36 @@ private fun EyeScan(eye: String, progress: Float) {
         )
         LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().height(5.dp).clip(CircleShape))
         Text("DEMO IMAGE · NOT A REAL EYE", style = MaterialTheme.typography.labelSmall, letterSpacing = 1.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Simulated eye tracking · no gaze sensor is active", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.weight(1f))
         Text("Keep still and look toward the center", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+private fun EyeTrackerGraphic(progress: Float, modifier: Modifier = Modifier) {
+    Canvas(modifier) {
+        val left = size.width * .08f
+        val right = size.width * .92f
+        val top = size.height * .22f
+        val bottom = size.height * .78f
+        val midY = size.height * .5f
+        val eye = Path().apply {
+            moveTo(left, midY)
+            cubicTo(size.width * .30f, top, size.width * .70f, top, right, midY)
+            cubicTo(size.width * .70f, bottom, size.width * .30f, bottom, left, midY)
+            close()
+        }
+        drawPath(eye, Color(0xFFE8F2EB))
+        drawPath(eye, GoldenGreenDark, style = Stroke(width = 3.dp.toPx()))
+        val irisX = left + (right - left) * (.42f + .16f * progress.coerceIn(0f, 1f))
+        val irisRadius = size.height * .22f
+        drawCircle(Color(0xFF329A78), irisRadius, Offset(irisX, midY))
+        drawCircle(Color(0xFF082B27), irisRadius * .55f, Offset(irisX, midY))
+        drawCircle(Color.White, 5.dp.toPx(), Offset(irisX, midY))
+        drawCircle(Color.White.copy(alpha = .8f), 14.dp.toPx(), Offset(irisX, midY), style = Stroke(width = 1.5.dp.toPx()))
+        val scanY = size.height * (.12f + .76f * progress.coerceIn(0f, 1f))
+        drawLine(Color.White.copy(alpha = .9f), Offset(size.width * .04f, scanY), Offset(size.width * .96f, scanY), 2.dp.toPx(), cap = StrokeCap.Round)
     }
 }
 
@@ -668,25 +793,13 @@ private fun DemoAnalysis() {
 
 @Composable
 private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
-    val conditions = listOf(
-        "Diabetic retinopathy",
-        "Age-related macular degeneration",
-        "Drusen finding",
-        "Myopic fundus appearance",
-        "Branch retinal vein occlusion",
-        "Optic-disc cupping finding",
-        "Optic-disc pallor finding",
-        "Optic-disc edema finding",
-        "Retinal tessellation",
-        "Retinal laser-scar finding",
-        "Central serous retinopathy",
-        "Retinitis finding",
-        "Chorioretinitis finding",
-        "Central retinal vein occlusion",
-        "Epiretinal membrane appearance",
-        "Macular-scar finding",
-        "Retinal traction finding",
+    val groups = listOf(
+        ConditionGroup("Retina & macula", listOf(
+            ConditionItem("Diabetic retinopathy", true), ConditionItem("Age-related macular degeneration", true), ConditionItem("Drusen finding", false), ConditionItem("Myopic fundus appearance", false), ConditionItem("Branch retinal vein occlusion", true), ConditionItem("Retinal tessellation", false), ConditionItem("Retinal laser-scar finding", false), ConditionItem("Central serous retinopathy", true), ConditionItem("Retinitis finding", true), ConditionItem("Chorioretinitis finding", true), ConditionItem("Central retinal vein occlusion", true), ConditionItem("Epiretinal membrane appearance", false), ConditionItem("Macular-scar finding", true), ConditionItem("Retinal traction finding", true),
+        )),
+        ConditionGroup("Optic nerve", listOf(ConditionItem("Optic-disc cupping finding", false), ConditionItem("Optic-disc pallor finding", false), ConditionItem("Optic-disc edema finding", true))),
     )
+    var expandedGroups by rememberSaveable { mutableStateOf(setOf("Retina & macula")) }
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()).padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -699,21 +812,43 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
             Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text("Condition-by-condition breakdown", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("These are separate research labels, not mutually exclusive diagnoses. Each row shows where a future per-condition result could appear.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    HorizontalDivider()
-                    conditions.forEachIndexed { index, condition ->
-                        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                Text(condition, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                Text("Right eye · Not analyzed     Left eye · Not analyzed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Expand a group to see its conditions. The group badge is the highest example priority among its rows.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    groups.forEach { group ->
+                        Card(
+                            onClick = { expandedGroups = if (group.name in expandedGroups) expandedGroups - group.name else expandedGroups + group.name },
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Column(Modifier.weight(1f)) {
+                                        Text(group.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                                        Text("${group.conditions.size} conditions", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                    Surface(shape = CircleShape, color = if (group.highestRisk) Color(0xFFFFE0D5) else MaterialTheme.colorScheme.secondaryContainer) {
+                                        Text(if (group.highestRisk) "HIGH RISK" else "LOW RISK", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = if (group.highestRisk) Color(0xFF8E2E14) else MaterialTheme.colorScheme.onSecondaryContainer)
+                                    }
+                                }
+                                if (group.name in expandedGroups) {
+                                    HorizontalDivider()
+                                    group.conditions.forEachIndexed { index, condition ->
+                                        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                            Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                                Text(condition.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                                Text("Right eye · Not analyzed   ·   Left eye · Not analyzed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                            }
+                                            Text(if (condition.highRisk) "HIGH" else "LOW", style = MaterialTheme.typography.labelSmall, color = if (condition.highRisk) Color(0xFF9D381C) else MaterialTheme.colorScheme.onSurfaceVariant)
+                                        }
+                                        if (index < group.conditions.lastIndex) HorizontalDivider()
+                                    }
+                                }
                             }
-                            Text("DEMO", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
                         }
-                        if (index < conditions.lastIndex) HorizontalDivider()
                     }
                     HorizontalDivider()
-                    Text("No disease or eye image is analyzed in this demo. These rows are placeholders, not predictions, probabilities, or medical advice.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Text("Risk badges are example group priorities, not patient-specific risk. No eye image or disease is analyzed; every condition is Not analyzed.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                 }
             }
             AboutFact("No image from you was captured or analyzed", Icons.Filled.Lock)
