@@ -1,4 +1,7 @@
 import SwiftUI
+import CryptoKit
+import Foundation
+import OnnxRuntimeBindings
 
 @main
 struct GoldenRetinaApp: App {
@@ -227,6 +230,9 @@ struct GogglesUnavailableSheet: View {
 }
 
 struct AboutView: View {
+    @StateObject private var registry = OnDeviceModelRegistry()
+    @State private var registryURL = UserDefaults.standard.string(forKey: "goldenRetinaModelRegistryURL") ?? ""
+
     var body: some View {
         List {
             Section {
@@ -242,8 +248,37 @@ struct AboutView: View {
                 Label("No goggles or Bluetooth connection are active", systemImage: "eyeglasses")
                 Label("Not a medical device or diagnosis", systemImage: "cross.case")
             }
+            Section("On-device models") {
+                Text("The design keeps inference on this phone. The registry only distributes model files; it does not receive eye images or run inference. This demo does not yet run a disease or tracking model.")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                TextField("HTTPS model registry URL", text: $registryURL)
+                    .textInputAutocapitalization(.never)
+                    .keyboardType(.URL)
+                    .autocorrectionDisabled()
+                Button {
+                    UserDefaults.standard.set(registryURL, forKey: "goldenRetinaModelRegistryURL")
+                    Task { await registry.refresh(registryURL: registryURL) }
+                } label: {
+                    Label("Check model updates", systemImage: "arrow.clockwise")
+                }
+                .disabled(registry.isBusy)
+                if registry.isBusy { ProgressView("Checking registry…") }
+                if !registry.message.isEmpty {
+                    Text(registry.message).font(.footnote).foregroundStyle(.secondary)
+                }
+                let modelIDs = Array(Set(registry.installedVersions.keys).union(registry.manifest?.models.keys ?? Dictionary<String, MobileModelRelease>().keys)).sorted()
+                ForEach(modelIDs, id: \.self) { id in
+                    let release = registry.manifest?.models[id]
+                    modelRow(release?.displayName ?? (id == "ir_eye_tracker" ? "IR eye tracker" : id), release: release, installed: registry.installedVersions[id], id: id)
+                }
+                if modelIDs.isEmpty {
+                    modelRow("Retinal disease model · one task per release", release: nil, installed: nil, id: "retinal_classifier")
+                    modelRow("IR eye tracker", release: nil, installed: nil, id: "ir_eye_tracker")
+                }
+            }
             Section {
-                Text("The current research models are development prototypes. This app does not connect to them or assess a person’s eyes. Do not use the demo to make health decisions.")
+                Text("No compatible mobile model bundles or registry URL are currently configured. The guided demo remains simulated and does not capture images, load models, or assess a person’s eyes. Research checkpoints require ONNX export and device qualification before installation.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } footer: {
@@ -252,6 +287,178 @@ struct AboutView: View {
         }
         .navigationTitle("About")
         .navigationBarTitleDisplayMode(.inline)
+    }
+
+    @ViewBuilder
+    private func modelRow(_ name: String, release: MobileModelRelease?, installed: String?, id: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack {
+                Text(name).font(.subheadline.weight(.semibold))
+                Spacer()
+                if installed != nil {
+                    Label("On device", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(BrandColor.green)
+                } else {
+                    Text(release?.status.replacingOccurrences(of: "_", with: " ").capitalized ?? "Not checked")
+                        .font(.caption).foregroundStyle(.secondary)
+                }
+            }
+            if let installed { Text("Installed version: \(installed)").font(.caption).foregroundStyle(.secondary) }
+            else if let version = release?.version { Text("Available version: \(version)").font(.caption).foregroundStyle(.secondary) }
+            if let release, release.status == "ready", installed != release.version {
+                Button("Download \(release.version ?? "model")") {
+                    Task { await registry.install(id: id) }
+                }
+                .font(.caption.weight(.semibold))
+                .disabled(registry.isBusy)
+            }
+        }
+    }
+}
+
+private struct MobileRegistryManifest: Decodable {
+    let schemaVersion: Int
+    let models: [String: MobileModelRelease]
+    enum CodingKeys: String, CodingKey { case schemaVersion = "schema_version", models }
+}
+
+private struct MobileModelRelease: Decodable {
+    let displayName: String
+    let status: String
+    let version: String?
+    let format: String?
+    let artifactURL: URL?
+    let sha256: String?
+    enum CodingKeys: String, CodingKey { case displayName = "display_name", status, version, format, artifactURL = "artifact_url", sha256 }
+}
+
+@MainActor
+private final class OnDeviceModelRegistry: ObservableObject {
+    @Published var manifest: MobileRegistryManifest?
+    @Published var installedVersions: [String: String] = [:]
+    @Published var isBusy = false
+    @Published var message = ""
+    private var activeRuntimeID: String?
+    private var activeRuntimeEnvironment: ORTEnv?
+    private var activeRuntimeSession: ORTSession?
+
+    init() { installedVersions = Self.readInstalledVersions() }
+
+    func refresh(registryURL: String) async {
+        guard let input = URL(string: registryURL), input.scheme?.lowercased() == "https", input.host != nil else {
+            message = "Enter the HTTPS URL of the model registry. No registry is configured yet."
+            manifest = nil
+            return
+        }
+        let url = input.appendingPathComponent("v1").appendingPathComponent("manifest.json")
+        isBusy = true
+        defer { isBusy = false }
+        do {
+            var request = URLRequest(url: url)
+            request.cachePolicy = .reloadIgnoringLocalCacheData
+            request.timeoutInterval = 20
+            let (data, response) = try await URLSession.shared.data(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw RegistryFailure.badResponse }
+            guard response.url?.scheme?.lowercased() == "https" else { throw RegistryFailure.insecureRedirect }
+            let decoded = try JSONDecoder().decode(MobileRegistryManifest.self, from: data)
+            guard decoded.schemaVersion == 1 else { throw RegistryFailure.unsupportedSchema }
+            manifest = decoded
+            message = "Registry checked. Compatible bundles appear here when published."
+        } catch {
+            manifest = nil
+            message = "Could not check registry: \(error.localizedDescription)"
+        }
+    }
+
+    func install(id: String) async {
+        guard id.range(of: "^[A-Za-z0-9_-]+$", options: .regularExpression) != nil,
+              let release = manifest?.models[id], release.status == "ready",
+              release.format?.lowercased() == "onnx", let artifactURL = release.artifactURL,
+              artifactURL.scheme == "https", let expected = release.sha256?.lowercased(),
+              expected.count == 64, let version = release.version,
+              version.range(of: "^[A-Za-z0-9._-]{1,64}$", options: .regularExpression) != nil else {
+            message = "This model has no compatible, downloadable ONNX release yet."
+            return
+        }
+        isBusy = true
+        defer { isBusy = false }
+        do {
+            var request = URLRequest(url: artifactURL)
+            request.timeoutInterval = 120
+            let (temporaryURL, response) = try await URLSession.shared.download(for: request)
+            guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw RegistryFailure.badResponse }
+            guard response.url?.scheme?.lowercased() == "https" else { throw RegistryFailure.insecureRedirect }
+            let actual = try Self.sha256(file: temporaryURL)
+            guard actual == expected else { throw RegistryFailure.hashMismatch }
+            let directory = try Self.modelDirectory()
+            let target = directory.appendingPathComponent("\(id)-\(version).onnx")
+            let staging = directory.appendingPathComponent(".\(id)-\(version).download")
+            if FileManager.default.fileExists(atPath: staging.path) { try FileManager.default.removeItem(at: staging) }
+            try FileManager.default.moveItem(at: temporaryURL, to: staging)
+            let environment = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
+            let session = try ORTSession(env: environment, modelPath: staging.path, sessionOptions: nil)
+            if FileManager.default.fileExists(atPath: target.path) { try FileManager.default.removeItem(at: target) }
+            try FileManager.default.moveItem(at: staging, to: target)
+            activeRuntimeID = id
+            activeRuntimeEnvironment = environment
+            activeRuntimeSession = session
+            let oldVersions = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+                .filter { $0.lastPathComponent.hasPrefix("\(id)-") && $0.pathExtension == "onnx" && $0 != target }
+            for oldVersion in oldVersions { try FileManager.default.removeItem(at: oldVersion) }
+            var versions = Self.readInstalledVersions()
+            versions[id] = version
+            UserDefaults.standard.set(versions, forKey: "goldenRetinaInstalledModelVersions")
+            installedVersions = versions
+            message = "\(releaseName(id)) \(version) downloaded, checksum verified, and opened by the on-device runtime."
+        } catch {
+            message = "Model update failed: \(error.localizedDescription)"
+        }
+    }
+
+    // Load only the requested model into memory; disease experts can be several
+    // separate artifacts, so the app must not keep every encoder session live.
+    func runtimeSession(for id: String) throws -> ORTSession? {
+        guard id.range(of: "^[A-Za-z0-9_-]+$", options: .regularExpression) != nil,
+              let version = installedVersions[id],
+              version.range(of: "^[A-Za-z0-9._-]{1,64}$", options: .regularExpression) != nil else { return nil }
+        if activeRuntimeID == id, let activeRuntimeSession { return activeRuntimeSession }
+        let url = try Self.modelDirectory().appendingPathComponent("\(id)-\(version).onnx")
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
+        let environment = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
+        let session = try ORTSession(env: environment, modelPath: url.path, sessionOptions: nil)
+        activeRuntimeID = id
+        activeRuntimeEnvironment = environment
+        activeRuntimeSession = session
+        return session
+    }
+
+    private func releaseName(_ id: String) -> String { id == "ir_eye_tracker" ? "IR eye tracker" : "Retinal classifier" }
+    private static func modelDirectory() throws -> URL {
+        let root = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let directory = root.appendingPathComponent("GoldenRetinaModels", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        return directory
+    }
+    private static func readInstalledVersions() -> [String: String] {
+        UserDefaults.standard.dictionary(forKey: "goldenRetinaInstalledModelVersions") as? [String: String] ?? [:]
+    }
+    private static func sha256(file: URL) throws -> String {
+        let handle = try FileHandle(forReadingFrom: file)
+        defer { try? handle.close() }
+        var hasher = SHA256()
+        while let chunk = try handle.read(upToCount: 1024 * 1024), !chunk.isEmpty { hasher.update(data: chunk) }
+        return hasher.finalize().map { String(format: "%02x", $0) }.joined()
+    }
+}
+
+private enum RegistryFailure: LocalizedError {
+    case badResponse, unsupportedSchema, hashMismatch, insecureRedirect
+    var errorDescription: String? {
+        switch self {
+        case .badResponse: return "The registry returned an unsuccessful response."
+        case .unsupportedSchema: return "This app does not support that registry schema version."
+        case .hashMismatch: return "The downloaded model failed its SHA-256 integrity check."
+        case .insecureRedirect: return "The registry redirected to a non-HTTPS URL."
+        }
     }
 }
 

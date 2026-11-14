@@ -1,6 +1,10 @@
 package org.goldenhorn8159.goldenretina
 
 import android.os.Bundle
+import android.content.Context
+import ai.onnxruntime.OrtEnvironment
+import ai.onnxruntime.OrtSession
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
@@ -60,6 +64,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -76,6 +81,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -91,6 +97,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -98,6 +105,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import org.json.JSONObject
+import java.io.File
+import java.net.HttpURLConnection
+import java.net.URL
+import java.security.MessageDigest
 
 private val GoldenGreen = Color(0xFF176B55)
 private val GoldenGreenDark = Color(0xFFA0D9C2)
@@ -282,6 +297,19 @@ private fun DemoPill() {
 
 @Composable
 private fun AboutScreen(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val prefs = remember { context.getSharedPreferences("model_registry", Context.MODE_PRIVATE) }
+    var registryUrl by rememberSaveable { mutableStateOf(prefs.getString("url", "") ?: "") }
+    var status by rememberSaveable { mutableStateOf("No model registry configured. The app continues in demo-only mode.") }
+    var busy by remember { mutableStateOf(false) }
+    val initialModelStates = remember {
+        mapOf("retinal_classifier" to "Not installed", "ir_eye_tracker" to "Not installed") +
+            prefs.all.keys.filter { it.startsWith("model:") }.associate { key ->
+                key.removePrefix("model:") to (prefs.getString(key, "Not installed") ?: "Not installed")
+            }
+    }
+    var modelStates by remember { mutableStateOf(initialModelStates) }
+    val scope = rememberCoroutineScope()
     BoxWithConstraints(modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp).padding(bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("About", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
@@ -295,8 +323,141 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
                     AboutFact("Not a medical device or diagnosis", Icons.Filled.Security)
                 }
             }
-            Text("The research models are development prototypes. This app does not connect to them or assess a person’s eyes. Do not use this demo to make health decisions.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text("On-device models", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("The design keeps inference on this phone. The registry only distributes model files; it does not receive eye images or run inference. This demo does not yet run a disease or tracking model.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    OutlinedTextField(
+                        value = registryUrl,
+                        onValueChange = { registryUrl = it },
+                        label = { Text("HTTPS registry base URL") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Button(enabled = !busy, onClick = {
+                        prefs.edit().putString("url", registryUrl.trim()).apply()
+                        busy = true
+                        status = "Checking model registry…"
+                        // The request only fetches the manifest and model artifacts. No image is uploaded.
+                        scope.launch {
+                            val result = runCatching { PhoneModelRegistry.refresh(context, registryUrl.trim()) }
+                            status = result.fold({ reply ->
+                                modelStates = reply
+                                "Registry checked. Model files are local and are not yet activated for scan inference."
+                            }, { "Registry check failed: ${it.message ?: "network or manifest error"}" })
+                            busy = false
+                        }
+                    }) {
+                        Icon(Icons.Filled.Refresh, contentDescription = null)
+                        Text("  Check for model updates")
+                    }
+                    if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
+                    Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    modelStates.toSortedMap().forEach { (id, state) ->
+                        HorizontalDivider()
+                        Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                            Text(if (id == "ir_eye_tracker") "IR eye tracker" else if (id == "retinal_classifier") "Retinal disease head · one task per release" else id.replace('_', ' '), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+                            Text(state, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            }
+            Text("The current checkpoints are research prototypes and are not yet qualified mobile inference bundles. The guided scan remains simulated and does not assess a person’s eyes or support health decisions.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
+    }
+}
+
+private object PhoneModelRegistry {
+    private var loadedModelId: String? = null
+    private var loadedSession: OrtSession? = null
+
+    fun openSession(context: Context, id: String): OrtSession? {
+        require(id.matches(Regex("[A-Za-z0-9_-]+"))) { "Invalid model identifier." }
+        if (loadedModelId == id) return loadedSession
+        loadedSession?.close()
+        loadedSession = null
+        loadedModelId = null
+        val prefs = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE)
+        val version = prefs.getString("model-version:$id", null) ?: return null
+        val modelFile = File(File(context.filesDir, "golden-retina-models"), "$id-$version.onnx")
+        if (!modelFile.isFile) return null
+        val options = OrtSession.SessionOptions()
+        loadedSession = try { OrtEnvironment.getEnvironment().createSession(modelFile.absolutePath, options) } finally { options.close() }
+        loadedModelId = id
+        return loadedSession
+    }
+
+    fun closeSession() { loadedSession?.close(); loadedSession = null; loadedModelId = null }
+
+    suspend fun refresh(context: Context, base: String): Map<String, String> = withContext(Dispatchers.IO) {
+        val root = URL(base.trimEnd('/') + "/v1/manifest.json")
+        require(root.protocol == "https") { "Use an HTTPS registry URL." }
+        val manifestText = (root.openConnection() as HttpURLConnection).run {
+            connectTimeout = 15_000
+            readTimeout = 30_000
+            instanceFollowRedirects = false
+            require(responseCode == HttpURLConnection.HTTP_OK) { "Manifest host returned HTTP $responseCode." }
+            getInputStream().bufferedReader().use { it.readText() }
+        }
+        val manifest = JSONObject(manifestText)
+        require(manifest.optInt("schema_version", -1) == 1) { "Unsupported manifest schema." }
+        val models = manifest.getJSONObject("models")
+        val directory = File(context.filesDir, "golden-retina-models").apply { mkdirs() }
+        val versions = mutableMapOf<String, String>()
+        models.keys().asSequence().toList().forEach { id ->
+            require(id.matches(Regex("[A-Za-z0-9_-]+"))) { "Invalid model identifier in manifest." }
+            val item = models.optJSONObject(id) ?: return@forEach
+            val version = item.optString("version").takeIf { it.isNotBlank() && it != "null" }
+            val fileUrl = item.optString("artifact_url")
+            val expected = item.optString("sha256").lowercase()
+            if (item.optString("status") != "ready" || item.optString("format") != "onnx" || version == null) {
+                versions[id] = "Awaiting mobile-ready ONNX release"
+                return@forEach
+            }
+            require(version.matches(Regex("[A-Za-z0-9._-]{1,64}"))) { "$id has an invalid model version." }
+            require(fileUrl.startsWith("https://")) { "$id artifact URL must use HTTPS." }
+            require(expected.matches(Regex("[0-9a-f]{64}"))) { "$id has an invalid SHA-256." }
+            val target = File(directory, "$id-$version.onnx")
+            if (!target.isFile || sha256(target) != expected) {
+                if (loadedModelId == id) closeSession()
+                val staging = File(directory, ".$id-$version.part")
+                try {
+                    URL(fileUrl).openConnection().run {
+                        connectTimeout = 15_000
+                        readTimeout = 120_000
+                        if (this is HttpURLConnection) {
+                            instanceFollowRedirects = false
+                            require(responseCode == HttpURLConnection.HTTP_OK) { "Model host returned HTTP $responseCode." }
+                        }
+                        getInputStream().use { input -> staging.outputStream().use { output -> input.copyTo(output) } }
+                    }
+                    require(sha256(staging) == expected) { "$id download failed checksum verification." }
+                    if (target.exists()) target.delete()
+                    check(staging.renameTo(target)) { "Could not install $id bundle." }
+                } finally { staging.delete() }
+            }
+            validateOnnx(target)
+            directory.listFiles()?.filter { it.name.startsWith("$id-") && it.name.endsWith(".onnx") && it != target }?.forEach { it.delete() }
+            versions[id] = "Ready locally · $version · SHA-256 verified · ONNX session opened"
+            context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("model-version:$id", version).apply()
+        }
+        versions.forEach { (id, value) -> context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("model:$id", value).apply() }
+        versions
+    }
+
+    private fun validateOnnx(path: File) {
+        val options = OrtSession.SessionOptions()
+        try { OrtEnvironment.getEnvironment().createSession(path.absolutePath, options).close() } finally { options.close() }
+    }
+
+    private fun sha256(file: File): String {
+        val digest = MessageDigest.getInstance("SHA-256")
+        file.inputStream().buffered().use { input ->
+            val buffer = ByteArray(1024 * 1024)
+            while (true) { val count = input.read(buffer); if (count < 0) break; digest.update(buffer, 0, count) }
+        }
+        return digest.digest().joinToString("") { "%02x".format(it) }
     }
 }
 
