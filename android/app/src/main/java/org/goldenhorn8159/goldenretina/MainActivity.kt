@@ -81,6 +81,8 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.Tab
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.darkColorScheme
@@ -1204,6 +1206,10 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
         ConditionGroup("Optic disc", listOf(ConditionItem("Optic-disc cupping finding", 35, 29), ConditionItem("Optic-disc pallor finding", 11, 13), ConditionItem("Optic-disc edema finding", 4, 6))),
     )
     var expandedGroups by rememberSaveable { mutableStateOf(setOf("Retina and macula")) }
+    var selectedEye by rememberSaveable { mutableStateOf(0) }
+    val rightTop = groups.flatMap { it.conditions }.maxByOrNull { it.rightScore }!!
+    val leftTop = groups.flatMap { it.conditions }.maxByOrNull { it.leftScore }!!
+    val selectedTop = if (selectedEye == 0) rightTop else leftTop
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()).padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -1218,6 +1224,11 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                     Text("Condition-by-condition breakdown", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     Text("Sample image quality: Adequate · simulated   Both eye scans: Complete · simulated", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
                     Text("The percentages below are fixed illustrative demo values. They were not calculated from an image or model and are not probabilities, diagnoses, or medical risk estimates.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    PrimaryTabRow(selectedTabIndex = selectedEye) {
+                        Tab(selected = selectedEye == 0, onClick = { selectedEye = 0 }, text = { Text("Right · ${rightTop.rightScore}%") })
+                        Tab(selected = selectedEye == 1, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftTop.leftScore}%") })
+                    }
+                    Text("Highest example score: ${selectedTop.name}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     groups.forEach { group ->
                         Card(
                             onClick = { expandedGroups = if (group.name in expandedGroups) expandedGroups - group.name else expandedGroups + group.name },
@@ -1229,10 +1240,10 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Column(Modifier.weight(1f)) {
                                         Text(group.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                                        Text("${group.conditions.size} conditions · highest demo score per eye", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text("${group.conditions.size} conditions · highest for ${if (selectedEye == 0) "right" else "left"} eye", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                     Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant) {
-                                        Text("R ${group.rightMax}% · L ${group.leftMax}%", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                                        Text("${group.conditions.maxOfOrNull { if (selectedEye == 0) it.rightScore else it.leftScore } ?: 0}%", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                     }
                                 }
                                 if (group.name in expandedGroups) {
@@ -1242,7 +1253,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                                             Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                                 Text(condition.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                                Text("Demo score · Right ${condition.rightScore}% · Left ${condition.leftScore}%", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text("Demo score · ${if (selectedEye == 0) "Right ${condition.rightScore}" else "Left ${condition.leftScore}"}%", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                             }
                                             Text("EXAMPLE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         }

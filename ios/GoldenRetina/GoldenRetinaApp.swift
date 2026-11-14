@@ -1364,20 +1364,22 @@ private struct EyeTrackingArtwork: View {
 }
 
 struct DemoResultsView: View {
+    private enum DemoEye: String { case right = "Right", left = "Left" }
     private struct ExampleCondition: Identifiable {
         let name: String
         let rightScore: Int
         let leftScore: Int
         var id: String { name }
+        func score(for eye: DemoEye) -> Int { eye == .right ? rightScore : leftScore }
     }
     private struct ExampleGroup: Identifiable {
         let title: String
         let conditions: [ExampleCondition]
         var id: String { title }
-        var rightMax: Int { conditions.map(\.rightScore).max() ?? 0 }
-        var leftMax: Int { conditions.map(\.leftScore).max() ?? 0 }
+        func maximum(for eye: DemoEye) -> Int { conditions.map { $0.score(for: eye) }.max() ?? 0 }
     }
     @State private var expandedGroups: Set<String> = ["Retina and macula"]
+    @State private var selectedEye: DemoEye = .right
     private let groups = [
         ExampleGroup(title: "Retina and macula", conditions: [
             .init(name: "Diabetic retinopathy", rightScore: 28, leftScore: 19), .init(name: "Age-related macular degeneration", rightScore: 14, leftScore: 11), .init(name: "DN · RFMiD label (definition unverified)", rightScore: 5, leftScore: 4), .init(name: "Myopia", rightScore: 31, leftScore: 26), .init(name: "Branch retinal vein occlusion", rightScore: 8, leftScore: 12), .init(name: "Tessellated fundus finding", rightScore: 23, leftScore: 18), .init(name: "Laser-scar finding", rightScore: 4, leftScore: 4), .init(name: "Central serous retinopathy", rightScore: 9, leftScore: 13), .init(name: "Retinal scar finding", rightScore: 7, leftScore: 6), .init(name: "CRS · RFMiD label (definition unverified)", rightScore: 3, leftScore: 2), .init(name: "Central retinal vein occlusion · low-support model", rightScore: 2, leftScore: 3), .init(name: "Epiretinal membrane · low-support model", rightScore: 10, leftScore: 9), .init(name: "Macular scar · low-support model", rightScore: 2, leftScore: 5), .init(name: "Retinal traction · low-support model", rightScore: 6, leftScore: 8)
@@ -1386,6 +1388,9 @@ struct DemoResultsView: View {
             .init(name: "Optic-disc cupping finding", rightScore: 35, leftScore: 29), .init(name: "Optic-disc pallor finding", rightScore: 11, leftScore: 13), .init(name: "Optic-disc edema finding", rightScore: 4, leftScore: 6)
         ])
     ]
+    private var highestRight: ExampleCondition { groups.flatMap(\.conditions).max { $0.rightScore < $1.rightScore }! }
+    private var highestLeft: ExampleCondition { groups.flatMap(\.conditions).max { $0.leftScore < $1.leftScore }! }
+    private var highestSelected: ExampleCondition { selectedEye == .right ? highestRight : highestLeft }
     let onReplay: () -> Void
     let onDone: () -> Void
     var body: some View {
@@ -1415,6 +1420,14 @@ struct DemoResultsView: View {
                     Text("The percentages below are fixed illustrative demo values. They were not calculated from an image or model and are not probabilities, diagnoses, or medical risk estimates.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                    Picker("Eye", selection: $selectedEye) {
+                        Text("Right · \(highestRight.rightScore)%").tag(DemoEye.right)
+                        Text("Left · \(highestLeft.leftScore)%").tag(DemoEye.left)
+                    }
+                    .pickerStyle(.segmented)
+                    Text("Highest example score: \(highestSelected.name)")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
                     ForEach(groups) { group in
                         DisclosureGroup(isExpanded: Binding(
                             get: { expandedGroups.contains(group.id) },
@@ -1427,7 +1440,7 @@ struct DemoResultsView: View {
                                     Image(systemName: "eye").foregroundStyle(BrandColor.green).frame(width: 22)
                                     VStack(alignment: .leading, spacing: 5) {
                                         Text(condition.name).font(.subheadline.weight(.semibold))
-                                        Text("Demo score  ·  Right (condition.rightScore)%  ·  Left (condition.leftScore)%").font(.caption).foregroundStyle(.secondary)
+                                        Text("Demo score · \(selectedEye.rawValue) \(condition.score(for: selectedEye))%").font(.caption).foregroundStyle(.secondary)
                                     }
                                     Spacer(minLength: 0)
                                     Text("EXAMPLE")
@@ -1442,7 +1455,7 @@ struct DemoResultsView: View {
                                     Text("\(group.conditions.count) conditions · highest demo score per eye").font(.caption).foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Text("R \(group.rightMax)% · L \(group.leftMax)%")
+                                    Text("Highest \(group.maximum(for: selectedEye))%")
                                     .font(.caption.weight(.bold))
                                     .foregroundStyle(BrandColor.green)
                                     .padding(.horizontal, 9).padding(.vertical, 6)
