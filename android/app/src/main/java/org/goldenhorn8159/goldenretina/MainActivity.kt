@@ -166,6 +166,8 @@ private enum class Destination { HOME, DEMO, GUIDE, SETTINGS }
 private enum class DemoPhase { WELCOME, SEARCHING, CONNECTED, RIGHT_SCAN, RIGHT_DONE, LEFT_SCAN, LEFT_DONE, ANALYZING, RESULTS }
 private data class ConditionItem(val name: String)
 private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>)
+private const val MODEL_MANIFEST_URL = "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/manifest.json"
+private const val BUNDLED_MODEL_VERSION = "20261114-r3"
 
 @Composable
 private fun GoldenRetinaApp(colorChoice: String, onColorChoice: (String) -> Unit) {
@@ -377,17 +379,14 @@ private fun GuideStep(number: String, title: String, description: String) {
 private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, onColorChoice: (String) -> Unit) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("model_registry", Context.MODE_PRIVATE) }
-    var registryUrl by rememberSaveable { mutableStateOf(prefs.getString("url", "") ?: "") }
-    var status by rememberSaveable { mutableStateOf("Bundled model inference is ready on-device. A remote update registry is optional.") }
+    var registryUrl by rememberSaveable { mutableStateOf(prefs.getString("url", MODEL_MANIFEST_URL) ?: MODEL_MANIFEST_URL) }
+    var status by rememberSaveable { mutableStateOf("Eye localization is bundled. Disease models install individually from the verified registry.") }
     var busy by remember { mutableStateOf(false) }
     val initialModelStates = remember {
         (listOf("ir_eye_tracker") + MobileResearchInference.diseaseIds).associateWith { id ->
-            if (id == "ir_eye_tracker") "Bundled on-device synthetic research model · v20261114-r3"
-            else "Bundled on-device RFMiD research classifier · v20261114-r3"
-        } +
-            prefs.all.keys.filter { it.startsWith("model:") }.associate { key ->
-                key.removePrefix("model:") to (prefs.getString(key, "Not installed") ?: "Not installed")
-            }
+            prefs.getString("model:$id", if (id == "ir_eye_tracker") "Bundled on-device synthetic research model · v20261114-r3" else "Not installed · check for model updates")
+                ?: "Not installed · check for model updates"
+        }
     }
     var modelStates by remember { mutableStateOf(initialModelStates) }
     var showBluetoothInfo by rememberSaveable { mutableStateOf(false) }
@@ -448,7 +447,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
             Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("On-device models", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("Inference runs locally on this phone. Model updates replace local bundles; selected images are not uploaded. The guided demo remains simulated.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Models run locally on this phone. Disease models download one at a time from the verified HTTPS registry; selected images are not uploaded. The guided demo remains simulated.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     Button(onClick = { showModelLab = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) {
                         Icon(Icons.Filled.Search, contentDescription = null)
                         Spacer(Modifier.width(8.dp))
@@ -457,7 +456,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                     OutlinedTextField(
                         value = registryUrl,
                         onValueChange = { registryUrl = it },
-                        label = { Text("HTTPS registry base URL") },
+                        label = { Text("HTTPS model manifest URL") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Uri),
                         singleLine = true,
                         modifier = Modifier.fillMaxWidth(),
@@ -466,12 +465,12 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                         prefs.edit().putString("url", registryUrl.trim()).apply()
                         busy = true
                         status = "Checking model registry…"
-                        // The request only fetches the manifest and model artifacts. No image is uploaded.
+                        // Only the small manifest is fetched here. Model files download individually on request.
                         scope.launch {
                             val result = runCatching { PhoneModelRegistry.refresh(context, registryUrl.trim()) }
                             status = result.fold({ reply ->
                                 modelStates = modelStates + reply
-                                "Registry checked. Downloaded model releases are used by on-device inference."
+                                "Registry checked. Model files download only when you choose an update; inference stays on-device."
                             }, { "Registry check failed: ${it.message ?: "network or manifest error"}" })
                             busy = false
                         }
@@ -486,11 +485,25 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                         Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
                             Text(modelDisplayName(id), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                             Text(state, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            if (state.startsWith("Update available ·")) {
+                                TextButton(enabled = !busy, onClick = {
+                                    busy = true
+                                    status = "Downloading and checking ${modelDisplayName(id)}…"
+                                    scope.launch {
+                                        val result = runCatching { PhoneModelRegistry.install(context, id) }
+                                        status = result.fold({ installed ->
+                                            modelStates = modelStates + (id to installed)
+                                            "Model downloaded, checksum-verified and opened by the phone runtime."
+                                        }, { "Model update failed: ${it.message ?: "download or model check error"}" })
+                                        busy = false
+                                    }
+                                }) { Text("Download model update") }
+                            }
                         }
                     }
                 }
             }
-            Text("Bundled disease heads are retrospective research models with patient independence unverified. The eye-localization model was trained on synthetic renders only. Neither is a clinical diagnosis or validated goggle tracker.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Disease heads are retrospective research models with patient independence unverified. The eye-localization model was trained on synthetic renders only. Neither is a clinical diagnosis or validated goggle tracker.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -548,6 +561,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             }
         }
     }
+    val installedDiseaseIds = MobileResearchInference.availableDiseaseIds(context)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
@@ -562,12 +576,12 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
         selectedImage?.let { bitmap ->
             Image(bitmap.asImageBitmap(), contentDescription = "Selected image", modifier = Modifier.fillMaxWidth().heightIn(max = 280.dp).clip(RoundedCornerShape(16.dp)))
         }
-        Button(enabled = selectedImage != null && !running && !loadingImage, onClick = {
+        Button(enabled = selectedImage != null && installedDiseaseIds.isNotEmpty() && !running && !loadingImage, onClick = {
             val bitmap = selectedImage ?: return@Button
             running = true
             runningDiseaseModels = true
             diseaseModelsCompleted = 0
-            status = "Running ${MobileResearchInference.diseaseIds.size} disease-specific ONNX models on-device…"
+            status = "Running ${installedDiseaseIds.size} installed disease-specific ONNX models on-device…"
             scope.launch {
                 val result = runCatching {
                     withContext(Dispatchers.IO) {
@@ -585,6 +599,9 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                 runningDiseaseModels = false
             }
         }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text("Run disease classifiers") }
+        if (installedDiseaseIds.isEmpty()) {
+            Text("No disease models are installed yet. Open Settings, check for updates, and download only the condition models you need.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
         if (diseaseResults.isNotEmpty()) {
             Text("Disease model scores", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text("Each condition and group is shown as a percentage. These are raw model scores, not calibrated patient-risk estimates or diagnoses; ‘low support’ describes the evidence behind a model, not the patient’s risk. Group values show the highest score in that group.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -642,10 +659,10 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
         if (loadingImage) LinearProgressIndicator(Modifier.fillMaxWidth())
         if (runningDiseaseModels) {
             LinearProgressIndicator(
-                progress = { diseaseModelsCompleted.toFloat() / MobileResearchInference.diseaseIds.size },
+                progress = { diseaseModelsCompleted.toFloat() / installedDiseaseIds.size.coerceAtLeast(1) },
                 modifier = Modifier.fillMaxWidth(),
             )
-            Text("Completed $diseaseModelsCompleted of ${MobileResearchInference.diseaseIds.size} models", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Completed $diseaseModelsCompleted of ${installedDiseaseIds.size} installed models", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else if (running) LinearProgressIndicator(Modifier.fillMaxWidth())
         Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("Limits: disease experts were trained/evaluated on RFMiD image splits with patient independence unverified; scores are not calibrated diagnoses. Eye localization was trained on synthetic renders only, not people, IR images, or goggles. Do not use for patient care or motor control.", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -680,12 +697,18 @@ private fun decodeSelectedImage(context: Context, uri: Uri): Bitmap? {
 }
 
 private object MobileResearchInference {
-    private const val bundledVersion = "20261114-r3"
     val diseaseIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls", "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt")
+
+    fun availableDiseaseIds(context: Context): List<String> = diseaseIds.filter { id ->
+        val version = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).getString("model-version:$id", null)
+        version?.let { File(File(context.filesDir, "golden-retina-models"), "$id-$it.onnx").isFile } == true
+    }
 
     fun classify(context: Context, source: Bitmap, onProgress: (Int, String) -> Unit): List<MobileDiseaseScore> =
         buildList {
-            diseaseIds.forEachIndexed { index, id ->
+            val available = availableDiseaseIds(context)
+            require(available.isNotEmpty()) { "No disease model is installed. Check for model updates in Settings, then download the conditions you need." }
+            available.forEachIndexed { index, id ->
                 val session = openSession(context, id)
                 val score = try {
                     val inputName = session.inputNames.first()
@@ -745,8 +768,8 @@ private object MobileResearchInference {
         val version = preferences.getString("model-version:$id", null)
         val installed = version?.let { File(File(context.filesDir, "golden-retina-models"), "$id-$it.onnx") }
         val modelFile = if (installed?.isFile == true) installed else {
-            // Version the copied asset path so app upgrades cannot reuse stale cached weights.
-            val bundled = File(context.cacheDir, "golden-retina-bundled/$bundledVersion/$id.onnx")
+            require(id == "ir_eye_tracker") { "Download ${modelDisplayName(id)} from Settings before running it." }
+            val bundled = File(context.cacheDir, "golden-retina-bundled/$BUNDLED_MODEL_VERSION/$id.onnx")
             if (!bundled.isFile) {
                 bundled.parentFile?.mkdirs()
                 context.assets.open("$id.onnx").use { input -> bundled.outputStream().use { output -> input.copyTo(output) } }
@@ -782,6 +805,7 @@ private object MobileResearchInference {
 }
 
 private object PhoneModelRegistry {
+    private const val bundledVersion = BUNDLED_MODEL_VERSION
     private var loadedModelId: String? = null
     private var loadedSession: OrtSession? = null
 
@@ -807,7 +831,8 @@ private object PhoneModelRegistry {
     fun closeSession() { loadedSession?.close(); loadedSession = null; loadedModelId = null }
 
     suspend fun refresh(context: Context, base: String): Map<String, String> = withContext(Dispatchers.IO) {
-        val root = URL(base.trimEnd('/') + "/v1/manifest.json")
+        val inputUrl = URL(base.trim())
+        val root = if (inputUrl.path.endsWith("manifest.json")) inputUrl else URL(base.trimEnd('/') + "/v1/manifest.json")
         require(root.protocol == "https") { "Use an HTTPS registry URL." }
         val manifestText = (root.openConnection() as HttpURLConnection).run {
             connectTimeout = 15_000
@@ -819,7 +844,8 @@ private object PhoneModelRegistry {
         val manifest = JSONObject(manifestText)
         require(manifest.optInt("schema_version", -1) == 1) { "Unsupported manifest schema." }
         val models = manifest.getJSONObject("models")
-        val directory = File(context.filesDir, "golden-retina-models").apply { mkdirs() }
+        require(models.length() > 0) { "Model manifest contains no models." }
+        context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("manifest-json", manifestText).apply()
         val versions = mutableMapOf<String, String>()
         models.keys().asSequence().toList().forEach { id ->
             require(id.matches(Regex("[A-Za-z0-9_-]+"))) { "Invalid model identifier in manifest." }
@@ -834,32 +860,50 @@ private object PhoneModelRegistry {
             require(version.matches(Regex("[A-Za-z0-9._-]{1,64}"))) { "$id has an invalid model version." }
             require(fileUrl.startsWith("https://")) { "$id artifact URL must use HTTPS." }
             require(expected.matches(Regex("[0-9a-f]{64}"))) { "$id has an invalid SHA-256." }
-            val target = File(directory, "$id-$version.onnx")
-            if (!target.isFile || sha256(target) != expected) {
-                if (loadedModelId == id) closeSession()
-                val staging = File(directory, ".$id-$version.part")
-                try {
-                    URL(fileUrl).openConnection().run {
-                        connectTimeout = 15_000
-                        readTimeout = 120_000
-                        if (this is HttpURLConnection) {
-                            instanceFollowRedirects = false
-                            require(responseCode == HttpURLConnection.HTTP_OK) { "Model host returned HTTP $responseCode." }
-                        }
-                        getInputStream().use { input -> staging.outputStream().use { output -> input.copyTo(output) } }
-                    }
-                    require(sha256(staging) == expected) { "$id download failed checksum verification." }
-                    if (target.exists()) target.delete()
-                    check(staging.renameTo(target)) { "Could not install $id bundle." }
-                } finally { staging.delete() }
+            val installedVersion = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).getString("model-version:$id", null)
+            versions[id] = when {
+                installedVersion == version -> "Current update installed · $version"
+                version == bundledVersion -> "Bundled on device · $version"
+                else -> "Update available · $version"
             }
-            validateOnnx(target)
-            directory.listFiles()?.filter { it.name.startsWith("$id-") && it.name.endsWith(".onnx") && it != target }?.forEach { it.delete() }
-            versions[id] = "Ready locally · $version · SHA-256 verified · ONNX session opened"
-            context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("model-version:$id", version).apply()
         }
         versions.forEach { (id, value) -> context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("model:$id", value).apply() }
         versions
+    }
+
+    suspend fun install(context: Context, id: String): String = withContext(Dispatchers.IO) {
+        require(id.matches(Regex("[A-Za-z0-9_-]+"))) { "Invalid model identifier." }
+        val prefs = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE)
+        val manifestText = prefs.getString("manifest-json", null) ?: error("Check the model manifest first.")
+        val item = JSONObject(manifestText).getJSONObject("models").getJSONObject(id)
+        val version = item.optString("version")
+        require(item.optString("status") == "ready" && item.optString("format") == "onnx") { "No downloadable ONNX release exists for this model." }
+        require(version.matches(Regex("[A-Za-z0-9._-]{1,64}"))) { "Invalid model version." }
+        val fileUrl = URL(item.getString("artifact_url"))
+        require(fileUrl.protocol == "https") { "Model downloads must use HTTPS." }
+        val expected = item.getString("sha256").lowercase()
+        require(expected.matches(Regex("[0-9a-f]{64}"))) { "Invalid model checksum." }
+        val directory = File(context.filesDir, "golden-retina-models").apply { mkdirs() }
+        val target = File(directory, "$id-$version.onnx")
+        val staging = File(directory, ".$id-$version.part")
+        try {
+            val connection = fileUrl.openConnection() as HttpURLConnection
+            connection.connectTimeout = 15_000
+            connection.readTimeout = 120_000
+            connection.instanceFollowRedirects = true
+            require(connection.responseCode == HttpURLConnection.HTTP_OK && connection.url.protocol == "https") {
+                "Model host did not return a secure successful download."
+            }
+            connection.inputStream.use { input -> staging.outputStream().use { output -> input.copyTo(output) } }
+            require(sha256(staging) == expected) { "Downloaded model failed SHA-256 verification." }
+            validateOnnx(staging)
+            if (loadedModelId == id) closeSession()
+            if (target.exists()) check(target.delete()) { "Could not replace the existing model file." }
+            check(staging.renameTo(target)) { "Could not install the verified model." }
+            directory.listFiles()?.filter { it.name.startsWith("$id-") && it.name.endsWith(".onnx") && it != target }?.forEach { it.delete() }
+            prefs.edit().putString("model-version:$id", version).putString("model:$id", "Current update installed · $version · SHA-256 verified").apply()
+            "Current update installed · $version · SHA-256 verified"
+        } finally { staging.delete() }
     }
 
     private fun validateOnnx(path: File) {

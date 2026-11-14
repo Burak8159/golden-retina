@@ -305,7 +305,7 @@ struct HowToUseView: View {
 
 struct SettingsView: View {
     @StateObject private var registry = OnDeviceModelRegistry()
-    @State private var registryURL = UserDefaults.standard.string(forKey: "goldenRetinaModelRegistryURL") ?? ""
+    @State private var registryURL = UserDefaults.standard.string(forKey: "goldenRetinaModelRegistryURL") ?? MobileModelRegistryURL.manifest
     @AppStorage("goldenRetinaColorScheme") private var colorChoice = "system"
     @State private var showBluetoothInfo = false
 
@@ -342,7 +342,7 @@ struct SettingsView: View {
                 Label("Not a medical device or diagnosis", systemImage: "cross.case")
             }
             Section("On-device models") {
-                Text("The research model bundles run on this phone with ONNX Runtime. Selected images stay on-device; the guided demo remains simulated.")
+                Text("Models run on this phone with ONNX Runtime. The small eye-localization model is bundled; disease models download individually from the verified HTTPS registry. Selected images stay on-device; the guided demo remains simulated.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                 NavigationLink {
@@ -350,7 +350,7 @@ struct SettingsView: View {
                 } label: {
                     Label("Run on-device research models", systemImage: "cpu")
                 }
-                TextField("HTTPS model registry URL", text: $registryURL)
+                TextField("HTTPS model manifest URL", text: $registryURL)
                     .textInputAutocapitalization(.never)
                     .keyboardType(.URL)
                     .autocorrectionDisabled()
@@ -365,16 +365,16 @@ struct SettingsView: View {
                 if !registry.message.isEmpty {
                     Text(registry.message).font(.footnote).foregroundStyle(.secondary)
                 }
-                let bundledIDs = ["ir_eye_tracker"] + BundledResearchInference.diseaseIDs
+                let bundledIDs = ["ir_eye_tracker"]
                 let modelIDs = Array(Set(bundledIDs).union(registry.installedVersions.keys).union(registry.manifest?.models.keys ?? Dictionary<String, MobileModelRelease>().keys)).sorted()
                 ForEach(modelIDs, id: \.self) { id in
                     let release = registry.manifest?.models[id]
-                    let bundled = bundledIDs.contains(id) ? "Bundled app · v20261114-r3" : nil
+                    let bundled = bundledIDs.contains(id) ? "20261114-r3" : nil
                     modelRow(release?.displayName ?? modelDisplayName(id), release: release, installed: registry.installedVersions[id] ?? bundled, id: id)
                 }
             }
             Section {
-                Text("The bundled RFMiD models are research classifiers, not clinical diagnoses. The eye-localization model was trained on synthetic renders and is not validated on people, infrared cameras, or goggles. Do not use outputs for patient care or motor control.")
+                Text("RFMiD models are research classifiers, not clinical diagnoses. The eye-localization model was trained on synthetic renders and is not validated on people, infrared cameras, or goggles. Do not use outputs for patient care or motor control.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } footer: {
@@ -397,15 +397,14 @@ struct SettingsView: View {
                 Text(name).font(.subheadline.weight(.semibold))
                 Spacer()
                 if installed != nil {
-                    Label("On device", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(BrandColor.green)
+                    Label("On device · v\(installed!)", systemImage: "checkmark.circle.fill").font(.caption).foregroundStyle(BrandColor.green)
                 } else {
                     Text(release?.status.replacingOccurrences(of: "_", with: " ").capitalized ?? "Not checked")
                         .font(.caption).foregroundStyle(.secondary)
                 }
             }
-            if let installed { Text("Installed version: \(installed)").font(.caption).foregroundStyle(.secondary) }
-            else if let version = release?.version { Text("Available version: \(version)").font(.caption).foregroundStyle(.secondary) }
-            if let release, release.status == "ready", installed != release.version {
+            if let release, release.status == "ready", let version = release.version,
+               installed != version {
                 Button("Download \(release.version ?? "model")") {
                     Task { await registry.install(id: id) }
                 }
@@ -454,9 +453,13 @@ private enum BundledResearchInference {
         "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt"
     ]
 
+    static var installedDiseaseIDs: [String] { diseaseIDs.filter { modelURL(id: $0) != nil } }
+
     static func diseaseScores(image: UIImage, onProgress: (Int, String) -> Void) throws -> [DiseaseScore] {
         var scores: [DiseaseScore] = []
-        for (index, id) in diseaseIDs.enumerated() {
+        let available = installedDiseaseIDs
+        guard !available.isEmpty else { throw RegistryFailure.noDiseaseModelsInstalled }
+        for (index, id) in available.enumerated() {
             let values = try run(image: image, id: id, size: 320, imagenetNormalize: true)
             guard let rawScore = values.first, rawScore.isFinite else { throw RegistryFailure.badResponse }
             scores.append(DiseaseScore(id: id, score: min(max(rawScore, 0), 1)))
@@ -598,7 +601,11 @@ private struct OnDeviceInferenceView: View {
                         .frame(maxWidth: .infinity, minHeight: 48)
                 }
                 .buttonStyle(.bordered)
-                .disabled(selectedImage == nil || isRunning || isLoadingImage)
+                .disabled(selectedImage == nil || isRunning || isLoadingImage || BundledResearchInference.installedDiseaseIDs.isEmpty)
+                if BundledResearchInference.installedDiseaseIDs.isEmpty {
+                    Text("No disease models are installed yet. Check for updates in Settings and download only the condition models you need.")
+                        .font(.footnote).foregroundStyle(.secondary)
+                }
                 if !diseaseResults.isEmpty {
                     Text("Disease model scores")
                         .font(.headline)
@@ -607,10 +614,10 @@ private struct OnDeviceInferenceView: View {
                         .foregroundStyle(.secondary)
                 }
                 if isRunningDiseaseModels {
-                    ProgressView(value: Double(diseaseModelsCompleted), total: Double(BundledResearchInference.diseaseIDs.count))
+                    ProgressView(value: Double(diseaseModelsCompleted), total: Double(max(BundledResearchInference.installedDiseaseIDs.count, 1)))
                         .tint(BrandColor.green)
                         .accessibilityLabel("Disease model progress")
-                    Text("Completed \(diseaseModelsCompleted) of \(BundledResearchInference.diseaseIDs.count) models")
+                    Text("Completed \(diseaseModelsCompleted) of \(BundledResearchInference.installedDiseaseIDs.count) installed models")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -688,13 +695,15 @@ private struct OnDeviceInferenceView: View {
         isRunning = true
         isRunningDiseaseModels = true
         diseaseModelsCompleted = 0
-        status = "Running \(BundledResearchInference.diseaseIDs.count) disease-specific ONNX models on this phone…"
+        let installedIDs = BundledResearchInference.installedDiseaseIDs
+        guard !installedIDs.isEmpty else { isRunning = false; isRunningDiseaseModels = false; status = "Download at least one disease model from Settings first."; return }
+        status = "Running \(installedIDs.count) installed disease-specific ONNX models on this phone…"
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 let values = try BundledResearchInference.diseaseScores(image: selectedImage) { completed, id in
                     DispatchQueue.main.async {
                         diseaseModelsCompleted = completed
-                        status = "Completed \(completed)/\(BundledResearchInference.diseaseIDs.count): \(modelDisplayName(id))"
+                        status = "Completed \(completed)/\(installedIDs.count): \(modelDisplayName(id))"
                     }
                 }
                 DispatchQueue.main.async {
@@ -759,6 +768,10 @@ private struct MobileRegistryManifest: Decodable {
     enum CodingKeys: String, CodingKey { case schemaVersion = "schema_version", models }
 }
 
+private enum MobileModelRegistryURL {
+    static let manifest = "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/manifest.json"
+}
+
 private struct MobileModelRelease: Decodable {
     let displayName: String
     let status: String
@@ -787,7 +800,9 @@ private final class OnDeviceModelRegistry: ObservableObject {
             manifest = nil
             return
         }
-        let url = input.appendingPathComponent("v1").appendingPathComponent("manifest.json")
+        let url = input.lastPathComponent == "manifest.json"
+            ? input
+            : input.appendingPathComponent("v1").appendingPathComponent("manifest.json")
         isBusy = true
         defer { isBusy = false }
         do {
@@ -800,7 +815,7 @@ private final class OnDeviceModelRegistry: ObservableObject {
             let decoded = try JSONDecoder().decode(MobileRegistryManifest.self, from: data)
             guard decoded.schemaVersion == 1 else { throw RegistryFailure.unsupportedSchema }
             manifest = decoded
-            message = "Registry checked. Compatible bundles appear here when published."
+            message = "Registry checked. Download only the disease models you need; all inference stays on this iPhone."
         } catch {
             manifest = nil
             message = "Could not check registry: \(error.localizedDescription)"
@@ -893,13 +908,14 @@ private final class OnDeviceModelRegistry: ObservableObject {
 }
 
 private enum RegistryFailure: LocalizedError {
-    case badResponse, unsupportedSchema, hashMismatch, insecureRedirect
+    case badResponse, unsupportedSchema, hashMismatch, insecureRedirect, noDiseaseModelsInstalled
     var errorDescription: String? {
         switch self {
         case .badResponse: return "The registry returned an unsuccessful response."
         case .unsupportedSchema: return "This app does not support that registry schema version."
         case .hashMismatch: return "The downloaded model failed its SHA-256 integrity check."
         case .insecureRedirect: return "The registry redirected to a non-HTTPS URL."
+        case .noDiseaseModelsInstalled: return "No disease models are installed. Check for model updates in Settings and download the conditions you need."
         }
     }
 }

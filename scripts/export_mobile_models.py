@@ -23,6 +23,7 @@ EYE_CHECKPOINT = ROOT / "models/eye_finding/charmorph_shared_eye_v2b.pt"
 EXPERT_DIR = ROOT / "results/expert_sweep/checkpoints"
 EXPERT_REGISTRY = ROOT / "results/expert_sweep/research_model_registry.json"
 VERSION = "20261114-r3"
+MODEL_RAW_BASE = "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx"
 TARGET_NAMES = {
     "DR": "Diabetic retinopathy",
     "ARMD": "Age-related macular degeneration",
@@ -165,7 +166,8 @@ def main() -> None:
     export(EyeProbabilityModel(eye_model), int(eye["size"]), eye_file, "image", "class_probabilities")
     entries[eye_name] = {
         "display_name": "Eye localization · synthetic research model",
-        "version": VERSION, "format": "onnx", "file": eye_file.name,
+        "status": "ready", "version": VERSION, "format": "onnx", "file": eye_file.name,
+        "artifact_url": f"{MODEL_RAW_BASE}/{eye_file.name}", "bytes": eye_file.stat().st_size,
         "sha256": sha256(eye_file), "input": {"name": "image", "shape": [1, 3, 384, 384],
         "color": "RGB", "range": "0..1", "resize": "square bilinear"},
         "output": {"name": "class_probabilities", "shape": [1, 3, 384, 384],
@@ -206,7 +208,8 @@ def main() -> None:
         test = target_info.get("test_evaluation", {})
         entries[model_id] = {
             "display_name": f"{TARGET_NAMES.get(target, target + ' · RFMiD label')} · RFMiD",
-            "version": VERSION, "format": "onnx", "file": model_file.name,
+            "status": "ready", "version": VERSION, "format": "onnx", "file": model_file.name,
+            "artifact_url": f"{MODEL_RAW_BASE}/{model_file.name}", "bytes": model_file.stat().st_size,
             "sha256": sha256(model_file), "input": {"name": "image", "shape": [1, 3, 320, 320],
             "color": "RGB", "range": "ImageNet normalized", "mean": [0.485, 0.456, 0.406],
             "std": [0.229, 0.224, 0.225], "resize": "square bilinear"},
