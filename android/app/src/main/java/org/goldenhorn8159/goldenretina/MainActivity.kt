@@ -483,6 +483,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                         Icon(Icons.Filled.Refresh, contentDescription = null)
                         Text("  Check for model updates")
                     }
+                    Text("For safety, updates are accepted only from the Golden Retina GitHub model registry. New model releases can be published there without updating this app.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (busy) LinearProgressIndicator(Modifier.fillMaxWidth())
                     Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     modelStates.toSortedMap().forEach { (id, state) ->
@@ -491,6 +492,9 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                             Text(modelDisplayName(id), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                             Text(state, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             if (state.startsWith("Update available ·")) {
+                                val bytes = runCatching {
+                                    JSONObject(prefs.getString("manifest-json", "{}") ?: "{}").getJSONObject("models").getJSONObject(id).optLong("bytes")
+                                }.getOrDefault(0L)
                                 TextButton(enabled = !busy, onClick = {
                                     busy = true
                                     status = "Downloading and checking ${modelDisplayName(id)}…"
@@ -502,7 +506,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                                         }, { "Model update failed: ${it.message ?: "download or model check error"}" })
                                         busy = false
                                     }
-                                }) { Text("Download model update") }
+                                }) { Text("Download model update · ${formatModelSize(bytes)}") }
                             }
                         }
                     }
@@ -533,6 +537,12 @@ private fun modelDisplayName(id: String): String = when (id) {
     "rfmid_ms" -> "Macular scar · low support"
     "rfmid_rt" -> "Retinal traction · low support"
     else -> id.replace('_', ' ')
+}
+
+private fun formatModelSize(bytes: Long): String = when {
+    bytes <= 0L -> "size unknown"
+    bytes >= 1_048_576L -> "${"%.1f".format(bytes / 1_048_576.0)} MB"
+    else -> "${"%.0f".format(bytes / 1_024.0)} KB"
 }
 
 private data class MobileDiseaseScore(val id: String, val value: Float)
@@ -583,6 +593,8 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
         }
         Button(enabled = selectedImage != null && installedDiseaseIds.isNotEmpty() && !running && !loadingImage, onClick = {
             val bitmap = selectedImage ?: return@Button
+            diseaseResults = emptyList()
+            eyeResult = null
             running = true
             runningDiseaseModels = true
             diseaseModelsCompleted = 0
@@ -599,7 +611,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                     }
                 }
                 result.onSuccess { diseaseResults = it; status = "Completed locally. Research scores are not diagnostic findings." }
-                    .onFailure { status = "Disease inference failed: ${it.message ?: "model/runtime error"}" }
+                    .onFailure { diseaseResults = emptyList(); status = "Disease inference failed: ${it.message ?: "model/runtime error"}" }
                 running = false
                 runningDiseaseModels = false
             }
@@ -645,13 +657,15 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
         }
         Button(enabled = selectedImage != null && !running && !loadingImage, onClick = {
             val bitmap = selectedImage ?: return@Button
+            diseaseResults = emptyList()
+            eyeResult = null
             running = true
             runningDiseaseModels = false
             status = "Running synthetic-domain eye localization on-device…"
             scope.launch {
                 val result = runCatching { withContext(Dispatchers.IO) { MobileResearchInference.locate(context, bitmap) } }
                 result.onSuccess { eyeResult = it; status = "Completed locally. This is not validated real-eye tracking." }
-                    .onFailure { status = "Eye-model inference failed: ${it.message ?: "model/runtime error"}" }
+                    .onFailure { eyeResult = null; status = "Eye-model inference failed: ${it.message ?: "model/runtime error"}" }
                 running = false
             }
         }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text("Run eye localization model") }
@@ -716,6 +730,7 @@ private object MobileResearchInference {
             available.forEachIndexed { index, id ->
                 val session = openSession(context, id)
                 val score = try {
+                    require(session.inputNames.size == 1 && session.outputNames.size == 1) { "Unexpected ONNX input/output count for $id." }
                     val inputName = session.inputNames.first()
                     val outputName = session.outputNames.first()
                     val input = inputTensor(source, 320, true)
@@ -736,6 +751,7 @@ private object MobileResearchInference {
     fun locate(context: Context, source: Bitmap): MobileEyeResult {
         val session = openSession(context, "ir_eye_tracker")
         try {
+            require(session.inputNames.size == 1 && session.outputNames.size == 1) { "Unexpected ONNX input/output count for eye localization." }
             val inputName = session.inputNames.first()
             val outputName = session.outputNames.first()
             val input = inputTensor(source, 384, false)
@@ -811,46 +827,27 @@ private object MobileResearchInference {
 
 private object PhoneModelRegistry {
     private const val bundledVersion = BUNDLED_MODEL_VERSION
-    private var loadedModelId: String? = null
-    private var loadedSession: OrtSession? = null
-
-    fun openSession(context: Context, id: String): OrtSession? {
-        require(id.matches(Regex("[A-Za-z0-9_-]+"))) { "Invalid model identifier." }
-        if (loadedModelId == id) return loadedSession
-        loadedSession?.close()
-        loadedSession = null
-        loadedModelId = null
-        val prefs = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE)
-        val version = prefs.getString("model-version:$id", null) ?: return null
-        val modelFile = File(File(context.filesDir, "golden-retina-models"), "$id-$version.onnx")
-        if (!modelFile.isFile) return null
-        val options = OrtSession.SessionOptions()
-        loadedSession = try {
-            options.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.BASIC_OPT)
-            OrtEnvironment.getEnvironment().createSession(modelFile.absolutePath, options)
-        } finally { options.close() }
-        loadedModelId = id
-        return loadedSession
-    }
-
-    fun closeSession() { loadedSession?.close(); loadedSession = null; loadedModelId = null }
 
     suspend fun refresh(context: Context, base: String): Map<String, String> = withContext(Dispatchers.IO) {
         val inputUrl = URL(base.trim())
         val root = if (inputUrl.path.endsWith("manifest.json")) inputUrl else URL(base.trimEnd('/') + "/v1/manifest.json")
-        require(root.protocol == "https") { "Use an HTTPS registry URL." }
+        require(isTrustedRegistry(root)) { "Use the official Golden Retina registry on raw.githubusercontent.com/Burak8159/golden-retina." }
         val manifestText = (root.openConnection() as HttpURLConnection).run {
             connectTimeout = 15_000
             readTimeout = 30_000
             instanceFollowRedirects = false
             require(responseCode == HttpURLConnection.HTTP_OK) { "Manifest host returned HTTP $responseCode." }
+            require(url.protocol == "https" && isTrustedRegistry(url)) { "Registry redirect was not trusted." }
+            require(contentLengthLong in 1..1_048_576) { "Model registry is empty or unexpectedly large." }
             getInputStream().bufferedReader().use { it.readText() }
         }
         val manifest = JSONObject(manifestText)
         require(manifest.optInt("schema_version", -1) == 1) { "Unsupported manifest schema." }
         val models = manifest.getJSONObject("models")
         require(models.length() > 0) { "Model manifest contains no models." }
-        context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("manifest-json", manifestText).apply()
+        val allowedIDs = (MobileResearchInference.diseaseIds + "ir_eye_tracker").toSet()
+        val modelIds = models.keys().asSequence().toSet()
+        require(modelIds.isNotEmpty() && allowedIDs.containsAll(modelIds)) { "Registry contains an unsupported model identifier." }
         val versions = mutableMapOf<String, String>()
         models.keys().asSequence().toList().forEach { id ->
             require(id.matches(Regex("[A-Za-z0-9_-]+"))) { "Invalid model identifier in manifest." }
@@ -863,7 +860,10 @@ private object PhoneModelRegistry {
                 return@forEach
             }
             require(version.matches(Regex("[A-Za-z0-9._-]{1,64}"))) { "$id has an invalid model version." }
-            require(fileUrl.startsWith("https://")) { "$id artifact URL must use HTTPS." }
+            val artifact = URL(fileUrl)
+            require(isTrustedArtifact(artifact, id)) { "$id artifact URL is not in the trusted Golden Retina model folder." }
+            val bytes = item.optLong("bytes", -1)
+            require(bytes in 1..MAX_MODEL_BYTES) { "$id has an invalid or excessive model size." }
             require(expected.matches(Regex("[0-9a-f]{64}"))) { "$id has an invalid SHA-256." }
             val installedVersion = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).getString("model-version:$id", null)
             val installedFile = installedVersion?.let { File(File(context.filesDir, "golden-retina-models"), "$id-$it.onnx") }
@@ -873,6 +873,7 @@ private object PhoneModelRegistry {
                 else -> "Update available · $version"
             }
         }
+        context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("manifest-json", manifestText).apply()
         versions.forEach { (id, value) -> context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).edit().putString("model:$id", value).apply() }
         versions
     }
@@ -886,7 +887,9 @@ private object PhoneModelRegistry {
         require(item.optString("status") == "ready" && item.optString("format") == "onnx") { "No downloadable ONNX release exists for this model." }
         require(version.matches(Regex("[A-Za-z0-9._-]{1,64}"))) { "Invalid model version." }
         val fileUrl = URL(item.getString("artifact_url"))
-        require(fileUrl.protocol == "https") { "Model downloads must use HTTPS." }
+        require(isTrustedArtifact(fileUrl, id)) { "Model download is outside the trusted Golden Retina repository." }
+        val expectedBytes = item.optLong("bytes", -1)
+        require(expectedBytes in 1..MAX_MODEL_BYTES) { "Model size is invalid or exceeds the safe download limit." }
         val expected = item.getString("sha256").lowercase()
         require(expected.matches(Regex("[0-9a-f]{64}"))) { "Invalid model checksum." }
         val directory = File(context.filesDir, "golden-retina-models").apply { mkdirs() }
@@ -900,12 +903,31 @@ private object PhoneModelRegistry {
             require(connection.responseCode == HttpURLConnection.HTTP_OK && connection.url.protocol == "https") {
                 "Model host did not return a secure successful download."
             }
-            connection.inputStream.use { input -> staging.outputStream().use { output -> input.copyTo(output) } }
+            require(isTrustedArtifact(connection.url, id)) { "Model download redirected outside the trusted repository." }
+            require(connection.contentLengthLong == expectedBytes) { "Model size does not match the registry." }
+            connection.inputStream.use { input -> staging.outputStream().use { output ->
+                val buffer = ByteArray(1024 * 1024)
+                var total = 0L
+                while (true) {
+                    val count = input.read(buffer)
+                    if (count < 0) break
+                    total += count
+                    require(total <= expectedBytes) { "Model download exceeded its declared size." }
+                    output.write(buffer, 0, count)
+                }
+                require(total == expectedBytes) { "Model download ended before the declared size." }
+            } }
             require(sha256(staging) == expected) { "Downloaded model failed SHA-256 verification." }
             validateOnnx(staging)
-            if (loadedModelId == id) closeSession()
-            if (target.exists()) check(target.delete()) { "Could not replace the existing model file." }
-            check(staging.renameTo(target)) { "Could not install the verified model." }
+            val backup = File(directory, ".$id-$version.previous")
+            if (backup.exists()) check(backup.delete()) { "Could not clear the previous staging backup." }
+            val hadPrevious = target.exists()
+            if (hadPrevious) check(target.renameTo(backup)) { "Could not preserve the installed model during update." }
+            if (!staging.renameTo(target)) {
+                if (hadPrevious) backup.renameTo(target)
+                error("Could not install the verified model.")
+            }
+            if (backup.exists()) backup.delete()
             directory.listFiles()?.filter { it.name.startsWith("$id-") && it.name.endsWith(".onnx") && it != target }?.forEach { it.delete() }
             prefs.edit().putString("model-version:$id", version).putString("model:$id", "Current update installed · $version · SHA-256 verified").apply()
             "Current update installed · $version · SHA-256 verified"
@@ -919,6 +941,16 @@ private object PhoneModelRegistry {
             OrtEnvironment.getEnvironment().createSession(path.absolutePath, options).close()
         } finally { options.close() }
     }
+
+    private fun isTrustedRegistry(url: URL): Boolean =
+        url.protocol == "https" && url.host.equals("raw.githubusercontent.com", ignoreCase = true) &&
+            url.path.startsWith("/Burak8159/golden-retina/")
+
+    private fun isTrustedArtifact(url: URL, id: String): Boolean =
+        isTrustedRegistry(url) && url.path.startsWith("/Burak8159/golden-retina/mobile_models/onnx/") &&
+            url.path.substringAfterLast('/') == "$id.onnx"
+
+    private const val MAX_MODEL_BYTES = 128L * 1024L * 1024L
 
     private fun sha256(file: File): String {
         val digest = MessageDigest.getInstance("SHA-256")

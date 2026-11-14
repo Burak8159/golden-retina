@@ -168,6 +168,7 @@ struct HomeView: View {
             .frame(maxWidth: 600)
             .frame(maxWidth: .infinity)
         }
+        .safeAreaPadding(.bottom, 24)
         .background(Color(uiColor: .systemGroupedBackground))
         .navigationBarHidden(true)
         .fullScreenCover(isPresented: $showDemo) { DemoFlowView() }
@@ -354,6 +355,8 @@ struct SettingsView: View {
                     .textInputAutocapitalization(.never)
                     .keyboardType(.URL)
                     .autocorrectionDisabled()
+                Text("For safety, model updates must come from the Golden Retina GitHub repository. New approved model versions can be published there without updating this app.")
+                    .font(.caption).foregroundStyle(.secondary)
                 Button {
                     UserDefaults.standard.set(registryURL, forKey: "goldenRetinaModelRegistryURL")
                     Task { await registry.refresh(registryURL: registryURL) }
@@ -405,7 +408,7 @@ struct SettingsView: View {
             }
             if let release, release.status == "ready", let version = release.version,
                installed != version {
-                Button("Download \(release.version ?? "model")") {
+                Button("Download v\(release.version ?? "model") · \(formatModelSize(release.bytes))") {
                     Task { await registry.install(id: id) }
                 }
                 .font(.caption.weight(.semibold))
@@ -413,6 +416,11 @@ struct SettingsView: View {
             }
         }
     }
+}
+
+private func formatModelSize(_ bytes: Int?) -> String {
+    guard let bytes, bytes > 0 else { return "size unknown" }
+    return String(format: "%.1f MB", Double(bytes) / 1_048_576)
 }
 
 private struct DiseaseScore: Identifiable {
@@ -461,7 +469,8 @@ private enum BundledResearchInference {
         guard !available.isEmpty else { throw RegistryFailure.noDiseaseModelsInstalled }
         for (index, id) in available.enumerated() {
             let values = try run(image: image, id: id, size: 320, imagenetNormalize: true)
-            guard let rawScore = values.first, rawScore.isFinite else { throw RegistryFailure.badResponse }
+            guard values.count == 1, let rawScore = values.first, rawScore.isFinite,
+                  (0...1).contains(rawScore) else { throw RegistryFailure.badResponse }
             scores.append(DiseaseScore(id: id, score: min(max(rawScore, 0), 1)))
             onProgress(index + 1, id)
         }
@@ -504,8 +513,11 @@ private enum BundledResearchInference {
         let options = try ORTSessionOptions()
         try options.setGraphOptimizationLevel(ORTGraphOptimizationLevel.basic)
         let session = try ORTSession(env: env, modelPath: modelURL.path, sessionOptions: options)
-        guard let inputName = try session.inputNames().first,
-              let outputName = try session.outputNames().first,
+        let inputNames = try session.inputNames()
+        let outputNames = try session.outputNames()
+        guard inputNames.count == 1, outputNames.count == 1,
+              let inputName = inputNames.first,
+              let outputName = outputNames.first,
               let pixels = resizedRGB(image, size: size) else { throw RegistryFailure.badResponse }
         let means: [Float] = imagenetNormalize ? [0.485, 0.456, 0.406] : [0, 0, 0]
         let stds: [Float] = imagenetNormalize ? [0.229, 0.224, 0.225] : [1, 1, 1]
@@ -590,6 +602,8 @@ private struct OnDeviceInferenceView: View {
                 .buttonStyle(.borderedProminent)
                 .tint(BrandColor.green)
                 .disabled(isRunning || isLoadingImage)
+                Text("For disease models, choose a retinal fundus photograph. For eye localization, choose an eye or face frame. The guided demo is separate and does not use this image.")
+                    .font(.footnote).foregroundStyle(.secondary)
                 if let selectedImage {
                     Image(uiImage: selectedImage).resizable().scaledToFit().frame(maxHeight: 260)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
@@ -692,6 +706,8 @@ private struct OnDeviceInferenceView: View {
 
     private func runDiseaseModels() {
         guard let selectedImage else { return }
+        diseaseResults = []
+        eyeResult = nil
         isRunning = true
         isRunningDiseaseModels = true
         diseaseModelsCompleted = 0
@@ -720,6 +736,8 @@ private struct OnDeviceInferenceView: View {
 
     private func runEyeModel() {
         guard let selectedImage else { return }
+        diseaseResults = []
+        eyeResult = nil
         isRunning = true
         isRunningDiseaseModels = false
         status = "Running synthetic-domain eye localization on this phone…"
@@ -779,7 +797,8 @@ private struct MobileModelRelease: Decodable {
     let format: String?
     let artifactURL: URL?
     let sha256: String?
-    enum CodingKeys: String, CodingKey { case displayName = "display_name", status, version, format, artifactURL = "artifact_url", sha256 }
+    let bytes: Int?
+    enum CodingKeys: String, CodingKey { case displayName = "display_name", status, version, format, artifactURL = "artifact_url", sha256, bytes }
 }
 
 @MainActor
@@ -788,15 +807,18 @@ private final class OnDeviceModelRegistry: ObservableObject {
     @Published var installedVersions: [String: String] = [:]
     @Published var isBusy = false
     @Published var message = ""
-    private var activeRuntimeID: String?
-    private var activeRuntimeEnvironment: ORTEnv?
-    private var activeRuntimeSession: ORTSession?
 
     init() { installedVersions = Self.readInstalledVersions() }
 
     func refresh(registryURL: String) async {
         guard let input = URL(string: registryURL), input.scheme?.lowercased() == "https", input.host != nil else {
             message = "Enter the HTTPS URL of the model registry. No registry is configured yet."
+            manifest = nil
+            return
+        }
+        guard input.host?.lowercased() == "raw.githubusercontent.com",
+              input.path.hasPrefix("/Burak8159/golden-retina/") else {
+            message = "For safety, use the official Golden Retina model registry on raw.githubusercontent.com/Burak8159/golden-retina."
             manifest = nil
             return
         }
@@ -810,10 +832,23 @@ private final class OnDeviceModelRegistry: ObservableObject {
             request.cachePolicy = .reloadIgnoringLocalCacheData
             request.timeoutInterval = 20
             let (data, response) = try await URLSession.shared.data(for: request)
+            guard data.count <= 1_048_576 else { throw RegistryFailure.badResponse }
             guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw RegistryFailure.badResponse }
-            guard response.url?.scheme?.lowercased() == "https" else { throw RegistryFailure.insecureRedirect }
+            guard response.url?.scheme?.lowercased() == "https",
+                  response.url?.host?.lowercased() == "raw.githubusercontent.com",
+                  response.url?.path.hasPrefix("/Burak8159/golden-retina/") == true else { throw RegistryFailure.insecureRedirect }
             let decoded = try JSONDecoder().decode(MobileRegistryManifest.self, from: data)
             guard decoded.schemaVersion == 1 else { throw RegistryFailure.unsupportedSchema }
+            let allowedIDs = Set(BundledResearchInference.diseaseIDs + ["ir_eye_tracker"])
+            guard !decoded.models.isEmpty, Set(decoded.models.keys).isSubset(of: allowedIDs) else { throw RegistryFailure.badResponse }
+            for (id, release) in decoded.models where release.status == "ready" {
+                guard let bytes = release.bytes, (1...(128 * 1_048_576)).contains(bytes),
+                      let artifact = release.artifactURL,
+                      artifact.scheme?.lowercased() == "https",
+                      artifact.host?.lowercased() == "raw.githubusercontent.com",
+                      artifact.path.hasPrefix("/Burak8159/golden-retina/mobile_models/onnx/"),
+                      artifact.lastPathComponent == "\(id).onnx" else { throw RegistryFailure.badResponse }
+            }
             manifest = decoded
             message = "Registry checked. Download only the disease models you need; all inference stays on this iPhone."
         } catch {
@@ -828,6 +863,10 @@ private final class OnDeviceModelRegistry: ObservableObject {
               release.format?.lowercased() == "onnx", let artifactURL = release.artifactURL,
               artifactURL.scheme == "https", let expected = release.sha256?.lowercased(),
               expected.count == 64, let version = release.version,
+              let expectedBytes = release.bytes, (1...(128 * 1_048_576)).contains(expectedBytes),
+              artifactURL.host?.lowercased() == "raw.githubusercontent.com",
+              artifactURL.path.hasPrefix("/Burak8159/golden-retina/mobile_models/onnx/"),
+              artifactURL.lastPathComponent == "\(id).onnx",
               version.range(of: "^[A-Za-z0-9._-]{1,64}$", options: .regularExpression) != nil else {
             message = "This model has no compatible, downloadable ONNX release yet."
             return
@@ -839,7 +878,12 @@ private final class OnDeviceModelRegistry: ObservableObject {
             request.timeoutInterval = 120
             let (temporaryURL, response) = try await URLSession.shared.download(for: request)
             guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw RegistryFailure.badResponse }
-            guard response.url?.scheme?.lowercased() == "https" else { throw RegistryFailure.insecureRedirect }
+            guard response.url?.scheme?.lowercased() == "https",
+                  response.url?.host?.lowercased() == "raw.githubusercontent.com",
+                  response.url?.path.hasPrefix("/Burak8159/golden-retina/mobile_models/onnx/") == true,
+                  response.url?.lastPathComponent == "\(id).onnx" else { throw RegistryFailure.insecureRedirect }
+            let actualBytes = (try FileManager.default.attributesOfItem(atPath: temporaryURL.path)[.size] as? NSNumber)?.intValue
+            guard actualBytes == expectedBytes else { throw RegistryFailure.badResponse }
             let actual = try Self.sha256(file: temporaryURL)
             guard actual == expected else { throw RegistryFailure.hashMismatch }
             let directory = try Self.modelDirectory()
@@ -850,12 +894,20 @@ private final class OnDeviceModelRegistry: ObservableObject {
             let environment = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
             let options = try ORTSessionOptions()
             try options.setGraphOptimizationLevel(ORTGraphOptimizationLevel.basic)
-            let session = try ORTSession(env: environment, modelPath: staging.path, sessionOptions: options)
-            if FileManager.default.fileExists(atPath: target.path) { try FileManager.default.removeItem(at: target) }
-            try FileManager.default.moveItem(at: staging, to: target)
-            activeRuntimeID = id
-            activeRuntimeEnvironment = environment
-            activeRuntimeSession = session
+            _ = try ORTSession(env: environment, modelPath: staging.path, sessionOptions: options)
+            let backup = directory.appendingPathComponent(".\(id)-\(version).previous")
+            let hadPrevious = FileManager.default.fileExists(atPath: target.path)
+            if FileManager.default.fileExists(atPath: backup.path) { try? FileManager.default.removeItem(at: backup) }
+            if hadPrevious { try FileManager.default.moveItem(at: target, to: backup) }
+            do {
+                try FileManager.default.moveItem(at: staging, to: target)
+            } catch {
+                if hadPrevious, FileManager.default.fileExists(atPath: backup.path) {
+                    try? FileManager.default.moveItem(at: backup, to: target)
+                }
+                throw error
+            }
+            if FileManager.default.fileExists(atPath: backup.path) { try? FileManager.default.removeItem(at: backup) }
             let oldVersions = try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
                 .filter { $0.lastPathComponent.hasPrefix("\(id)-") && $0.pathExtension == "onnx" && $0 != target }
             for oldVersion in oldVersions { try FileManager.default.removeItem(at: oldVersion) }
@@ -867,25 +919,6 @@ private final class OnDeviceModelRegistry: ObservableObject {
         } catch {
             message = "Model update failed: \(error.localizedDescription)"
         }
-    }
-
-    // Load only the requested model into memory; disease experts can be several
-    // separate artifacts, so the app must not keep every encoder session live.
-    func runtimeSession(for id: String) throws -> ORTSession? {
-        guard id.range(of: "^[A-Za-z0-9_-]+$", options: .regularExpression) != nil,
-              let version = installedVersions[id],
-              version.range(of: "^[A-Za-z0-9._-]{1,64}$", options: .regularExpression) != nil else { return nil }
-        if activeRuntimeID == id, let activeRuntimeSession { return activeRuntimeSession }
-        let url = try Self.modelDirectory().appendingPathComponent("\(id)-\(version).onnx")
-        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
-        let environment = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
-        let options = try ORTSessionOptions()
-        try options.setGraphOptimizationLevel(ORTGraphOptimizationLevel.basic)
-        let session = try ORTSession(env: environment, modelPath: url.path, sessionOptions: options)
-        activeRuntimeID = id
-        activeRuntimeEnvironment = environment
-        activeRuntimeSession = session
-        return session
     }
 
     private func releaseName(_ id: String) -> String { id == "ir_eye_tracker" ? "Synthetic eye localization" : "Retinal classifier" }
