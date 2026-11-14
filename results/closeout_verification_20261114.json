@@ -1,6 +1,6 @@
 {
   "project": "Golden Retina",
-  "snapshot_utc": "2026-11-14T12:09:01Z",
+  "snapshot_utc": "2026-11-14T12:53:33Z",
   "remote_archive": "results/remote_closeout_20261114/golden_retina_l4_closeout_20261114.tar",
   "archive_sha256": "3b413a611d448f2b40fad11134025f2fb5eaee9d2b1e9d2aebbd1dc0c8a771cb",
   "remote_archive_sha256": "3b413a611d448f2b40fad11134025f2fb5eaee9d2b1e9d2aebbd1dc0c8a771cb",
@@ -12,6 +12,21 @@
   "metric_rows": 17,
   "row_level_predictions_published": false,
   "model_checkpoints_published": false,
-  "raw_dataset_images_pulled": false,
-  "evidence_boundary": "RFMiD image-level held-out split; patient independence, intended-camera validity, and clinical utility not established."
+  "raw_dataset_images_pulled": true,
+  "evidence_boundary": "RFMiD image-level held-out split; patient independence, intended-camera validity, and clinical utility not established.",
+  "raw_dataset_images_pulled_note": "Included only in the private, Git-ignored full workspace archive; not published to GitHub.",
+  "workspace_archive": "results/remote_closeout_20261114/golden_retina_workspace_20261114.tar",
+  "workspace_archive_bytes": 11444756480,
+  "workspace_archive_sha256": "f36bc22214af09ca015e93358f90c8f08da361d96d7b07f27b17860a2655bdcf",
+  "workspace_archive_remote_sha256": "f36bc22214af09ca015e93358f90c8f08da361d96d7b07f27b17860a2655bdcf",
+  "workspace_archive_hash_match": true,
+  "workspace_archive_tar_listing_valid": true,
+  "private_checkpoints_pulled": true,
+  "private_checkpoints_published": false,
+  "row_level_predictions_pulled": true,
+  "vm_name": "golden-retina-disease-l4-20261114",
+  "vm_status": "TERMINATED",
+  "vm_last_stop_utc": "2026-11-14T12:53:33Z",
+  "estimated_runtime_spend_try": 238.85,
+  "invoice_settled": false
 }

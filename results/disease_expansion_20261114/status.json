@@ -5,7 +5,7 @@
   "total_blocks": 32,
   "planned_work_hours": null,
   "time_cap_hours": null,
-  "current_block": 31,
+  "current_block": 32,
   "blocks": [
     {
       "id": 1,
@@ -251,22 +251,22 @@
       "id": 31,
       "name": "Commit and push safe project files",
       "description": "Stage only current disease-scope code, tracker, configs, documentation and permitted aggregates; inspect staged diff and remote result.",
-      "status": "active",
-      "status_label": "In progress · safe source/results publication",
-      "evidence": "Reviewing exact staged paths and diff; publish code, documentation, and permitted aggregate summaries only. Model weights, raw images, and row-level outputs remain local/excluded."
+      "status": "complete",
+      "status_label": "Complete · scoped package pushed and verified",
+      "evidence": "Commit d030827 was pushed to origin/main. Published source, technical/customer docs, tracker, app demo source, and permitted aggregate metrics. Raw dataset images, row-level predictions, model checkpoints, and private archive are excluded."
     },
     {
       "id": 32,
       "name": "Stop Golden Retina VM and verify cloud closeout",
       "description": "Stop only the named Golden Retina L4 and confirm it is stopped; leave unrelated cloud resources untouched.",
-      "status": "planned",
-      "status_label": "Queued · scoped cloud stop after push",
-      "evidence": "Stop only the Golden Retina L4 instance after the commit is verified remotely, then confirm TERMINATED and stop budget accrual."
+      "status": "complete",
+      "status_label": "Complete · L4 stopped and verified",
+      "evidence": "Stopped only golden-retina-disease-l4-20261114 in us-west1-a; cloud API reports TERMINATED at 2026-11-14T12:53:33Z. RTX and unrelated cloud resources were untouched."
     }
   ],
-  "gate_title": "Image-split research training underway; independent clinical validation remains open",
-  "gate_detail": "The camera-scope/label audit is complete. Seventeen RFMiD disease or finding targets are listed individually; unsupported labels remain untrained. The official split is image-level with no patient identifiers, so the current work is development evidence only.",
-  "gpu_status": "Golden Retina L4 running · disease sweep process not detected; inspect before closeout · RTX unused",
+  "gate_title": "Research development run closed; clinical validation remains open",
+  "gate_detail": "All 32 planned work blocks are complete. RFMiD results are image-split development evidence only: patient independence, intended-camera validity, and clinical utility are not established. The complete private VM workspace archive is locally checksum-verified; safe source and aggregates are on GitHub; the Golden Retina L4 is TERMINATED.",
+  "gpu_status": "Golden Retina L4 TERMINATED and verified; RTX unused; no Golden Retina GPU job remains active.",
   "evidence": [
     "NEI describes dilation as enabling retinal and optic-nerve inspection and screening for DR, glaucoma and AMD; the camera still captures only its actual field of view.",
     "RFMiD is a 3,200-image, 46-condition multi-label fundus dataset from three cameras with expert consensus labels; patient-level separation is not established by the official image-level split.",
@@ -302,7 +302,9 @@
     "RFMiD CRVO image-split test at threshold 0.5: accuracy=0.9766, sensitivity=0.7778, specificity=0.9794, auroc=0.9826, average_precision=0.7501; missed positives=2/9; validation-selected convnext_tiny; patient independence and clinical validity not established.",
     "RFMiD ERM image-split test at threshold 0.5: accuracy=0.9922, sensitivity=0.0000, specificity=1.0000, auroc=0.8317, average_precision=0.2172; missed positives=5/5; validation-selected convnext_tiny; patient independence and clinical validity not established.",
     "RFMiD MS image-split test at threshold 0.5: accuracy=0.9844, sensitivity=0.2857, specificity=0.9921, auroc=0.8934, average_precision=0.2276; missed positives=5/7; validation-selected convnext_tiny; patient independence and clinical validity not established.",
-    "RFMiD RT image-split test at threshold 0.5: accuracy=0.9938, sensitivity=0.2000, specificity=1.0000, auroc=0.9318, average_precision=0.5192; missed positives=4/5; validation-selected convnext_tiny; patient independence and clinical validity not established."
+    "RFMiD RT image-split test at threshold 0.5: accuracy=0.9938, sensitivity=0.2000, specificity=1.0000, auroc=0.9318, average_precision=0.5192; missed positives=4/5; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "Full private project workspace archive pulled to results/remote_closeout_20261114/golden_retina_workspace_20261114.tar (11,444,756,480 bytes); SHA-256 matches remote: f36bc22214af09ca015e93358f90c8f08da361d96d7b07f27b17860a2655bdcf. Archive is local and Git-ignored; raw RFMiD images, local checkpoints, and environment are not published.",
+    "Final cloud closeout: golden-retina-disease-l4-20261114 is TERMINATED; estimated runtime spend at stop ₺238.85, not a settled invoice; billing can lag and ancillary charges may differ."
   ],
   "issues": [
     {
@@ -344,40 +346,34 @@
   ],
   "budget": {
     "spent_try": null,
-    "estimated_spent_try": 214.45,
+    "estimated_spent_try": 238.85,
     "planned_total_try": 1900,
     "hard_total_try": 1980,
     "protected_reserve_try": 80,
     "display_label": "Estimated L4 runtime at public on-demand rate; invoice may lag; excludes unrelated resources",
-    "accrual_active": true,
-    "as_of_utc": "2026-11-14T12:12:16Z",
+    "accrual_active": false,
+    "as_of_utc": "2026-11-14T12:53:33Z",
     "accrual_rate_try_per_hour": 35.6
   },
-  "current_block_estimate": "Inspect and push scoped release, verify GitHub commit, then stop only the Golden Retina L4 and confirm cloud closeout.",
+  "current_block_estimate": "Complete · final closeout verified",
   "current_stage_steps": [
     {
-      "title": "Train DR candidate: convnext_tiny",
+      "title": "Pull full private VM workspace archive",
       "status": "complete",
-      "status_label": "Validation summary saved",
-      "evidence": "Validation AUROC 0.9618."
+      "status_label": "Complete · exact byte count and SHA-256 match",
+      "evidence": "11,444,756,480 bytes; SHA-256 f36bc22214af09ca015e93358f90c8f08da361d96d7b07f27b17860a2655bdcf."
     },
     {
-      "title": "Train DR candidate: dinov2_vits14",
-      "status": "active",
-      "status_label": "Training on L4",
-      "evidence": "Train/validation only; test remains closed during selection."
+      "title": "Verify safe GitHub release",
+      "status": "complete",
+      "status_label": "Complete · source and permitted aggregates pushed",
+      "evidence": "Commit d030827 published code, app demo sources, documentation, and aggregate results. Raw images, row-level predictions, and checkpoints are not in the public repository."
     },
     {
-      "title": "Select DR model on validation",
-      "status": "planned",
-      "status_label": "Queued",
-      "evidence": "Validation AUROC only; selected convnext_tiny (0.9618)."
-    },
-    {
-      "title": "Evaluate selected DR model once",
-      "status": "planned",
-      "status_label": "Queued",
-      "evidence": "No threshold tuning on test; report misses with specificity and accuracy."
+      "title": "Stop scoped Golden Retina L4",
+      "status": "complete",
+      "status_label": "Complete · TERMINATED verified",
+      "evidence": "golden-retina-disease-l4-20261114 in project project-41fe08b0-9696-4f8a-928, zone us-west1-a; cloud API reports TERMINATED at 2026-11-14T12:53:33Z."
     }
   ],
   "run_limits": [
@@ -529,9 +525,9 @@
       "notes": "Full audited label supports are in the disease-scope document. Several targets have 0–6 training positives; the trainer masks heads below 10 positives or negatives."
     }
   ],
-  "last_update_utc": "2026-11-14T12:12:16Z",
-  "updated_at": "2026-11-14T12:12:16Z",
-  "completed_blocks": 30,
+  "last_update_utc": "2026-11-14T12:53:33Z",
+  "updated_at": "2026-11-14T12:53:33Z",
+  "completed_blocks": 32,
   "disease_model_assignments": [
     {
       "target": "DR",
