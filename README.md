@@ -47,9 +47,10 @@ and [Android project](android/README.md).
 
 ## Try the Local Research Interface
 
-The RFMiD checkpoint is a local model artifact and is not distributed in this
-repository. After obtaining the project environment and placing the checkpoint
-at `models/rfmid_convnext_tiny_multilabel_20261021.pt`, start the station:
+The desktop station's RFMiD multi-label checkpoint remains a local artifact and
+is not distributed in this repository. After obtaining the project environment
+and placing the checkpoint at
+`models/rfmid_convnext_tiny_multilabel_20261021.pt`, start the station:
 
 ```bash
 PYTHONPATH=src .venv-golden-retina/bin/python -m golden_retina.rfmid_multidisease_station
@@ -60,6 +61,12 @@ local computer only. It accepts JPEG, PNG, and WebP images up to 16 MB. The
 JSON endpoint is `POST /api/predict`; see
 [`docs/rfmid_multidisease_ui_api.md`](docs/rfmid_multidisease_ui_api.md) for the
 request and response details.
+
+The iOS and Android research apps bundle the ONNX artifacts in
+[`mobile_models/onnx`](mobile_models/onnx) for local inference. Their provenance,
+dataset attribution, architecture, and evidence limits are documented in
+[`docs/mobile_model_artifacts.md`](docs/mobile_model_artifacts.md). The mobile
+bundle is separate from the desktop checkpoint above.
 
 For the separate DR case workflow and browser station, see
 [`docs/api_contract.md`](docs/api_contract.md) and

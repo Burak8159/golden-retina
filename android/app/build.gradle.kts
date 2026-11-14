@@ -15,6 +15,8 @@ android {
         versionName = "0.1.0"
     }
 
+    sourceSets.getByName("main").assets.srcDir("../../mobile_models/onnx")
+
     buildFeatures { compose = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17

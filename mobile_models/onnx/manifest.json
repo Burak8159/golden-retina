@@ -1,0 +1,893 @@
+{
+  "schema_version": 1,
+  "project": "Golden Retina",
+  "bundle_version": "20261114-r3",
+  "inference": "on-device only; the app does not upload selected images",
+  "models": {
+    "ir_eye_tracker": {
+      "display_name": "Eye localization \u00b7 synthetic research model",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "ir_eye_tracker.onnx",
+      "sha256": "ac5d5c997e6aa2d699c5db6181e27c79561b814fa2e74e7aff17e9ad19bed872",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          384,
+          384
+        ],
+        "color": "RGB",
+        "range": "0..1",
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "class_probabilities",
+        "shape": [
+          1,
+          3,
+          384,
+          384
+        ],
+        "classes": [
+          "background",
+          "iris",
+          "pupil"
+        ]
+      },
+      "evidence": "synthetic renderer only; not validated on people, IR cameras, or goggles",
+      "source_checkpoint_sha256": "57ef89060125078d9aea7f3f8a21b380a269b3f34b20ef89d7ed32872262c2ab"
+    },
+    "rfmid_dr": {
+      "display_name": "Diabetic retinopathy \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_dr.onnx",
+      "sha256": "83f6baedc5aed8c415bec2ce0bd6eb3b9f7707b5583c158dbee3a150abe37ea8",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        376,
+        132,
+        124
+      ],
+      "export_parity_max_abs_error": 9.429454803466797e-05,
+      "development_test_accuracy_at_0_5": 0.928125,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "4f7a7dcbf872205cc50253ea9e9e153ace1fb815b3734d545872ad50c630a199"
+    },
+    "rfmid_armd": {
+      "display_name": "Age-related macular degeneration \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_armd.onnx",
+      "sha256": "1c0d300857bbb7433de7951279c494bb6b7bc53fb95b66c793db1096faa2e0e0",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        100,
+        38,
+        31
+      ],
+      "export_parity_max_abs_error": 0.0001016855239868164,
+      "development_test_accuracy_at_0_5": 0.9484375,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "ee75437a1d74fae3185e3652522bc1a757befdb99fa825492601229890b20ca1"
+    },
+    "rfmid_dn": {
+      "display_name": "DN \u00b7 RFMiD label \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_dn.onnx",
+      "sha256": "127d543a77288cffc71f0f12fe50e1bdba31a2cffd51d5fc3f245743e4a3d0e2",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        138,
+        46,
+        46
+      ],
+      "export_parity_max_abs_error": 9.694695472717285e-05,
+      "development_test_accuracy_at_0_5": 0.9296875,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "699ba90968b6902a4bb10ee70a91bad869d4feb9a7b7b2a5231ba53555ce0484"
+    },
+    "rfmid_mya": {
+      "display_name": "Myopia \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_mya.onnx",
+      "sha256": "66c437f5d6d87b5d0c68a66fbee032b92eb6f80f5d04b7bbd1354587928addea",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        101,
+        34,
+        32
+      ],
+      "export_parity_max_abs_error": 8.881092071533203e-05,
+      "development_test_accuracy_at_0_5": 0.971875,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "dd2b02e4c452dd2b26c09f8406c634b436f780541eb4c1dd3f79ba4c54abb54e"
+    },
+    "rfmid_brvo": {
+      "display_name": "Branch retinal vein occlusion \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_brvo.onnx",
+      "sha256": "e8cf5e78d9074ca913e77a05d76ec8c2633570b86fef222ec0b11b02959d9bd2",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        73,
+        23,
+        23
+      ],
+      "export_parity_max_abs_error": 2.9861927032470703e-05,
+      "development_test_accuracy_at_0_5": 0.95625,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "3304b4cd322af975f23793be515b6ee19a71c87ec641077bef51034ef074a2ab"
+    },
+    "rfmid_odc": {
+      "display_name": "Optic-disc cupping finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_odc.onnx",
+      "sha256": "454d895423f28cf4a56a96235926f4b7b72e7b08b7414ab9b5b0cfb6657dab69",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        282,
+        72,
+        91
+      ],
+      "export_parity_max_abs_error": 5.924701690673828e-05,
+      "development_test_accuracy_at_0_5": 0.8921875,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "23f7f25d05164e03716b3e3edd46c39d7559e3fcb2d1b1fd417c41ad4f578b74"
+    },
+    "rfmid_odp": {
+      "display_name": "Optic-disc pallor finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_odp.onnx",
+      "sha256": "b08bab269a8d280a200ba44d4f9312d4b21a8aa6e997ab89bfabca9c5445932e",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "resnet50",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        65,
+        26,
+        24
+      ],
+      "export_parity_max_abs_error": 0.0,
+      "development_test_accuracy_at_0_5": 0.9625,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "fbbddeeb61d2af3403641cc8a66a73f02ada7a2acfc63190f3c9992caa9beebf"
+    },
+    "rfmid_ode": {
+      "display_name": "Optic-disc edema finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_ode.onnx",
+      "sha256": "ea726866c6f0c27929304c393925dba3097dc0c3be1887980522f7637f1d15ea",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        58,
+        21,
+        17
+      ],
+      "export_parity_max_abs_error": 2.288818359375e-05,
+      "development_test_accuracy_at_0_5": 0.978125,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "a36b81f6a55710f095428e0311e53fdd055164c2fe505b66cddf52e263c728ea"
+    },
+    "rfmid_tsln": {
+      "display_name": "Tessellated fundus finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_tsln.onnx",
+      "sha256": "fa898859fd90779995f7646f240b2d21f0a75919db0186c47da8bba391a3bd28",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        186,
+        65,
+        53
+      ],
+      "export_parity_max_abs_error": 5.868077278137207e-05,
+      "development_test_accuracy_at_0_5": 0.928125,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "8b5c367cfbb63de33199b598647b3c68f9aa53ad7b22b1d0b9fc1bde33eb99e6"
+    },
+    "rfmid_ls": {
+      "display_name": "Laser-scar finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_ls.onnx",
+      "sha256": "ff490413e54f5bea7252994f701bd01efc45041b540a16ec7a9db396aecfd2bd",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        47,
+        17,
+        15
+      ],
+      "export_parity_max_abs_error": 0.00019678473472595215,
+      "development_test_accuracy_at_0_5": 0.98125,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "df7cac8e3cdb633453b9e2522a6d76b24861a6dfbfb45a69cd66e94d8d23897f"
+    },
+    "rfmid_csr": {
+      "display_name": "Central serous retinopathy \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_csr.onnx",
+      "sha256": "94b997e6e037350ef0b0818a04a966f50b3b1f2d264857b49d73659c6fc9137b",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        37,
+        11,
+        13
+      ],
+      "export_parity_max_abs_error": 8.404254913330078e-05,
+      "development_test_accuracy_at_0_5": 0.9765625,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "c6ca25ac50ddb5f8de057100ef1256b7d6037679d827c086c70e9cc47abd539d"
+    },
+    "rfmid_rs": {
+      "display_name": "Retinal scar finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_rs.onnx",
+      "sha256": "75cd3dca146aabdfd6f32b527a6a1f1d940d479c3df18fa90182df9ba9d73d2c",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        43,
+        14,
+        14
+      ],
+      "export_parity_max_abs_error": 4.571676254272461e-05,
+      "development_test_accuracy_at_0_5": 0.975,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "bc92cbb9db4021998a036b45c7b4543c8c50dfb98405b00e24a6cfe14f3359d1"
+    },
+    "rfmid_crs": {
+      "display_name": "CRS \u00b7 RFMiD label \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_crs.onnx",
+      "sha256": "533b848d7cae47f4467ceea425ff19627ea3ea178a66cf536ffee60089a375ee",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "primary_support",
+      "positive_images_train_validation_test": [
+        32,
+        11,
+        11
+      ],
+      "export_parity_max_abs_error": 2.473592758178711e-06,
+      "development_test_accuracy_at_0_5": 0.9828125,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "03fcfb3f1174371927b40adadd83117b7c9857de58a911ff744b6c1d59f1b41b"
+    },
+    "rfmid_crvo": {
+      "display_name": "Central retinal vein occlusion \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_crvo.onnx",
+      "sha256": "67459e58fe9951d2aa6dda1bf97ac08eb4e6ad672c51163b5915236eee3fff09",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "exploratory_low_support",
+      "positive_images_train_validation_test": [
+        28,
+        8,
+        9
+      ],
+      "export_parity_max_abs_error": 1.4871358871459961e-05,
+      "development_test_accuracy_at_0_5": 0.9765625,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "1751ad4dac34a6618fc0b2662b5ee89537b98e6b305122e6540e84283fa0049b"
+    },
+    "rfmid_erm": {
+      "display_name": "Epiretinal membrane appearance \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_erm.onnx",
+      "sha256": "2fb152e951c134255d7a2671b1c6b8803636d017edd9d23d1254cd81f08b2fd0",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "exploratory_low_support",
+      "positive_images_train_validation_test": [
+        14,
+        7,
+        5
+      ],
+      "export_parity_max_abs_error": 7.236003875732422e-05,
+      "development_test_accuracy_at_0_5": 0.9921875,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "66a3c233aa903bb9e721ebe7164b7d268837c181025ee9140c7377813e277a80"
+    },
+    "rfmid_ms": {
+      "display_name": "Macular-scar finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_ms.onnx",
+      "sha256": "5ccfbe58a7fc5ba116efd550a5c581152271e420a2573a0e967f00549c88d582",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "exploratory_low_support",
+      "positive_images_train_validation_test": [
+        15,
+        5,
+        7
+      ],
+      "export_parity_max_abs_error": 2.4497509002685547e-05,
+      "development_test_accuracy_at_0_5": 0.984375,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "984cea977d7e4bbfb3c7885499a7d3e0c44d59aed0f22b7a36908589d8a8900a"
+    },
+    "rfmid_rt": {
+      "display_name": "Retinal traction finding \u00b7 RFMiD",
+      "version": "20261114-r3",
+      "format": "onnx",
+      "file": "rfmid_rt.onnx",
+      "sha256": "422ce9052b8bbcb3d33bc5b22f82daa697ceb6358007dba0b3453830e5834c12",
+      "input": {
+        "name": "image",
+        "shape": [
+          1,
+          3,
+          320,
+          320
+        ],
+        "color": "RGB",
+        "range": "ImageNet normalized",
+        "mean": [
+          0.485,
+          0.456,
+          0.406
+        ],
+        "std": [
+          0.229,
+          0.224,
+          0.225
+        ],
+        "resize": "square bilinear"
+      },
+      "output": {
+        "name": "score",
+        "shape": [
+          1,
+          1
+        ],
+        "threshold": 0.5,
+        "interpretation": "uncalibrated model score; not a diagnosis"
+      },
+      "architecture": "convnext_tiny",
+      "weights_precision": "float16; Gelu and input/output float32",
+      "evidence_tier": "exploratory_low_support",
+      "positive_images_train_validation_test": [
+        14,
+        6,
+        5
+      ],
+      "export_parity_max_abs_error": 6.35385513305664e-05,
+      "development_test_accuracy_at_0_5": 0.99375,
+      "evidence": "RFMiD image-split research; patient independence not verified; not clinical validation",
+      "source_checkpoint_sha256": "d4ae8a8f8233ddc282ae7e7030894be04c85d16018bbcdb9fe02e185ff7820a7"
+    }
+  }
+}

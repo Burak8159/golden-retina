@@ -2,13 +2,22 @@ package org.goldenhorn8159.goldenretina
 
 import android.os.Bundle
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.graphics.Color as AndroidColor
+import android.net.Uri
 import ai.onnxruntime.OrtEnvironment
 import ai.onnxruntime.OrtSession
+import ai.onnxruntime.OnnxTensor
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -21,6 +30,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -56,6 +66,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -95,6 +107,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.semantics.heading
@@ -151,10 +164,8 @@ private fun GoldenRetinaTheme(colorChoice: String, content: @Composable () -> Un
 
 private enum class Destination { HOME, DEMO, GUIDE, SETTINGS }
 private enum class DemoPhase { WELCOME, SEARCHING, CONNECTED, RIGHT_SCAN, RIGHT_DONE, LEFT_SCAN, LEFT_DONE, ANALYZING, RESULTS }
-private data class ConditionItem(val name: String, val highRisk: Boolean)
-private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>) {
-    val highestRisk: Boolean get() = conditions.any { it.highRisk }
-}
+private data class ConditionItem(val name: String)
+private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>)
 
 @Composable
 private fun GoldenRetinaApp(colorChoice: String, onColorChoice: (String) -> Unit) {
@@ -333,7 +344,7 @@ private fun HowToUseScreen(modifier: Modifier = Modifier) {
                     GuideStep("2", "Press the goggles button", "In the intended product, the physical button starts acquisition. In the demo, tap the on-screen control to simulate it.")
                     GuideStep("3", "Position and hold still", "The planned flow guides positioning. The animated eye is an illustration; it does not track your gaze.")
                     GuideStep("4", "Scan both eyes", "The demo proceeds from the right eye to the left eye automatically.")
-                    GuideStep("5", "Review grouped conditions", "Expand a condition group to inspect its rows. The group badge represents the highest example priority among its rows.")
+                    GuideStep("5", "Review grouped conditions", "Expand a condition group to inspect its rows. Demo rows are marked Not analyzed because this simulation does not run disease inference.")
                 }
             }
             Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)) {
@@ -367,17 +378,28 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("model_registry", Context.MODE_PRIVATE) }
     var registryUrl by rememberSaveable { mutableStateOf(prefs.getString("url", "") ?: "") }
-    var status by rememberSaveable { mutableStateOf("No model registry configured. The app continues in demo-only mode.") }
+    var status by rememberSaveable { mutableStateOf("Bundled model inference is ready on-device. A remote update registry is optional.") }
     var busy by remember { mutableStateOf(false) }
     val initialModelStates = remember {
-        mapOf("retinal_classifier" to "Not installed", "ir_eye_tracker" to "Not installed") +
+        (listOf("ir_eye_tracker") + MobileResearchInference.diseaseIds).associateWith { id ->
+            if (id == "ir_eye_tracker") "Bundled on-device synthetic research model · v20261114-r3"
+            else "Bundled on-device RFMiD research classifier · v20261114-r3"
+        } +
             prefs.all.keys.filter { it.startsWith("model:") }.associate { key ->
                 key.removePrefix("model:") to (prefs.getString(key, "Not installed") ?: "Not installed")
             }
     }
     var modelStates by remember { mutableStateOf(initialModelStates) }
     var showBluetoothInfo by rememberSaveable { mutableStateOf(false) }
+    var showModelLab by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    if (showModelLab) {
+        Dialog(onDismissRequest = { showModelLab = false }, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+            Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+                OnDeviceInferenceScreen(onBack = { showModelLab = false })
+            }
+        }
+    }
     BoxWithConstraints(modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp, vertical = 16.dp).padding(bottom = 20.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text("Settings", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
@@ -426,7 +448,12 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
             Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text("On-device models", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("The design keeps inference on this phone. The registry only distributes model files; it does not receive eye images or run inference. This demo does not yet run a disease or tracking model.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Inference runs locally on this phone. Model updates replace local bundles; selected images are not uploaded. The guided demo remains simulated.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Button(onClick = { showModelLab = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) {
+                        Icon(Icons.Filled.Search, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                        Text("Run on-device research models")
+                    }
                     OutlinedTextField(
                         value = registryUrl,
                         onValueChange = { registryUrl = it },
@@ -443,8 +470,8 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                         scope.launch {
                             val result = runCatching { PhoneModelRegistry.refresh(context, registryUrl.trim()) }
                             status = result.fold({ reply ->
-                                modelStates = reply
-                                "Registry checked. Model files are local and are not yet activated for scan inference."
+                                modelStates = modelStates + reply
+                                "Registry checked. Downloaded model releases are used by on-device inference."
                             }, { "Registry check failed: ${it.message ?: "network or manifest error"}" })
                             busy = false
                         }
@@ -457,14 +484,300 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
                     modelStates.toSortedMap().forEach { (id, state) ->
                         HorizontalDivider()
                         Column(verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                            Text(if (id == "ir_eye_tracker") "IR eye tracker" else if (id == "retinal_classifier") "Retinal disease head · one task per release" else id.replace('_', ' '), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
+                            Text(modelDisplayName(id), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.SemiBold)
                             Text(state, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
             }
-            Text("The current checkpoints are research prototypes and are not yet qualified mobile inference bundles. The guided scan remains simulated and does not assess a person’s eyes or support health decisions.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Bundled disease heads are retrospective research models with patient independence unverified. The eye-localization model was trained on synthetic renders only. Neither is a clinical diagnosis or validated goggle tracker.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
+    }
+}
+
+private fun modelDisplayName(id: String): String = when (id) {
+    "ir_eye_tracker" -> "Eye localization · synthetic research model"
+    "rfmid_dr" -> "Diabetic retinopathy · RFMiD"
+    "rfmid_armd" -> "Age-related macular degeneration · RFMiD"
+    "rfmid_dn" -> "DN · RFMiD label"
+    "rfmid_mya" -> "Myopia · RFMiD"
+    "rfmid_brvo" -> "Branch retinal vein occlusion · RFMiD"
+    "rfmid_odc" -> "Optic-disc cupping finding · RFMiD"
+    "rfmid_odp" -> "Optic-disc pallor finding · RFMiD"
+    "rfmid_ode" -> "Optic-disc edema finding · RFMiD"
+    "rfmid_tsln" -> "Tessellated fundus finding · RFMiD"
+    "rfmid_ls" -> "Laser-scar finding · RFMiD"
+    "rfmid_csr" -> "Central serous retinopathy · RFMiD"
+    "rfmid_rs" -> "Retinal scar finding · RFMiD"
+    "rfmid_crs" -> "CRS · RFMiD label"
+    "rfmid_crvo" -> "Central retinal vein occlusion · low support"
+    "rfmid_erm" -> "Epiretinal membrane · low support"
+    "rfmid_ms" -> "Macular scar · low support"
+    "rfmid_rt" -> "Retinal traction · low support"
+    else -> id.replace('_', ' ')
+}
+
+private data class MobileDiseaseScore(val id: String, val value: Float)
+private data class MobileEyeResult(val pupilPixels: Int, val centerX: Double?, val centerY: Double?, val score: Float?)
+
+@Composable
+private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var selectedImage by remember { mutableStateOf<Bitmap?>(null) }
+    var diseaseResults by remember { mutableStateOf<List<MobileDiseaseScore>>(emptyList()) }
+    var expandedScoreGroups by remember { mutableStateOf(setOf("Retina and macula")) }
+    var eyeResult by remember { mutableStateOf<MobileEyeResult?>(null) }
+    var running by remember { mutableStateOf(false) }
+    var runningDiseaseModels by remember { mutableStateOf(false) }
+    var loadingImage by remember { mutableStateOf(false) }
+    var diseaseModelsCompleted by remember { mutableStateOf(0) }
+    var status by remember { mutableStateOf("Choose a color fundus photograph or an eye/face frame, then run the matching local model.") }
+    val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        if (uri != null) {
+            scope.launch {
+                loadingImage = true
+                selectedImage = null
+                diseaseResults = emptyList()
+                eyeResult = null
+                status = "Preparing the selected image locally…"
+                val decoded = runCatching { withContext(Dispatchers.IO) { decodeSelectedImage(context, uri) } }.getOrNull()
+                selectedImage = decoded
+                status = if (decoded == null) "Could not open that image. Choose a readable JPEG, PNG, or WebP image." else "Image loaded locally. Choose the matching research model below."
+                loadingImage = false
+            }
+        }
+    }
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
+            Text("On-device model lab", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+        }
+        Text("Inference runs on this phone. This screen does not upload or store the selected image.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Button(enabled = !running && !loadingImage, onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) {
+            Icon(Icons.Filled.Search, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Choose an image")
+        }
+        selectedImage?.let { bitmap ->
+            Image(bitmap.asImageBitmap(), contentDescription = "Selected image", modifier = Modifier.fillMaxWidth().heightIn(max = 280.dp).clip(RoundedCornerShape(16.dp)))
+        }
+        Button(enabled = selectedImage != null && !running && !loadingImage, onClick = {
+            val bitmap = selectedImage ?: return@Button
+            running = true
+            runningDiseaseModels = true
+            diseaseModelsCompleted = 0
+            status = "Running ${MobileResearchInference.diseaseIds.size} disease-specific ONNX models on-device…"
+            scope.launch {
+                val result = runCatching {
+                    withContext(Dispatchers.IO) {
+                        MobileResearchInference.classify(context, bitmap) { completed, id ->
+                            scope.launch {
+                                diseaseModelsCompleted = completed
+                                status = "Completed $completed/${MobileResearchInference.diseaseIds.size}: ${modelDisplayName(id)}"
+                            }
+                        }
+                    }
+                }
+                result.onSuccess { diseaseResults = it; status = "Completed locally. Research scores are not diagnostic findings." }
+                    .onFailure { status = "Disease inference failed: ${it.message ?: "model/runtime error"}" }
+                running = false
+                runningDiseaseModels = false
+            }
+        }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text("Run disease classifiers") }
+        if (diseaseResults.isNotEmpty()) {
+            Text("Disease model scores", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text("Each condition and group is shown as a percentage. These are raw model scores, not calibrated patient-risk estimates or diagnoses; ‘low support’ describes the evidence behind a model, not the patient’s risk. Group values show the highest score in that group.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+        listOf(
+            "Retina and macula" to listOf("rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_tsln", "rfmid_ls", "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt"),
+            "Optic disc" to listOf("rfmid_odc", "rfmid_odp", "rfmid_ode"),
+        ).forEach { (groupName, modelIds) ->
+            val rows = diseaseResults.filter { it.id in modelIds }
+            val highest = rows.maxOfOrNull { it.value }
+            if (highest != null) {
+                Card(
+                    onClick = { expandedScoreGroups = if (groupName in expandedScoreGroups) expandedScoreGroups - groupName else expandedScoreGroups + groupName },
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(groupName, fontWeight = FontWeight.Bold)
+                                Text("Highest model score (%)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Text("${"%.1f".format(highest * 100)}%", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        }
+                        if (groupName in expandedScoreGroups) {
+                            HorizontalDivider()
+                            rows.forEach { item ->
+                                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                    Text(modelDisplayName(item.id), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                                    Text("${"%.1f".format(item.value * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Button(enabled = selectedImage != null && !running && !loadingImage, onClick = {
+            val bitmap = selectedImage ?: return@Button
+            running = true
+            runningDiseaseModels = false
+            status = "Running synthetic-domain eye localization on-device…"
+            scope.launch {
+                val result = runCatching { withContext(Dispatchers.IO) { MobileResearchInference.locate(context, bitmap) } }
+                result.onSuccess { eyeResult = it; status = "Completed locally. This is not validated real-eye tracking." }
+                    .onFailure { status = "Eye-model inference failed: ${it.message ?: "model/runtime error"}" }
+                running = false
+            }
+        }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text("Run eye localization model") }
+        eyeResult?.let { result ->
+            val description = if (result.centerX != null && result.centerY != null) {
+                "Synthetic-domain pupil candidate · x ${"%.0f".format(result.centerX)} px, y ${"%.0f".format(result.centerY)} px · ${result.pupilPixels} pixels · score ${"%.3f".format(result.score ?: 0f)}"
+            } else "No pupil candidate above the minimum-pixel rule · ${result.pupilPixels} pixels found"
+            Text(description, style = MaterialTheme.typography.bodyMedium)
+        }
+        if (loadingImage) LinearProgressIndicator(Modifier.fillMaxWidth())
+        if (runningDiseaseModels) {
+            LinearProgressIndicator(
+                progress = { diseaseModelsCompleted.toFloat() / MobileResearchInference.diseaseIds.size },
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Text("Completed $diseaseModelsCompleted of ${MobileResearchInference.diseaseIds.size} models", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        } else if (running) LinearProgressIndicator(Modifier.fillMaxWidth())
+        Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Limits: disease experts were trained/evaluated on RFMiD image splits with patient independence unverified; scores are not calibrated diagnoses. Eye localization was trained on synthetic renders only, not people, IR images, or goggles. Do not use for patient care or motor control.", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+private fun decodeSelectedImage(context: Context, uri: Uri): Bitmap? {
+    val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+    if (bounds.outWidth <= 0 || bounds.outHeight <= 0) return null
+    var sample = 1
+    while (bounds.outWidth / sample > 2048 || bounds.outHeight / sample > 2048) sample *= 2
+    val options = BitmapFactory.Options().apply { inSampleSize = sample; inPreferredConfig = Bitmap.Config.ARGB_8888 }
+    val decoded = context.contentResolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) } ?: return null
+    val orientation = context.contentResolver.openInputStream(uri)?.use { stream ->
+        ExifInterface(stream).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+    } ?: ExifInterface.ORIENTATION_NORMAL
+    val transform = Matrix()
+    when (orientation) {
+        ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> transform.setScale(-1f, 1f)
+        ExifInterface.ORIENTATION_ROTATE_180 -> transform.setRotate(180f)
+        ExifInterface.ORIENTATION_FLIP_VERTICAL -> transform.setScale(1f, -1f)
+        ExifInterface.ORIENTATION_TRANSPOSE -> { transform.setRotate(90f); transform.postScale(-1f, 1f) }
+        ExifInterface.ORIENTATION_ROTATE_90 -> transform.setRotate(90f)
+        ExifInterface.ORIENTATION_TRANSVERSE -> { transform.setRotate(-90f); transform.postScale(-1f, 1f) }
+        ExifInterface.ORIENTATION_ROTATE_270 -> transform.setRotate(-90f)
+        else -> return decoded
+    }
+    val upright = Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height, transform, true)
+    if (upright !== decoded) decoded.recycle()
+    return upright
+}
+
+private object MobileResearchInference {
+    private const val bundledVersion = "20261114-r3"
+    val diseaseIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls", "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt")
+
+    fun classify(context: Context, source: Bitmap, onProgress: (Int, String) -> Unit): List<MobileDiseaseScore> =
+        buildList {
+            diseaseIds.forEachIndexed { index, id ->
+                val session = openSession(context, id)
+                val score = try {
+                    val inputName = session.inputNames.first()
+                    val outputName = session.outputNames.first()
+                    val input = inputTensor(source, 320, true)
+                    try {
+                        session.run(mapOf(inputName to input)).use { result ->
+                            val output = result.get(outputName).orElseThrow { IllegalStateException("Missing model output: $outputName") } as OnnxTensor
+                            val rawScore = output.floatBuffer.get()
+                            require(rawScore.isFinite()) { "Non-finite output from $id." }
+                            MobileDiseaseScore(id, rawScore.coerceIn(0f, 1f))
+                        }
+                    } finally { input.close() }
+                } finally { session.close() }
+                add(score)
+                onProgress(index + 1, id)
+            }
+        }
+
+    fun locate(context: Context, source: Bitmap): MobileEyeResult {
+        val session = openSession(context, "ir_eye_tracker")
+        try {
+            val inputName = session.inputNames.first()
+            val outputName = session.outputNames.first()
+            val input = inputTensor(source, 384, false)
+            try {
+                session.run(mapOf(inputName to input)).use { result ->
+                    val output = result.get(outputName).orElseThrow { IllegalStateException("Missing model output: $outputName") } as OnnxTensor
+                    val buffer = output.floatBuffer
+                    val values = FloatArray(buffer.remaining())
+                    buffer.get(values)
+                    val plane = 384 * 384
+                    require(values.size == plane * 3) { "Eye model output shape mismatch." }
+                    var count = 0
+                    var sumX = 0.0
+                    var sumY = 0.0
+                    var sumScore = 0.0
+                    for (pixel in 0 until plane) {
+                        val score = values[2 * plane + pixel]
+                        if (score > values[pixel] && score > values[plane + pixel]) {
+                            count++
+                            sumX += pixel % 384
+                            sumY += pixel / 384
+                            sumScore += score
+                        }
+                    }
+                    if (count < 5) return MobileEyeResult(count, null, null, null)
+                    return MobileEyeResult(count, sumX / count * source.width / 384.0, sumY / count * source.height / 384.0, (sumScore / count).toFloat())
+                }
+            } finally { input.close() }
+        } finally { session.close() }
+    }
+
+    private fun openSession(context: Context, id: String): OrtSession {
+        require(id.matches(Regex("[A-Za-z0-9_-]+")))
+        val preferences = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE)
+        val version = preferences.getString("model-version:$id", null)
+        val installed = version?.let { File(File(context.filesDir, "golden-retina-models"), "$id-$it.onnx") }
+        val modelFile = if (installed?.isFile == true) installed else {
+            // Version the copied asset path so app upgrades cannot reuse stale cached weights.
+            val bundled = File(context.cacheDir, "golden-retina-bundled/$bundledVersion/$id.onnx")
+            if (!bundled.isFile) {
+                bundled.parentFile?.mkdirs()
+                context.assets.open("$id.onnx").use { input -> bundled.outputStream().use { output -> input.copyTo(output) } }
+            }
+            bundled
+        }
+        val options = OrtSession.SessionOptions()
+        return try {
+            // Keep the ONNX graph at basic optimization: extended fusion turns
+            // the FP16 ConvNeXt GELU into a custom float16 kernel that Android
+            // CPU EP does not provide.
+            options.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.BASIC_OPT)
+            OrtEnvironment.getEnvironment().createSession(modelFile.absolutePath, options)
+        } finally { options.close() }
+    }
+
+    private fun inputTensor(source: Bitmap, size: Int, normalize: Boolean): OnnxTensor {
+        val resized = Bitmap.createScaledBitmap(source, size, size, true)
+        val pixels = IntArray(size * size)
+        resized.getPixels(pixels, 0, size, 0, 0, size, size)
+        val values = FloatArray(3 * size * size)
+        val means = if (normalize) floatArrayOf(.485f, .456f, .406f) else floatArrayOf(0f, 0f, 0f)
+        val stds = if (normalize) floatArrayOf(.229f, .224f, .225f) else floatArrayOf(1f, 1f, 1f)
+        val plane = size * size
+        for (i in pixels.indices) {
+            values[i] = (AndroidColor.red(pixels[i]) / 255f - means[0]) / stds[0]
+            values[plane + i] = (AndroidColor.green(pixels[i]) / 255f - means[1]) / stds[1]
+            values[2 * plane + i] = (AndroidColor.blue(pixels[i]) / 255f - means[2]) / stds[2]
+        }
+        if (resized !== source) resized.recycle()
+        return OnnxTensor.createTensor(OrtEnvironment.getEnvironment(), java.nio.FloatBuffer.wrap(values), longArrayOf(1, 3, size.toLong(), size.toLong()))
     }
 }
 
@@ -483,7 +796,10 @@ private object PhoneModelRegistry {
         val modelFile = File(File(context.filesDir, "golden-retina-models"), "$id-$version.onnx")
         if (!modelFile.isFile) return null
         val options = OrtSession.SessionOptions()
-        loadedSession = try { OrtEnvironment.getEnvironment().createSession(modelFile.absolutePath, options) } finally { options.close() }
+        loadedSession = try {
+            options.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.BASIC_OPT)
+            OrtEnvironment.getEnvironment().createSession(modelFile.absolutePath, options)
+        } finally { options.close() }
         loadedModelId = id
         return loadedSession
     }
@@ -548,7 +864,10 @@ private object PhoneModelRegistry {
 
     private fun validateOnnx(path: File) {
         val options = OrtSession.SessionOptions()
-        try { OrtEnvironment.getEnvironment().createSession(path.absolutePath, options).close() } finally { options.close() }
+        try {
+            options.setOptimizationLevel(OrtSession.SessionOptions.OptLevel.BASIC_OPT)
+            OrtEnvironment.getEnvironment().createSession(path.absolutePath, options).close()
+        } finally { options.close() }
     }
 
     private fun sha256(file: File): String {
@@ -794,12 +1113,12 @@ private fun DemoAnalysis() {
 @Composable
 private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
     val groups = listOf(
-        ConditionGroup("Retina & macula", listOf(
-            ConditionItem("Diabetic retinopathy", true), ConditionItem("Age-related macular degeneration", true), ConditionItem("Drusen finding", false), ConditionItem("Myopic fundus appearance", false), ConditionItem("Branch retinal vein occlusion", true), ConditionItem("Retinal tessellation", false), ConditionItem("Retinal laser-scar finding", false), ConditionItem("Central serous retinopathy", true), ConditionItem("Retinitis finding", true), ConditionItem("Chorioretinitis finding", true), ConditionItem("Central retinal vein occlusion", true), ConditionItem("Epiretinal membrane appearance", false), ConditionItem("Macular-scar finding", true), ConditionItem("Retinal traction finding", true),
+        ConditionGroup("Retina and macula", listOf(
+            ConditionItem("Diabetic retinopathy"), ConditionItem("Age-related macular degeneration"), ConditionItem("DN · RFMiD label (definition unverified)"), ConditionItem("Myopia"), ConditionItem("Branch retinal vein occlusion"), ConditionItem("Tessellated fundus finding"), ConditionItem("Laser-scar finding"), ConditionItem("Central serous retinopathy"), ConditionItem("Retinal scar finding"), ConditionItem("CRS · RFMiD label (definition unverified)"), ConditionItem("Central retinal vein occlusion · low-support model"), ConditionItem("Epiretinal membrane · low-support model"), ConditionItem("Macular scar · low-support model"), ConditionItem("Retinal traction · low-support model"),
         )),
-        ConditionGroup("Optic nerve", listOf(ConditionItem("Optic-disc cupping finding", false), ConditionItem("Optic-disc pallor finding", false), ConditionItem("Optic-disc edema finding", true))),
+        ConditionGroup("Optic disc", listOf(ConditionItem("Optic-disc cupping finding"), ConditionItem("Optic-disc pallor finding"), ConditionItem("Optic-disc edema finding"))),
     )
-    var expandedGroups by rememberSaveable { mutableStateOf(setOf("Retina & macula")) }
+    var expandedGroups by rememberSaveable { mutableStateOf(setOf("Retina and macula")) }
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()).padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -812,7 +1131,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
             Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text("Condition-by-condition breakdown", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("Expand a group to see its conditions. The group badge is the highest example priority among its rows.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Expand a group to see its conditions. This guided demo does not analyze an image, so it has no model percentages to show.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     groups.forEach { group ->
                         Card(
                             onClick = { expandedGroups = if (group.name in expandedGroups) expandedGroups - group.name else expandedGroups + group.name },
@@ -826,8 +1145,8 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                                         Text(group.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
                                         Text("${group.conditions.size} conditions", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
-                                    Surface(shape = CircleShape, color = if (group.highestRisk) Color(0xFFFFE0D5) else MaterialTheme.colorScheme.secondaryContainer) {
-                                        Text(if (group.highestRisk) "HIGH RISK" else "LOW RISK", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = if (group.highestRisk) Color(0xFF8E2E14) else MaterialTheme.colorScheme.onSecondaryContainer)
+                                    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant) {
+                                        Text("NOT ANALYZED", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                 }
                                 if (group.name in expandedGroups) {
@@ -839,7 +1158,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                                                 Text(condition.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                                                 Text("Right eye · Not analyzed   ·   Left eye · Not analyzed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                             }
-                                            Text(if (condition.highRisk) "HIGH" else "LOW", style = MaterialTheme.typography.labelSmall, color = if (condition.highRisk) Color(0xFF9D381C) else MaterialTheme.colorScheme.onSurfaceVariant)
+                                            Text("NOT ANALYZED", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         }
                                         if (index < group.conditions.lastIndex) HorizontalDivider()
                                     }
@@ -848,7 +1167,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                         }
                     }
                     HorizontalDivider()
-                    Text("Risk badges are example group priorities, not patient-specific risk. No eye image or disease is analyzed; every condition is Not analyzed.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Text("No disease or eye image is analyzed in this demo. For model-derived percentages, use Research inference and treat outputs as uncalibrated research scores.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                 }
             }
             AboutFact("No image from you was captured or analyzed", Icons.Filled.Lock)

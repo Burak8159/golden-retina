@@ -1,7 +1,10 @@
 import SwiftUI
 import CryptoKit
 import Foundation
+import ImageIO
 import OnnxRuntimeBindings
+import PhotosUI
+import UIKit
 
 @main
 struct GoldenRetinaApp: App {
@@ -263,7 +266,7 @@ struct HowToUseView: View {
                 manualStep("2", title: "Start with the goggles button", body: "In the intended product flow, pressing the physical goggles button begins acquisition. The demo uses an on-screen button to represent that action.")
                 manualStep("3", title: "Hold still and look toward the guide", body: "The planned interface guides positioning and image capture. The current eye graphic is illustrative only; it does not track the user.")
                 manualStep("4", title: "Capture both eyes", body: "The flow scans the right eye and then switches automatically to the left eye.")
-                manualStep("5", title: "Review the summary", body: "The demo shows expandable condition groups and example group-priority labels. Every condition is marked Not analyzed.")
+                manualStep("5", title: "Review the summary", body: "The demo shows expandable condition groups. Every condition is marked Not analyzed because the demo does not run disease inference.")
             }
             Section("Instructional video") {
                 ZStack {
@@ -339,9 +342,14 @@ struct SettingsView: View {
                 Label("Not a medical device or diagnosis", systemImage: "cross.case")
             }
             Section("On-device models") {
-                Text("The design keeps inference on this phone. The registry only distributes model files; it does not receive eye images or run inference. This demo does not yet run a disease or tracking model.")
+                Text("The research model bundles run on this phone with ONNX Runtime. Selected images stay on-device; the guided demo remains simulated.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+                NavigationLink {
+                    OnDeviceInferenceView()
+                } label: {
+                    Label("Run on-device research models", systemImage: "cpu")
+                }
                 TextField("HTTPS model registry URL", text: $registryURL)
                     .textInputAutocapitalization(.never)
                     .keyboardType(.URL)
@@ -357,18 +365,16 @@ struct SettingsView: View {
                 if !registry.message.isEmpty {
                     Text(registry.message).font(.footnote).foregroundStyle(.secondary)
                 }
-                let modelIDs = Array(Set(registry.installedVersions.keys).union(registry.manifest?.models.keys ?? Dictionary<String, MobileModelRelease>().keys)).sorted()
+                let bundledIDs = ["ir_eye_tracker"] + BundledResearchInference.diseaseIDs
+                let modelIDs = Array(Set(bundledIDs).union(registry.installedVersions.keys).union(registry.manifest?.models.keys ?? Dictionary<String, MobileModelRelease>().keys)).sorted()
                 ForEach(modelIDs, id: \.self) { id in
                     let release = registry.manifest?.models[id]
-                    modelRow(release?.displayName ?? (id == "ir_eye_tracker" ? "IR eye tracker" : id), release: release, installed: registry.installedVersions[id], id: id)
-                }
-                if modelIDs.isEmpty {
-                    modelRow("Retinal disease model · one task per release", release: nil, installed: nil, id: "retinal_classifier")
-                    modelRow("IR eye tracker", release: nil, installed: nil, id: "ir_eye_tracker")
+                    let bundled = bundledIDs.contains(id) ? "Bundled app · v20261114-r3" : nil
+                    modelRow(release?.displayName ?? modelDisplayName(id), release: release, installed: registry.installedVersions[id] ?? bundled, id: id)
                 }
             }
             Section {
-                Text("No compatible mobile model bundles or registry URL are currently configured. The guided demo remains simulated and does not capture images, load models, or assess a person’s eyes. Research checkpoints require ONNX export and device qualification before installation.")
+                Text("The bundled RFMiD models are research classifiers, not clinical diagnoses. The eye-localization model was trained on synthetic renders and is not validated on people, infrared cameras, or goggles. Do not use outputs for patient care or motor control.")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             } footer: {
@@ -407,6 +413,343 @@ struct SettingsView: View {
                 .disabled(registry.isBusy)
             }
         }
+    }
+}
+
+private struct DiseaseScore: Identifiable {
+    let id: String
+    let score: Float
+}
+
+private func prepareModelImage(_ data: Data) -> UIImage? {
+    guard let source = CGImageSourceCreateWithData(data as CFData, nil),
+          let thumbnail = CGImageSourceCreateThumbnailAtIndex(
+            source,
+            0,
+            [
+                kCGImageSourceCreateThumbnailFromImageAlways: true,
+                kCGImageSourceCreateThumbnailWithTransform: true,
+                kCGImageSourceThumbnailMaxPixelSize: 2048
+            ] as CFDictionary
+          ) else { return nil }
+    return UIImage(cgImage: thumbnail, scale: 1, orientation: .up)
+}
+
+private struct DiseaseScoreGroup: Identifiable {
+    let id: String
+    let modelIDs: [String]
+}
+
+private struct EyeLocalization {
+    let pupilCount: Int
+    let centerX: Double?
+    let centerY: Double?
+    let meanScore: Float?
+}
+
+private enum BundledResearchInference {
+    static let diseaseIDs = [
+        "rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_odc",
+        "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls", "rfmid_csr", "rfmid_rs",
+        "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt"
+    ]
+
+    static func diseaseScores(image: UIImage, onProgress: (Int, String) -> Void) throws -> [DiseaseScore] {
+        var scores: [DiseaseScore] = []
+        for (index, id) in diseaseIDs.enumerated() {
+            let values = try run(image: image, id: id, size: 320, imagenetNormalize: true)
+            guard let rawScore = values.first, rawScore.isFinite else { throw RegistryFailure.badResponse }
+            scores.append(DiseaseScore(id: id, score: min(max(rawScore, 0), 1)))
+            onProgress(index + 1, id)
+        }
+        return scores
+    }
+
+    static func locateEyes(image: UIImage) throws -> EyeLocalization {
+        let values = try run(image: image, id: "ir_eye_tracker", size: 384, imagenetNormalize: false)
+        let plane = 384 * 384
+        guard values.count == 3 * plane else { throw RegistryFailure.badResponse }
+        var count = 0
+        var sumX = 0.0
+        var sumY = 0.0
+        var sumScore: Double = 0
+        for pixel in 0..<plane {
+            let pupil = values[2 * plane + pixel]
+            if pupil > values[pixel], pupil > values[plane + pixel] {
+                let x = pixel % 384
+                let y = pixel / 384
+                count += 1
+                sumX += Double(x)
+                sumY += Double(y)
+                sumScore += Double(pupil)
+            }
+        }
+        guard count >= 5, let cg = image.cgImage else {
+            return EyeLocalization(pupilCount: count, centerX: nil, centerY: nil, meanScore: nil)
+        }
+        return EyeLocalization(
+            pupilCount: count,
+            centerX: (sumX / Double(count)) * Double(cg.width) / 384,
+            centerY: (sumY / Double(count)) * Double(cg.height) / 384,
+            meanScore: Float(sumScore / Double(count))
+        )
+    }
+
+    private static func run(image: UIImage, id: String, size: Int, imagenetNormalize: Bool) throws -> [Float] {
+        guard let modelURL = modelURL(id: id) else { throw RegistryFailure.badResponse }
+        let env = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
+        let options = try ORTSessionOptions()
+        try options.setGraphOptimizationLevel(ORTGraphOptimizationLevel.basic)
+        let session = try ORTSession(env: env, modelPath: modelURL.path, sessionOptions: options)
+        guard let inputName = try session.inputNames().first,
+              let outputName = try session.outputNames().first,
+              let pixels = resizedRGB(image, size: size) else { throw RegistryFailure.badResponse }
+        let means: [Float] = imagenetNormalize ? [0.485, 0.456, 0.406] : [0, 0, 0]
+        let stds: [Float] = imagenetNormalize ? [0.229, 0.224, 0.225] : [1, 1, 1]
+        var channels = [Float](repeating: 0, count: 3 * size * size)
+        for pixel in 0..<(size * size) {
+            for channel in 0..<3 {
+                let value = Float(pixels[pixel * 4 + channel]) / 255
+                channels[channel * size * size + pixel] = (value - means[channel]) / stds[channel]
+            }
+        }
+        let data = channels.withUnsafeBytes { Data($0) }
+        let input = try ORTValue(
+            tensorData: NSMutableData(data: data),
+            elementType: ORTTensorElementDataType.float,
+            shape: [NSNumber(value: 1), NSNumber(value: 3), NSNumber(value: size), NSNumber(value: size)]
+        )
+        let outputs = try session.run(withInputs: [inputName: input], outputNames: [outputName], runOptions: nil)
+        guard let output = outputs[outputName] else { throw RegistryFailure.badResponse }
+        let outputData = try output.tensorData() as Data
+        return outputData.withUnsafeBytes { raw in
+            Array(raw.bindMemory(to: Float.self))
+        }
+    }
+
+    private static func modelURL(id: String) -> URL? {
+        if let versions = UserDefaults.standard.dictionary(forKey: "goldenRetinaInstalledModelVersions") as? [String: String],
+           let version = versions[id],
+           let support = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) {
+            let installed = support.appendingPathComponent("GoldenRetinaModels", isDirectory: true)
+                .appendingPathComponent("\(id)-\(version).onnx")
+            if FileManager.default.fileExists(atPath: installed.path) { return installed }
+        }
+        return Bundle.main.url(forResource: id, withExtension: "onnx")
+    }
+
+    private static func resizedRGB(_ image: UIImage, size: Int) -> [UInt8]? {
+        guard let cgImage = image.cgImage else { return nil }
+        var bytes = [UInt8](repeating: 0, count: size * size * 4)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        bytes.withUnsafeMutableBytes { buffer in
+            guard let context = CGContext(
+                data: buffer.baseAddress, width: size, height: size,
+                bitsPerComponent: 8, bytesPerRow: size * 4, space: colorSpace,
+                bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+            ) else { return }
+            context.interpolationQuality = .high
+            context.draw(cgImage, in: CGRect(x: 0, y: 0, width: size, height: size))
+        }
+        return bytes
+    }
+}
+
+private struct OnDeviceInferenceView: View {
+    private let scoreGroups = [
+        DiseaseScoreGroup(id: "Retina and macula", modelIDs: [
+            "rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_tsln",
+            "rfmid_ls", "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm",
+            "rfmid_ms", "rfmid_rt"
+        ]),
+        DiseaseScoreGroup(id: "Optic disc", modelIDs: ["rfmid_odc", "rfmid_odp", "rfmid_ode"])
+    ]
+    @State private var selectedItem: PhotosPickerItem?
+    @State private var selectedImage: UIImage?
+    @State private var diseaseResults: [DiseaseScore] = []
+    @State private var eyeResult: EyeLocalization?
+    @State private var status = "Choose a color fundus photograph or an eye/face frame to run the matching local model."
+    @State private var isRunning = false
+    @State private var isLoadingImage = false
+    @State private var isRunningDiseaseModels = false
+    @State private var diseaseModelsCompleted = 0
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                Text("On-device model lab").font(.largeTitle.bold())
+                Text("Inference runs locally on this iPhone. Images are not uploaded or saved by this screen.")
+                    .foregroundStyle(.secondary)
+                PhotosPicker(selection: $selectedItem, matching: .images) {
+                    Label("Choose an image", systemImage: "photo.on.rectangle.angled")
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(BrandColor.green)
+                .disabled(isRunning || isLoadingImage)
+                if let selectedImage {
+                    Image(uiImage: selectedImage).resizable().scaledToFit().frame(maxHeight: 260)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                }
+                Button {
+                    runDiseaseModels()
+                } label: {
+                    Label(isRunning ? "Running locally…" : "Run disease classifiers", systemImage: "cross.case")
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                }
+                .buttonStyle(.bordered)
+                .disabled(selectedImage == nil || isRunning || isLoadingImage)
+                if !diseaseResults.isEmpty {
+                    Text("Disease model scores")
+                        .font(.headline)
+                    Text("Each condition and group is shown as a percentage. These are raw model scores, not calibrated patient-risk estimates or diagnoses; ‘low support’ describes the evidence behind a model, not the patient’s risk. CRVO, ERM, MS (macular scar), and RT are exploratory labels.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                if isRunningDiseaseModels {
+                    ProgressView(value: Double(diseaseModelsCompleted), total: Double(BundledResearchInference.diseaseIDs.count))
+                        .tint(BrandColor.green)
+                        .accessibilityLabel("Disease model progress")
+                    Text("Completed \(diseaseModelsCompleted) of \(BundledResearchInference.diseaseIDs.count) models")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                ForEach(scoreGroups) { group in
+                    let rows = diseaseResults.filter { group.modelIDs.contains($0.id) }
+                    if let highest = rows.map(\.score).max() {
+                        DisclosureGroup {
+                            ForEach(rows) { result in
+                                HStack {
+                                    Text(modelDisplayName(result.id))
+                                    Spacer()
+                                    Text(String(format: "%.1f%%", result.score * 100)).monospacedDigit().fontWeight(.semibold)
+                                }
+                                .padding(12)
+                                .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 12))
+                            }
+                        } label: {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(group.id).font(.subheadline.weight(.semibold))
+                                    Text("Highest model score (%)").font(.caption).foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Text(String(format: "%.1f%%", highest * 100)).monospacedDigit().fontWeight(.bold)
+                            }
+                        }
+                    }
+                }
+                Button {
+                    runEyeModel()
+                } label: {
+                    Label(isRunning ? "Running locally…" : "Run eye localization model", systemImage: "eye")
+                        .frame(maxWidth: .infinity, minHeight: 48)
+                }
+                .buttonStyle(.bordered)
+                .disabled(selectedImage == nil || isRunning || isLoadingImage)
+                if let eyeResult {
+                    if let x = eyeResult.centerX, let y = eyeResult.centerY {
+                        Text(String(format: "Synthetic-domain pupil candidate: x %.0f, y %.0f px · %d pixels · score %.3f", x, y, eyeResult.pupilCount, eyeResult.meanScore ?? 0))
+                    } else {
+                        Text("No pupil candidate above the minimum-pixel rule (\(eyeResult.pupilCount) pixels found).")
+                    }
+                }
+                Text(status).font(.footnote).foregroundStyle(.secondary)
+                Text("Limits: the RFMiD heads are image-split research models with patient independence unverified. Scores are not calibrated diagnoses. Eye localization was trained/evaluated on synthetic renders only, not real people, IR frames, or goggles. Do not use for patient care or motor control.")
+                    .font(.footnote.weight(.medium)).foregroundStyle(.secondary)
+            }
+            .padding(20)
+        }
+        .navigationTitle("Research inference")
+        .navigationBarTitleDisplayMode(.inline)
+        .onChange(of: selectedItem) { _, item in
+            guard let item else { return }
+            selectedImage = nil
+            diseaseResults = []
+            eyeResult = nil
+            isLoadingImage = true
+            status = "Preparing the selected image locally…"
+            Task {
+                defer { isLoadingImage = false }
+                if let data = try? await item.loadTransferable(type: Data.self), let image = prepareModelImage(data) {
+                    selectedImage = image
+                    diseaseResults = []
+                    eyeResult = nil
+                    status = "Image is ready. Choose the appropriate local model action."
+                } else {
+                    status = "Could not load that image. Choose a JPEG, PNG, or HEIC image."
+                }
+            }
+        }
+    }
+
+    private func runDiseaseModels() {
+        guard let selectedImage else { return }
+        isRunning = true
+        isRunningDiseaseModels = true
+        diseaseModelsCompleted = 0
+        status = "Running \(BundledResearchInference.diseaseIDs.count) disease-specific ONNX models on this phone…"
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let values = try BundledResearchInference.diseaseScores(image: selectedImage) { completed, id in
+                    DispatchQueue.main.async {
+                        diseaseModelsCompleted = completed
+                        status = "Completed \(completed)/\(BundledResearchInference.diseaseIDs.count): \(modelDisplayName(id))"
+                    }
+                }
+                DispatchQueue.main.async {
+                    diseaseResults = values
+                    status = "Completed locally. These are research scores, not diagnostic findings."
+                    isRunning = false
+                    isRunningDiseaseModels = false
+                }
+            } catch {
+                DispatchQueue.main.async { status = "Inference failed: \(error.localizedDescription)"; isRunning = false; isRunningDiseaseModels = false }
+            }
+        }
+    }
+
+    private func runEyeModel() {
+        guard let selectedImage else { return }
+        isRunning = true
+        isRunningDiseaseModels = false
+        status = "Running synthetic-domain eye localization on this phone…"
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let value = try BundledResearchInference.locateEyes(image: selectedImage)
+                DispatchQueue.main.async {
+                    eyeResult = value
+                    status = "Completed locally. This result is not validated eye tracking."
+                    isRunning = false
+                }
+            } catch {
+                DispatchQueue.main.async { status = "Inference failed: \(error.localizedDescription)"; isRunning = false }
+            }
+        }
+    }
+}
+
+private func modelDisplayName(_ id: String) -> String {
+    switch id {
+    case "ir_eye_tracker": return "Eye localization · synthetic research model"
+    case "rfmid_dr": return "Diabetic retinopathy · RFMiD"
+    case "rfmid_armd": return "Age-related macular degeneration · RFMiD"
+    case "rfmid_dn": return "DN · RFMiD label"
+    case "rfmid_mya": return "Myopia · RFMiD"
+    case "rfmid_brvo": return "Branch retinal vein occlusion · RFMiD"
+    case "rfmid_odc": return "Optic-disc cupping · RFMiD"
+    case "rfmid_odp": return "Optic-disc pallor · RFMiD"
+    case "rfmid_ode": return "Optic-disc edema · RFMiD"
+    case "rfmid_tsln": return "Tessellated fundus finding · RFMiD"
+    case "rfmid_ls": return "Laser-scar finding · RFMiD"
+    case "rfmid_csr": return "Central serous retinopathy · RFMiD"
+    case "rfmid_rs": return "Retinal scar finding · RFMiD"
+    case "rfmid_crs": return "CRS · RFMiD label"
+    case "rfmid_crvo": return "Central retinal vein occlusion · RFMiD · low support"
+    case "rfmid_erm": return "Epiretinal membrane · RFMiD · low support"
+    case "rfmid_ms": return "Macular scar · RFMiD · low support"
+    case "rfmid_rt": return "Retinal traction · RFMiD · low support"
+    default: return id.replacingOccurrences(of: "_", with: " ")
     }
 }
 
@@ -490,7 +833,9 @@ private final class OnDeviceModelRegistry: ObservableObject {
             if FileManager.default.fileExists(atPath: staging.path) { try FileManager.default.removeItem(at: staging) }
             try FileManager.default.moveItem(at: temporaryURL, to: staging)
             let environment = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
-            let session = try ORTSession(env: environment, modelPath: staging.path, sessionOptions: nil)
+            let options = try ORTSessionOptions()
+            try options.setGraphOptimizationLevel(ORTGraphOptimizationLevel.basic)
+            let session = try ORTSession(env: environment, modelPath: staging.path, sessionOptions: options)
             if FileManager.default.fileExists(atPath: target.path) { try FileManager.default.removeItem(at: target) }
             try FileManager.default.moveItem(at: staging, to: target)
             activeRuntimeID = id
@@ -519,14 +864,16 @@ private final class OnDeviceModelRegistry: ObservableObject {
         let url = try Self.modelDirectory().appendingPathComponent("\(id)-\(version).onnx")
         guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         let environment = try ORTEnv(loggingLevel: ORTLoggingLevel.warning)
-        let session = try ORTSession(env: environment, modelPath: url.path, sessionOptions: nil)
+        let options = try ORTSessionOptions()
+        try options.setGraphOptimizationLevel(ORTGraphOptimizationLevel.basic)
+        let session = try ORTSession(env: environment, modelPath: url.path, sessionOptions: options)
         activeRuntimeID = id
         activeRuntimeEnvironment = environment
         activeRuntimeSession = session
         return session
     }
 
-    private func releaseName(_ id: String) -> String { id == "ir_eye_tracker" ? "IR eye tracker" : "Retinal classifier" }
+    private func releaseName(_ id: String) -> String { id == "ir_eye_tracker" ? "Synthetic eye localization" : "Retinal classifier" }
     private static func modelDirectory() throws -> URL {
         let root = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
         let directory = root.appendingPathComponent("GoldenRetinaModels", isDirectory: true)
@@ -963,22 +1310,20 @@ private struct EyeTrackingArtwork: View {
 struct DemoResultsView: View {
     private struct ExampleCondition: Identifiable {
         let name: String
-        let sampleRisk: Int
         var id: String { name }
     }
     private struct ExampleGroup: Identifiable {
         let title: String
         let conditions: [ExampleCondition]
         var id: String { title }
-        var highestRisk: Int { conditions.map(\.sampleRisk).max() ?? 0 }
     }
-    @State private var expandedGroups: Set<String> = ["Retina & macula"]
+    @State private var expandedGroups: Set<String> = ["Retina and macula"]
     private let groups = [
-        ExampleGroup(title: "Retina & macula", conditions: [
-            .init(name: "Diabetic retinopathy", sampleRisk: 2), .init(name: "Age-related macular degeneration", sampleRisk: 2), .init(name: "Drusen finding", sampleRisk: 1), .init(name: "Myopic fundus appearance", sampleRisk: 1), .init(name: "Branch retinal vein occlusion", sampleRisk: 2), .init(name: "Retinal tessellation", sampleRisk: 1), .init(name: "Retinal laser-scar finding", sampleRisk: 1), .init(name: "Central serous retinopathy", sampleRisk: 2), .init(name: "Retinitis finding", sampleRisk: 2), .init(name: "Chorioretinitis finding", sampleRisk: 2), .init(name: "Central retinal vein occlusion", sampleRisk: 2), .init(name: "Epiretinal membrane appearance", sampleRisk: 1), .init(name: "Macular-scar finding", sampleRisk: 2), .init(name: "Retinal traction finding", sampleRisk: 2)
+        ExampleGroup(title: "Retina and macula", conditions: [
+            .init(name: "Diabetic retinopathy"), .init(name: "Age-related macular degeneration"), .init(name: "DN · RFMiD label (definition unverified)"), .init(name: "Myopia"), .init(name: "Branch retinal vein occlusion"), .init(name: "Tessellated fundus finding"), .init(name: "Laser-scar finding"), .init(name: "Central serous retinopathy"), .init(name: "Retinal scar finding"), .init(name: "CRS · RFMiD label (definition unverified)"), .init(name: "Central retinal vein occlusion · low-support model"), .init(name: "Epiretinal membrane · low-support model"), .init(name: "Macular scar · low-support model"), .init(name: "Retinal traction · low-support model")
         ]),
-        ExampleGroup(title: "Optic nerve", conditions: [
-            .init(name: "Optic-disc cupping finding", sampleRisk: 1), .init(name: "Optic-disc pallor finding", sampleRisk: 1), .init(name: "Optic-disc edema finding", sampleRisk: 2)
+        ExampleGroup(title: "Optic disc", conditions: [
+            .init(name: "Optic-disc cupping finding"), .init(name: "Optic-disc pallor finding"), .init(name: "Optic-disc edema finding")
         ])
     ]
     let onReplay: () -> Void
@@ -1004,7 +1349,7 @@ struct DemoResultsView: View {
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Condition-by-condition breakdown", systemImage: "doc.text.magnifyingglass")
                         .font(.headline)
-                    Text("Expand a group to see its individual conditions. The group badge shows the highest example priority within that group.")
+                    Text("Expand a group to see its conditions. This guided demo does not analyze an image, so it has no model percentages to show.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     ForEach(groups) { group in
@@ -1022,8 +1367,8 @@ struct DemoResultsView: View {
                                         Text("Right eye · Not analyzed  ·  Left eye · Not analyzed").font(.caption).foregroundStyle(.secondary)
                                     }
                                     Spacer(minLength: 0)
-                                    Text(condition.sampleRisk == 2 ? "HIGH" : "LOW")
-                                        .font(.caption2.weight(.bold)).foregroundStyle(condition.sampleRisk == 2 ? .orange : .secondary)
+                                    Text("NOT ANALYZED")
+                                        .font(.caption2.weight(.bold)).foregroundStyle(.secondary)
                                 }
                                 .padding(.vertical, 7)
                             }
@@ -1034,16 +1379,16 @@ struct DemoResultsView: View {
                                     Text("\(group.conditions.count) conditions").font(.caption).foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Text(group.highestRisk == 2 ? "HIGH RISK" : "LOW RISK")
+                                Text("NOT ANALYZED")
                                     .font(.caption2.weight(.bold))
-                                    .foregroundStyle(group.highestRisk == 2 ? .orange : BrandColor.green)
+                                    .foregroundStyle(.secondary)
                                     .padding(.horizontal, 9).padding(.vertical, 6)
-                                    .background((group.highestRisk == 2 ? Color.orange : BrandColor.green).opacity(0.12), in: Capsule())
+                                    .background(Color.secondary.opacity(0.12), in: Capsule())
                             }
                         }
                         .tint(BrandColor.green)
                     }
-                    Text("Risk badges are illustrative group-priority labels only, not patient-specific risk. No disease or eye image is analyzed; every condition is Not analyzed.")
+                    Text("No disease or eye image is analyzed in this demo. For model-derived percentages, use Research inference and treat outputs as uncalibrated research scores.")
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(.primary)
                 }

@@ -16,6 +16,7 @@ external/model_cache/
 *.pth
 *.onnx
 !eye_finding_ai/artifacts/eye_pupil_unet.pt
+!mobile_models/onnx/*.onnx
 *_rtx_patch.zip
 results/remote_closeout_20261114/
 results/expert_sweep/**/*.log
