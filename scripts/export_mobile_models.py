@@ -22,12 +22,17 @@ sys.path.insert(0, str(ROOT))
 EYE_CHECKPOINT = ROOT / "models/eye_finding/charmorph_shared_eye_v2b.pt"
 EXPERT_DIR = ROOT / "results/expert_sweep/checkpoints"
 EXPERT_REGISTRY = ROOT / "results/expert_sweep/research_model_registry.json"
-VERSION = "20261114-r3"
+VERSION = "20261114-r4"
+CONSUMER_INFERENCE_IDS = ["rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"]
+CONSUMER_INFERENCE_RULE = (
+    "Post hoc research shortlist from the RFMiD image-split summary; 0.50 is a model cutoff, "
+    "not a calibrated disease probability or clinical decision threshold. Results are exploratory."
+)
 MODEL_RAW_BASE = "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx"
 TARGET_NAMES = {
     "DR": "Diabetic retinopathy",
     "ARMD": "Age-related macular degeneration",
-    "DN": "DN · RFMiD label",
+    "DN": "Drusen",
     "MYA": "Myopia",
     "BRVO": "Branch retinal vein occlusion",
     "ODC": "Optic-disc cupping finding",
@@ -37,7 +42,7 @@ TARGET_NAMES = {
     "LS": "Laser-scar finding",
     "CSR": "Central serous retinopathy",
     "RS": "Retinal scar finding",
-    "CRS": "CRS · RFMiD label",
+    "CRS": "Chorioretinitis",
     "CRVO": "Central retinal vein occlusion",
     "ERM": "Epiretinal membrane appearance",
     "MS": "Macular-scar finding",
@@ -229,6 +234,11 @@ def main() -> None:
         "schema_version": 1, "project": "Golden Retina", "bundle_version": VERSION,
         "inference": "on-device only; the app does not upload selected images",
         "models": entries,
+        "consumer_inference_ids": CONSUMER_INFERENCE_IDS,
+        "consumer_inference_rule": CONSUMER_INFERENCE_RULE,
+        "not_supported": {
+            "glaucoma": "No glaucoma checkpoint is included in this mobile bundle. RFMiD optic-disc cupping is a finding and must not be presented as glaucoma."
+        },
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"output": str(out), "models": {

@@ -634,7 +634,7 @@ private struct OnDeviceInferenceView: View {
                 if !diseaseResults.isEmpty {
                     Text("\(selectedEye.rawValue) eye · per-disease model scores")
                         .font(.headline)
-                    Text("These percentages are raw model scores for the selected image, not calibrated probabilities, patient-risk estimates, or diagnoses.")
+                    Text("Research classification uses the model’s 0.50 cutoff. The percentages are raw scores, not calibrated probabilities, patient-risk estimates, or diagnoses.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -651,9 +651,13 @@ private struct OnDeviceInferenceView: View {
                     if let highest = rows.map(\.score).max() {
                         DisclosureGroup {
                             ForEach(rows) { result in
-                                HStack {
-                                    Text(modelDisplayName(result.id))
-                                    Spacer()
+                                HStack(alignment: .center, spacing: 10) {
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(modelDisplayName(result.id)).font(.subheadline.weight(.semibold))
+                                        Text(result.score >= 0.5 ? "Positive at research cutoff" : "Negative at research cutoff")
+                                            .font(.caption).foregroundStyle(.secondary)
+                                    }
+                                    Spacer(minLength: 8)
                                     Text(String(format: "%.1f%%", result.score * 100)).monospacedDigit().fontWeight(.semibold)
                                 }
                                 .padding(12)
@@ -687,7 +691,7 @@ private struct OnDeviceInferenceView: View {
                     }
                 }
                 Text(status).font(.footnote).foregroundStyle(.secondary)
-                Text("Limits: the RFMiD heads are image-split research models with patient independence unverified. Scores are not calibrated diagnoses. Eye localization was trained/evaluated on synthetic renders only, not real people, IR frames, or goggles. Do not use for patient care or motor control.")
+                Text("Glaucoma is not classified here. The RFMiD optic-disc cupping label is a finding, not a glaucoma diagnosis. These RFMiD heads use image-level research splits with patient independence unverified. Scores are not calibrated diagnoses. Eye localization was trained/evaluated on synthetic renders only, not real people, IR frames, or goggles. Do not use for patient care or motor control.")
                     .font(.footnote.weight(.medium)).foregroundStyle(.secondary)
             }
             .padding(20)

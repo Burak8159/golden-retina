@@ -34,3 +34,7 @@ This is a synthetic engineering prototype evaluated from one base identity. It h
 ## Release boundary
 
 The GitHub release includes the eye-finding source and the small synthetic-trained checkpoints, plus the latest disease-model source changes and aggregate run summaries. The L4 recovery additionally restored the private disease checkpoints, source predictions/embeddings, split manifests, and full generated eye-sequence bundle to `external/recovered_l4_20261108/` and `external/recovered_l4_aux_20261110/`. Those folders are git-ignored. Raw datasets, row-level predictions/manifests, and disease-model checkpoints are not published; disease weights remain private because redistribution rights are not established. These exclusions do not change the internal-development-only evidence boundary.
+
+## Mobile disease-classifier scope update (2026-11-14)
+
+The current iOS and Android apps expose four RFMiD image-label classifiers only: diabetic retinopathy, age-related macular degeneration, myopia, and branch retinal vein occlusion. Scores are evaluated per selected eye and are paired with a 0.50 research cutoff; they are not calibrated disease probabilities or clinical decisions. Glaucoma is not in the mobile bundle: the previous HYGD/RETFound-MAE validation summary exists, but its checkpoint is not present in this active checkout and the model has not been exported to the phone runtime. RFMiD optic-disc cupping is not used as a glaucoma proxy.

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "project": "Golden Retina",
-  "bundle_version": "20261114-r3",
+  "bundle_version": "20261114-r4",
   "inference": "on-device only; the app does not upload selected images",
   "models": {
     "ir_eye_tracker": {
@@ -44,7 +44,7 @@
     },
     "rfmid_dr": {
       "display_name": "Diabetic retinopathy \u00b7 RFMiD",
-      "version": "20261114-r3",
+      "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_dr.onnx",
       "sha256": "83f6baedc5aed8c415bec2ce0bd6eb3b9f7707b5583c158dbee3a150abe37ea8",
@@ -93,11 +93,12 @@
       "source_checkpoint_sha256": "4f7a7dcbf872205cc50253ea9e9e153ace1fb815b3734d545872ad50c630a199",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_dr.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
     },
     "rfmid_armd": {
       "display_name": "Age-related macular degeneration \u00b7 RFMiD",
-      "version": "20261114-r3",
+      "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_armd.onnx",
       "sha256": "1c0d300857bbb7433de7951279c494bb6b7bc53fb95b66c793db1096faa2e0e0",
@@ -146,11 +147,12 @@
       "source_checkpoint_sha256": "ee75437a1d74fae3185e3652522bc1a757befdb99fa825492601229890b20ca1",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_armd.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
     },
     "rfmid_dn": {
       "display_name": "Drusen \u00b7 RFMiD",
-      "version": "20261114-r3",
+      "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_dn.onnx",
       "sha256": "127d543a77288cffc71f0f12fe50e1bdba31a2cffd51d5fc3f245743e4a3d0e2",
@@ -203,7 +205,7 @@
     },
     "rfmid_mya": {
       "display_name": "Myopia \u00b7 RFMiD",
-      "version": "20261114-r3",
+      "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_mya.onnx",
       "sha256": "66c437f5d6d87b5d0c68a66fbee032b92eb6f80f5d04b7bbd1354587928addea",
@@ -252,11 +254,12 @@
       "source_checkpoint_sha256": "dd2b02e4c452dd2b26c09f8406c634b436f780541eb4c1dd3f79ba4c54abb54e",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_mya.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
     },
     "rfmid_brvo": {
       "display_name": "Branch retinal vein occlusion \u00b7 RFMiD",
-      "version": "20261114-r3",
+      "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_brvo.onnx",
       "sha256": "e8cf5e78d9074ca913e77a05d76ec8c2633570b86fef222ec0b11b02959d9bd2",
@@ -305,7 +308,8 @@
       "source_checkpoint_sha256": "3304b4cd322af975f23793be515b6ee19a71c87ec641077bef51034ef074a2ab",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_brvo.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
     },
     "rfmid_odc": {
       "display_name": "Optic-disc cupping finding \u00b7 RFMiD",
@@ -680,7 +684,7 @@
     },
     "rfmid_crs": {
       "display_name": "Chorioretinitis \u00b7 RFMiD",
-      "version": "20261114-r3",
+      "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_crs.onnx",
       "sha256": "533b848d7cae47f4467ceea425ff19627ea3ea178a66cf536ffee60089a375ee",
@@ -950,5 +954,42 @@
     "rfmid_mya",
     "rfmid_brvo"
   ],
-  "consumer_inference_rule": "Post hoc development-display filter applied after reviewing the recorded RFMiD image-split test summary: at least 20 positive test images and sensitivity >= 0.70 at threshold 0.5. This is not prespecified or confirmatory; selected metrics are exploratory and require independent re-evaluation."
+  "consumer_inference_rule": "Post hoc research shortlist from the RFMiD image-split summary. Per-image model outputs use a 0.50 sigmoid cutoff; this is not a calibrated disease probability or clinical decision threshold. Results are exploratory.",
+  "consumer_conditions": [
+    {
+      "id": "rfmid_dr",
+      "name": "Diabetic retinopathy",
+      "dataset_label": "DR",
+      "label_meaning": "RFMiD image annotated with diabetic retinopathy",
+      "source": "RFMiD",
+      "output": "uncalibrated per-image model score; research-positive when score >= 0.50"
+    },
+    {
+      "id": "rfmid_armd",
+      "name": "Age-related macular degeneration",
+      "dataset_label": "ARMD",
+      "label_meaning": "RFMiD AMD label; annotations include drusen, geographic atrophy, or neovascular AMD features",
+      "source": "RFMiD",
+      "output": "uncalibrated per-image model score; research-positive when score >= 0.50"
+    },
+    {
+      "id": "rfmid_mya",
+      "name": "Myopia",
+      "dataset_label": "MYA",
+      "label_meaning": "RFMiD myopia label",
+      "source": "RFMiD",
+      "output": "uncalibrated per-image model score; research-positive when score >= 0.50"
+    },
+    {
+      "id": "rfmid_brvo",
+      "name": "Branch retinal vein occlusion",
+      "dataset_label": "BRVO",
+      "label_meaning": "RFMiD branch retinal vein occlusion label",
+      "source": "RFMiD",
+      "output": "uncalibrated per-image model score; research-positive when score >= 0.50"
+    }
+  ],
+  "not_supported": {
+    "glaucoma": "No glaucoma classifier is included in this mobile bundle. The RFMiD optic-disc cupping head is not a glaucoma diagnosis; the historical HYGD checkpoint is not present in this checkout as a distributable mobile artifact."
+  }
 }

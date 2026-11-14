@@ -601,7 +601,8 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
             Text("On-device model lab", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         }
-        Text("Inference runs on this phone. Images stay on-device. Add one color fundus photo for each eye; each eye is analyzed separately.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("On-device research classifiers: diabetic retinopathy, age-related macular degeneration, myopia, and branch retinal vein occlusion. No glaucoma classifier is installed.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Images stay on this phone. Add one color fundus photo for each eye; each eye is analyzed separately.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         PrimaryTabRow(selectedTabIndex = selectedEye) {
             Tab(selected = selectedEye == 0, enabled = !running && !loadingImage, onClick = { selectedEye = 0 }, text = { Text("Right · ${rightDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
             Tab(selected = selectedEye == 1, enabled = !running && !loadingImage, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
@@ -644,7 +645,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
         }
         if (diseaseResults.isNotEmpty()) {
             Text("${if (selectedEye == 0) "Right" else "Left"} eye · per-disease model scores", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text("These percentages are raw model scores for the selected image, not calibrated probabilities, patient-risk estimates, or diagnoses. Group values show the highest model score for this eye.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Research classification uses the model's 0.50 cutoff. Percentages are raw model scores, not calibrated probabilities, patient-risk estimates, or diagnoses. Group values show the highest score for this eye.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         listOf(
             "Retina and macula" to listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"),
@@ -668,7 +669,10 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                             HorizontalDivider()
                             rows.forEach { item ->
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                                    Text(modelDisplayName(item.id), modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium)
+                                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                                        Text(modelDisplayName(item.id), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                        Text(if (item.value >= 0.5f) "Positive at research cutoff" else "Negative at research cutoff", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
                                     Text("${"%.1f".format(item.value * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                                 }
                             }
@@ -705,7 +709,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             Text("Completed $diseaseModelsCompleted of ${installedDiseaseIds.size} installed models", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         } else if (running) LinearProgressIndicator(Modifier.fillMaxWidth())
         Text(status, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text("Limits: disease experts were trained/evaluated on RFMiD image splits with patient independence unverified; scores are not calibrated diagnoses. Eye localization was trained on synthetic renders only, not people, IR images, or goggles. Do not use for patient care or motor control.", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Glaucoma is not classified here. RFMiD optic-disc cupping is a finding, not a glaucoma diagnosis. These disease heads were evaluated on RFMiD image splits with patient independence unverified; scores are not calibrated diagnoses. Eye localization was trained on synthetic renders only, not people, IR images, or goggles. Do not use for patient care or motor control.", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Medium, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

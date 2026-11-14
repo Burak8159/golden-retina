@@ -33,15 +33,30 @@ been validated on people, infrared camera captures, or goggles.
 
 ## User-facing condition selection
 
-The app exposes only DR, ARMD, MYA, and BRVO: each had at least 20 positive RFMiD test images and sensitivity of at least 0.70 at the recorded 0.5 threshold in the existing image-split evaluation. This is a post hoc development-display filter applied after reviewing the recorded image-split test summary, not a prespecified model-selection rule or clinical acceptance criterion. Because the final test results informed which conditions are exposed in the app, these values are exploratory and must not be treated as unbiased confirmatory estimates. In that evaluation, sensitivity was 86.3% (DR; 124 positive test images), 74.2% (ARMD; 31), 100.0% (MYA; 32), and 78.3% (BRVO; 23). The test partition is image-level; patient independence is unverified. Other labels, including drusen, optic-disc findings, and rare conditions, are omitted from the app classifier because their current test results/support did not meet this screen. The artifact registry retains those research models for auditability, but the mobile apps no longer offer them for classification.
+The app exposes four clearly defined RFMiD image-label targets: diabetic retinopathy (DR), age-related macular degeneration (ARMD), myopia (MYA), and branch retinal vein occlusion (BRVO): each had at least 20 positive RFMiD test images and sensitivity of at least 0.70 at the recorded 0.5 threshold in the existing image-split evaluation. This is a post hoc development-display filter applied after reviewing the recorded image-split test summary, not a prespecified model-selection rule or clinical acceptance criterion. Because the final test results informed which conditions are exposed in the app, these values are exploratory and must not be treated as unbiased confirmatory estimates. In that evaluation, sensitivity was 86.3% (DR; 124 positive test images), 74.2% (ARMD; 31), 100.0% (MYA; 32), and 78.3% (BRVO; 23). The test partition is image-level; patient independence is unverified. Other labels, including drusen, optic-disc findings, and rare conditions, are omitted from the disease classifier because current support/performance did not meet this post hoc screen. They remain available only in the audit registry. Glaucoma is not included: the older HYGD internal-validation result has no checkpoint in this checkout or mobile bundle, and RFMiD optic-disc cupping is a finding rather than a glaucoma diagnosis.
 
 ## Evidence limits
 
 The disease/finding models were evaluated on RFMiD's image-level split. Patient
 independence, external-site performance, calibration for clinical use, and
 performance on Golden Retina hardware have not been established. Several rare
-labels have very small test support. The model outputs are uncalibrated per-image research scores, not probabilities of disease, diagnoses, or clinical risk estimates. No confidence or risk percentage is shown in the guided demo. See the [technical system
+labels have very small test support. The app shows the uncalibrated per-image score and whether it crosses the 0.50 research cutoff. These are not calibrated disease probabilities, diagnoses, or clinical risk estimates. No confidence or risk percentage is shown in the guided demo. See the [technical system
 note](golden_retina_technical_system_note_20261114.md) and the
 [per-disease metrics ledger](../results/expert_sweep/per_disease_metrics.csv).
 
 The bundle is not a medical device and must not be used to make care decisions.
+
+### Current disease-specific measurements
+
+The existing RFMiD image-split report at threshold 0.50 is shown below. These results are exposed, image-level development metrics; they are not estimates of patient-level or clinical performance.
+
+| App output label | RFMiD test positives | Accuracy | Sensitivity | Specificity |
+|---|---:|---:|---:|---:|
+| Diabetic retinopathy | 124 | 92.81% | 86.29% | 94.38% |
+| Age-related macular degeneration | 31 | 94.84% | 74.19% | 95.89% |
+| Myopia | 32 | 97.19% | 100.00% | 97.04% |
+| Branch retinal vein occlusion | 23 | 95.63% | 78.26% | 96.27% |
+
+### Glaucoma coverage
+
+Glaucoma is not an installed or exposed mobile classifier. The repository contains a historical HYGD internal-validation summary, but the trained RETFound-MAE checkpoint is not present in this checkout and is not an ONNX artifact in the mobile registry. Therefore the apps cannot run that model. The RFMiD optic-disc-cupping head is intentionally excluded: optic-disc cupping is an observed finding and is not specific to glaucoma. The historical HYGD summary used 125 validation images (95 positive), so it must not be presented as external or confirmatory evidence.
