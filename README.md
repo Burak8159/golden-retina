@@ -71,6 +71,11 @@ use, prospective workflow benefit, and safety have not been established. The
 separate DR score-policy replay figures in this repository are development
 references, not raw-image model accuracy or independent clinical validation.
 
+Audience-specific project briefs are available: the [technical system note](docs/golden_retina_technical_system_note_20261114.md)
+documents the current per-disease specialist sweep and its evidence boundaries;
+the [customer and research-partner brief](docs/golden_retina_customer_partner_brief_20261114.md)
+describes the prototype's present capabilities and non-clinical status.
+
 ## Impact Path
 
 1. Build accessible, understandable software for retinal-image review.
