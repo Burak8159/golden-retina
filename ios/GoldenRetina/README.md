@@ -1,8 +1,9 @@
 # Golden Retina iOS concept app
 
 Native SwiftUI app for the consumer-facing concept. The only working route is a
-guided **simulation**: simulated device discovery, simulated goggles connection,
-right-eye and left-eye scan animations, timed analysis, and invented sample
+guided **simulation**: simulated device discovery and goggles connection, an
+on-screen control that represents pressing the goggles' physical start button,
+automatic right-eye then left-eye scan animations, timed analysis, and example
 results. Every phase labels itself as a demo. It does not use a camera, Bluetooth,
 patient images, a model, or the research API.
 

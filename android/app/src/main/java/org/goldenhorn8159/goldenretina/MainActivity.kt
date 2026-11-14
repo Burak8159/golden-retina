@@ -51,9 +51,6 @@ import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Sensors
-import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -242,7 +239,7 @@ private fun HomeScreen(modifier: Modifier = Modifier, onStartDemo: () -> Unit) {
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(Modifier.fillMaxWidth().padding(18.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
-                        Icon(Icons.Filled.Visibility, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(30.dp))
+                        Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(30.dp))
                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text("Connect goggles", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                             Text("Hardware pairing is unavailable", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -256,7 +253,7 @@ private fun HomeScreen(modifier: Modifier = Modifier, onStartDemo: () -> Unit) {
                     }
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Top, modifier = Modifier.padding(bottom = 10.dp)) {
-                    Icon(Icons.Filled.Security, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
                     Text("Demo only · No image is captured, no AI runs, and no health result is produced.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
@@ -319,9 +316,9 @@ private fun AboutScreen(modifier: Modifier = Modifier) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text("About this demo", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     AboutFact("Every scan and result is simulated", Icons.Filled.PlayArrow)
-                    AboutFact("No camera images are collected", Icons.Filled.Visibility)
+                    AboutFact("No camera images are collected", Icons.Filled.Lock)
                     AboutFact("No goggles or Bluetooth are active", Icons.Filled.Lock)
-                    AboutFact("Not a medical device or diagnosis", Icons.Filled.Security)
+                    AboutFact("Not a medical device or diagnosis", Icons.Filled.Info)
                 }
             }
             Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
@@ -481,7 +478,6 @@ private fun DemoExperience(onExit: () -> Unit) {
     LaunchedEffect(phase) {
         when (phase) {
             DemoPhase.SEARCHING -> { delay(2200); phaseName = DemoPhase.CONNECTED.name }
-            DemoPhase.CONNECTED -> { delay(1400); phaseName = DemoPhase.RIGHT_SCAN.name }
             DemoPhase.RIGHT_SCAN -> { delay(3600); phaseName = DemoPhase.RIGHT_DONE.name }
             DemoPhase.RIGHT_DONE -> { delay(1100); phaseName = DemoPhase.LEFT_SCAN.name }
             DemoPhase.LEFT_SCAN -> { delay(3600); phaseName = DemoPhase.LEFT_DONE.name }
@@ -514,7 +510,7 @@ private fun DemoExperience(onExit: () -> Unit) {
                 when (target) {
                     DemoPhase.WELCOME -> DemoWelcome { phaseName = DemoPhase.SEARCHING.name }
                     DemoPhase.SEARCHING -> DeviceSearch()
-                    DemoPhase.CONNECTED -> DeviceConnected()
+                    DemoPhase.CONNECTED -> DeviceConnected { phaseName = DemoPhase.RIGHT_SCAN.name }
                     DemoPhase.RIGHT_SCAN -> EyeScan("Right", progress)
                     DemoPhase.RIGHT_DONE -> EyeCaptured("Right", "Starting the left-eye scan automatically…")
                     DemoPhase.LEFT_SCAN -> EyeScan("Left", progress)
@@ -545,8 +541,8 @@ private fun DemoWelcome(onStart: () -> Unit) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(18.dp)) {
             RetinaArtwork(Modifier.size(190.dp).clip(CircleShape))
             Text("See how a scan could work", style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
-            Text("This guided simulation shows device setup, a scan of each eye, and an example summary.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            AboutFact("No camera or goggles are used", Icons.Filled.Visibility)
+            Text("This guided simulation shows device setup, a goggles-button press, both eye scans, and an example summary.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            AboutFact("No camera or goggles are used", Icons.Filled.Info)
         }
         Button(onClick = onStart, modifier = Modifier.fillMaxWidth().heightIn(min = 54.dp), shape = RoundedCornerShape(18.dp)) { Text("Start the demo", style = MaterialTheme.typography.titleMedium) }
     }
@@ -566,7 +562,7 @@ private fun DeviceSearch() {
                 }
             }
             Surface(Modifier.size(92.dp), shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
-                Box(contentAlignment = Alignment.Center) { Icon(Icons.Filled.Sensors, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(42.dp)) }
+                Box(contentAlignment = Alignment.Center) { Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(42.dp)) }
             }
         }
         Spacer(Modifier.height(24.dp))
@@ -577,13 +573,21 @@ private fun DeviceSearch() {
 }
 
 @Composable
-private fun DeviceConnected() {
-    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+private fun DeviceConnected(onButtonPress: () -> Unit) {
+    Column(Modifier.fillMaxSize().padding(vertical = 24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(72.dp))
         Spacer(Modifier.height(20.dp))
         Text("Demo goggles connected", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
-        Text("This connection is simulated. No real hardware was found or paired.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("In the real product, press the button on the goggles to begin. Tap below to simulate that press.", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(Modifier.height(28.dp))
+        Button(onClick = onButtonPress, modifier = Modifier.fillMaxWidth().heightIn(min = 56.dp), shape = RoundedCornerShape(18.dp)) {
+            Icon(Icons.Filled.PlayArrow, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Simulate goggles button press", style = MaterialTheme.typography.titleMedium)
+        }
+        Spacer(Modifier.height(10.dp))
+        Text("Demo interaction · no goggles are connected", style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -595,7 +599,7 @@ private fun EyeScan(eye: String, progress: Float) {
             Spacer(Modifier.weight(1f))
             Surface(shape = CircleShape, color = MaterialTheme.colorScheme.secondaryContainer) {
                 Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Icon(Icons.Filled.Visibility, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSecondaryContainer)
+                    Icon(Icons.Filled.Search, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSecondaryContainer)
                     Text("$eye eye", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSecondaryContainer)
                 }
             }
@@ -699,7 +703,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                     HorizontalDivider()
                     conditions.forEachIndexed { index, condition ->
                         Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                            Icon(Icons.Filled.Visibility, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                 Text(condition, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                                 Text("Right eye · Not analyzed     Left eye · Not analyzed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -712,7 +716,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                     Text("No disease or eye image is analyzed in this demo. These rows are placeholders, not predictions, probabilities, or medical advice.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                 }
             }
-            AboutFact("No image from you was captured or analyzed", Icons.Filled.Security)
+            AboutFact("No image from you was captured or analyzed", Icons.Filled.Lock)
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedAction("Replay demo", Icons.Filled.Refresh, onReplay, Modifier.weight(1f))
                 Button(onClick = onDone, modifier = Modifier.weight(1f).heightIn(min = 52.dp), shape = RoundedCornerShape(16.dp)) { Text("Done") }

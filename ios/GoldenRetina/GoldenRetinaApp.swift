@@ -531,7 +531,7 @@ struct DemoFlowView: View {
                     switch phase {
                     case .welcome: DemoWelcomeView(onStart: { phase = .searching })
                     case .searching: DeviceSearchView()
-                    case .connected: ConnectedView()
+                    case .connected: ConnectedView(onButtonPress: { beginScan(.rightScan) })
                     case .rightScan: EyeScanView(eye: "Right", progress: scanProgress)
                     case .rightDone: CapturedView(eye: "Right", nextStep: "Starting the left-eye scan automatically…")
                     case .leftScan: EyeScanView(eye: "Left", progress: scanProgress)
@@ -575,8 +575,8 @@ struct DemoFlowView: View {
                 try await Task.sleep(for: .seconds(2.2))
                 phase = .connected
             case .connected:
-                try await Task.sleep(for: .seconds(1.4))
-                beginScan(.rightScan)
+                // Wait for the simulated goggles button press.
+                break
             case .rightScan:
                 try await Task.sleep(for: .seconds(3.6))
                 phase = .rightDone
@@ -625,7 +625,7 @@ struct DemoWelcomeView: View {
                 Text("See how a scan could work")
                     .font(.largeTitle.bold())
                     .multilineTextAlignment(.center)
-                Text("This guided simulation shows device setup, a scan of each eye, and an example result.")
+                Text("This guided simulation shows device setup, a goggles-button press, both eye scans, and an example result.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -682,6 +682,7 @@ struct DeviceSearchView: View {
 }
 
 struct ConnectedView: View {
+    let onButtonPress: () -> Void
     var body: some View {
         VStack(spacing: 20) {
             Spacer()
@@ -691,12 +692,24 @@ struct ConnectedView: View {
             VStack(spacing: 8) {
                 Text("Demo goggles connected")
                     .font(.title2.bold())
-                Text("This connection is part of the simulation. No hardware was found or paired.")
+                Text("In the real product, press the button on the goggles to begin. Tap below to simulate that press.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
             }
             .padding(.horizontal, 24)
+            Spacer()
+            Button(action: onButtonPress) {
+                Label("Simulate goggles button press", systemImage: "button.programmable")
+                    .font(.headline)
+                    .frame(maxWidth: .infinity, minHeight: 56)
+            }
+            .buttonStyle(.borderedProminent)
+            .tint(BrandColor.green)
+            .padding(.horizontal, 20)
+            Text("Demo interaction · no goggles are connected")
+                .font(.caption)
+                .foregroundStyle(.secondary)
             Spacer()
         }
         .padding(24)

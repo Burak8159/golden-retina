@@ -21,11 +21,13 @@ instead of silently substituting a different profile.
 
 ## What is and is not connected
 
-The demo simulates finding a sample device, connecting, scanning a sample right
-and left eye, analyzing, and displaying invented results. It does not use the
-camera, Bluetooth, patient images, the screening model, or a network API. The
-goggles route is locked because the hardware and Bluetooth protocol are not
-ready. No camera or Bluetooth permissions are declared.
+The demo simulates finding a sample device and connecting. The user then taps an
+on-screen control that represents pressing the goggles' physical start button;
+the right-eye scan is followed automatically by the left-eye scan, analysis, and
+example results. It does not use the camera, Bluetooth, patient images, the
+screening model, or a network API. The goggles route is locked because the
+hardware and Bluetooth protocol are not ready. No camera or Bluetooth
+permissions are declared.
 
 The current Golden Retina inference services are loopback-bound research
 prototypes, not a consumer mobile backend. A real connection needs an approved
