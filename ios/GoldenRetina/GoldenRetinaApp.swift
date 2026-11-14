@@ -601,8 +601,8 @@ private struct OnDeviceInferenceView: View {
                 Text("Inference runs locally on this iPhone. Images are not uploaded or saved by this screen.")
                     .foregroundStyle(.secondary)
                 Picker("Eye", selection: $selectedEye) {
-                    Text("Right · \(rightDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.right)
                     Text("Left · \(leftDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.left)
+                    Text("Right · \(rightDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.right)
                 }
                 .pickerStyle(.segmented)
                 .disabled(isRunning || isLoadingImage)

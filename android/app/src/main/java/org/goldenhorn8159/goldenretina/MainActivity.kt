@@ -603,9 +603,9 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
         }
         Text("On-device research classifiers: diabetic retinopathy, age-related macular degeneration, myopia, and branch retinal vein occlusion. No glaucoma classifier is installed.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("Images stay on this phone. Add one color fundus photo for each eye; each eye is analyzed separately.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        PrimaryTabRow(selectedTabIndex = selectedEye) {
-            Tab(selected = selectedEye == 0, enabled = !running && !loadingImage, onClick = { selectedEye = 0 }, text = { Text("Right · ${rightDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
+        PrimaryTabRow(selectedTabIndex = if (selectedEye == 0) 1 else 0) {
             Tab(selected = selectedEye == 1, enabled = !running && !loadingImage, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
+            Tab(selected = selectedEye == 0, enabled = !running && !loadingImage, onClick = { selectedEye = 0 }, text = { Text("Right · ${rightDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
         }
         Button(enabled = !running && !loadingImage, onClick = { imageTargetEye = selectedEye; imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) {
             Icon(Icons.Filled.Search, contentDescription = null)
