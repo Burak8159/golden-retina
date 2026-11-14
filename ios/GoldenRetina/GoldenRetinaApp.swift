@@ -533,9 +533,9 @@ struct DemoFlowView: View {
                     case .searching: DeviceSearchView()
                     case .connected: ConnectedView()
                     case .rightScan: EyeScanView(eye: "Right", progress: scanProgress)
-                    case .rightDone: CapturedView(eye: "Right", onContinue: { beginScan(.leftScan) })
+                    case .rightDone: CapturedView(eye: "Right", nextStep: "Starting the left-eye scan automatically…")
                     case .leftScan: EyeScanView(eye: "Left", progress: scanProgress)
-                    case .leftDone: CapturedView(eye: "Left", onContinue: { phase = .analyzing })
+                    case .leftDone: CapturedView(eye: "Left", nextStep: "Preparing the example summary automatically…")
                     case .analyzing: AnalysisView()
                     case .results: DemoResultsView(onReplay: reset, onDone: { dismiss() })
                     }
@@ -580,9 +580,15 @@ struct DemoFlowView: View {
             case .rightScan:
                 try await Task.sleep(for: .seconds(3.6))
                 phase = .rightDone
+            case .rightDone:
+                try await Task.sleep(for: .seconds(1.1))
+                beginScan(.leftScan)
             case .leftScan:
                 try await Task.sleep(for: .seconds(3.6))
                 phase = .leftDone
+            case .leftDone:
+                try await Task.sleep(for: .seconds(1.1))
+                phase = .analyzing
             case .analyzing:
                 try await Task.sleep(for: .seconds(3.1))
                 phase = .results
@@ -755,7 +761,7 @@ struct EyeScanView: View {
 
 struct CapturedView: View {
     let eye: String
-    let onContinue: () -> Void
+    let nextStep: String
     var body: some View {
         VStack(spacing: 22) {
             Spacer()
@@ -770,13 +776,11 @@ struct CapturedView: View {
                     .foregroundStyle(.secondary)
             }
             Spacer()
-            Button(action: onContinue) {
-                Text(eye == "Right" ? "Continue to left eye" : "Show example analysis")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, minHeight: 54)
+            HStack(spacing: 10) {
+                ProgressView().tint(BrandColor.green)
+                Text(nextStep).font(.subheadline.weight(.medium)).foregroundStyle(.secondary)
             }
-            .buttonStyle(.borderedProminent)
-            .tint(BrandColor.green)
+            .frame(maxWidth: .infinity, minHeight: 54)
             .padding(.bottom, 20)
         }
         .padding(.horizontal, 24)

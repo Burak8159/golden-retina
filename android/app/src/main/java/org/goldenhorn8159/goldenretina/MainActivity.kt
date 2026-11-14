@@ -58,6 +58,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -482,7 +483,9 @@ private fun DemoExperience(onExit: () -> Unit) {
             DemoPhase.SEARCHING -> { delay(2200); phaseName = DemoPhase.CONNECTED.name }
             DemoPhase.CONNECTED -> { delay(1400); phaseName = DemoPhase.RIGHT_SCAN.name }
             DemoPhase.RIGHT_SCAN -> { delay(3600); phaseName = DemoPhase.RIGHT_DONE.name }
+            DemoPhase.RIGHT_DONE -> { delay(1100); phaseName = DemoPhase.LEFT_SCAN.name }
             DemoPhase.LEFT_SCAN -> { delay(3600); phaseName = DemoPhase.LEFT_DONE.name }
+            DemoPhase.LEFT_DONE -> { delay(1100); phaseName = DemoPhase.ANALYZING.name }
             DemoPhase.ANALYZING -> { delay(3000); phaseName = DemoPhase.RESULTS.name }
             else -> Unit
         }
@@ -513,9 +516,9 @@ private fun DemoExperience(onExit: () -> Unit) {
                     DemoPhase.SEARCHING -> DeviceSearch()
                     DemoPhase.CONNECTED -> DeviceConnected()
                     DemoPhase.RIGHT_SCAN -> EyeScan("Right", progress)
-                    DemoPhase.RIGHT_DONE -> EyeCaptured("Right", "Continue to left eye") { phaseName = DemoPhase.LEFT_SCAN.name }
+                    DemoPhase.RIGHT_DONE -> EyeCaptured("Right", "Starting the left-eye scan automatically…")
                     DemoPhase.LEFT_SCAN -> EyeScan("Left", progress)
-                    DemoPhase.LEFT_DONE -> EyeCaptured("Left", "Show example summary") { phaseName = DemoPhase.ANALYZING.name }
+                    DemoPhase.LEFT_DONE -> EyeCaptured("Left", "Preparing the example summary automatically…")
                     DemoPhase.ANALYZING -> DemoAnalysis()
                     DemoPhase.RESULTS -> DemoResults(onReplay = { phaseName = DemoPhase.WELCOME.name }, onDone = onExit)
                 }
@@ -615,7 +618,7 @@ private fun EyeScan(eye: String, progress: Float) {
 }
 
 @Composable
-private fun EyeCaptured(eye: String, action: String, onContinue: () -> Unit) {
+private fun EyeCaptured(eye: String, nextStep: String) {
     Column(Modifier.fillMaxSize().padding(vertical = 22.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
         Spacer(Modifier.height(12.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
@@ -623,7 +626,11 @@ private fun EyeCaptured(eye: String, action: String, onContinue: () -> Unit) {
             Text("$eye eye scan complete", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
             Text("Sample image captured in the demo", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Button(onClick = onContinue, modifier = Modifier.fillMaxWidth().heightIn(min = 54.dp), shape = RoundedCornerShape(18.dp)) { Text(action, style = MaterialTheme.typography.titleMedium) }
+        Row(Modifier.fillMaxWidth().heightIn(min = 54.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+            Spacer(Modifier.width(10.dp))
+            Text(nextStep, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
     }
 }
 
