@@ -158,7 +158,7 @@ struct HomeView: View {
                 .buttonStyle(.plain)
                 .accessibilityHint("Explains why real goggles cannot be connected yet.")
 
-                Label("Demo only · No camera, Bluetooth, or medical result is used", systemImage: "checkmark.shield")
+                Label("Demo only · Example values are illustrative; no real image or medical result is produced", systemImage: "checkmark.shield")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -267,7 +267,7 @@ struct HowToUseView: View {
                 manualStep("2", title: "Start with the goggles button", body: "In the intended product flow, pressing the physical goggles button begins acquisition. The demo uses an on-screen button to represent that action.")
                 manualStep("3", title: "Hold still and look toward the guide", body: "The planned interface guides positioning and image capture. The current eye graphic is illustrative only; it does not track the user.")
                 manualStep("4", title: "Capture both eyes", body: "The flow scans the right eye and then switches automatically to the left eye.")
-                manualStep("5", title: "Review the summary", body: "The demo shows expandable condition groups. Every condition is marked Not analyzed because the demo does not run disease inference.")
+                manualStep("5", title: "Review the sample summary", body: "The demo shows expandable condition groups with illustrative right- and left-eye percentages. These fixed examples are not produced by an image or disease model.")
             }
             Section("Instructional video") {
                 ZStack {
@@ -1366,20 +1366,24 @@ private struct EyeTrackingArtwork: View {
 struct DemoResultsView: View {
     private struct ExampleCondition: Identifiable {
         let name: String
+        let rightScore: Int
+        let leftScore: Int
         var id: String { name }
     }
     private struct ExampleGroup: Identifiable {
         let title: String
         let conditions: [ExampleCondition]
         var id: String { title }
+        var rightMax: Int { conditions.map(\.rightScore).max() ?? 0 }
+        var leftMax: Int { conditions.map(\.leftScore).max() ?? 0 }
     }
     @State private var expandedGroups: Set<String> = ["Retina and macula"]
     private let groups = [
         ExampleGroup(title: "Retina and macula", conditions: [
-            .init(name: "Diabetic retinopathy"), .init(name: "Age-related macular degeneration"), .init(name: "DN · RFMiD label (definition unverified)"), .init(name: "Myopia"), .init(name: "Branch retinal vein occlusion"), .init(name: "Tessellated fundus finding"), .init(name: "Laser-scar finding"), .init(name: "Central serous retinopathy"), .init(name: "Retinal scar finding"), .init(name: "CRS · RFMiD label (definition unverified)"), .init(name: "Central retinal vein occlusion · low-support model"), .init(name: "Epiretinal membrane · low-support model"), .init(name: "Macular scar · low-support model"), .init(name: "Retinal traction · low-support model")
+            .init(name: "Diabetic retinopathy", rightScore: 28, leftScore: 19), .init(name: "Age-related macular degeneration", rightScore: 14, leftScore: 11), .init(name: "DN · RFMiD label (definition unverified)", rightScore: 5, leftScore: 4), .init(name: "Myopia", rightScore: 31, leftScore: 26), .init(name: "Branch retinal vein occlusion", rightScore: 8, leftScore: 12), .init(name: "Tessellated fundus finding", rightScore: 23, leftScore: 18), .init(name: "Laser-scar finding", rightScore: 4, leftScore: 4), .init(name: "Central serous retinopathy", rightScore: 9, leftScore: 13), .init(name: "Retinal scar finding", rightScore: 7, leftScore: 6), .init(name: "CRS · RFMiD label (definition unverified)", rightScore: 3, leftScore: 2), .init(name: "Central retinal vein occlusion · low-support model", rightScore: 2, leftScore: 3), .init(name: "Epiretinal membrane · low-support model", rightScore: 10, leftScore: 9), .init(name: "Macular scar · low-support model", rightScore: 2, leftScore: 5), .init(name: "Retinal traction · low-support model", rightScore: 6, leftScore: 8)
         ]),
         ExampleGroup(title: "Optic disc", conditions: [
-            .init(name: "Optic-disc cupping finding"), .init(name: "Optic-disc pallor finding"), .init(name: "Optic-disc edema finding")
+            .init(name: "Optic-disc cupping finding", rightScore: 35, leftScore: 29), .init(name: "Optic-disc pallor finding", rightScore: 11, leftScore: 13), .init(name: "Optic-disc edema finding", rightScore: 4, leftScore: 6)
         ])
     ]
     let onReplay: () -> Void
@@ -1398,14 +1402,17 @@ struct DemoResultsView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("Your demo is complete")
                         .font(.largeTitle.bold())
-                    Text("Here is how a future screening summary might be organized.")
+                    Text("Here is an example of the result screen.")
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }
                 VStack(alignment: .leading, spacing: 12) {
                     Label("Condition-by-condition breakdown", systemImage: "doc.text.magnifyingglass")
                         .font(.headline)
-                    Text("Expand a group to see its conditions. This guided demo does not analyze an image, so it has no model percentages to show.")
+                    Text("Sample image quality: Adequate · simulated     Both eye scans: Complete · simulated")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(BrandColor.green)
+                    Text("The percentages below are fixed illustrative demo values. They were not calculated from an image or model and are not probabilities, diagnoses, or medical risk estimates.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     ForEach(groups) { group in
@@ -1420,10 +1427,10 @@ struct DemoResultsView: View {
                                     Image(systemName: "eye").foregroundStyle(BrandColor.green).frame(width: 22)
                                     VStack(alignment: .leading, spacing: 5) {
                                         Text(condition.name).font(.subheadline.weight(.semibold))
-                                        Text("Right eye · Not analyzed  ·  Left eye · Not analyzed").font(.caption).foregroundStyle(.secondary)
+                                        Text("Demo score  ·  Right (condition.rightScore)%  ·  Left (condition.leftScore)%").font(.caption).foregroundStyle(.secondary)
                                     }
                                     Spacer(minLength: 0)
-                                    Text("NOT ANALYZED")
+                                    Text("EXAMPLE")
                                         .font(.caption2.weight(.bold)).foregroundStyle(.secondary)
                                 }
                                 .padding(.vertical, 7)
@@ -1432,19 +1439,19 @@ struct DemoResultsView: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 3) {
                                     Text(group.title).font(.subheadline.weight(.bold))
-                                    Text("\(group.conditions.count) conditions").font(.caption).foregroundStyle(.secondary)
+                                    Text("\(group.conditions.count) conditions · highest demo score per eye").font(.caption).foregroundStyle(.secondary)
                                 }
                                 Spacer()
-                                Text("NOT ANALYZED")
-                                    .font(.caption2.weight(.bold))
-                                    .foregroundStyle(.secondary)
+                                Text("R \(group.rightMax)% · L \(group.leftMax)%")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundStyle(BrandColor.green)
                                     .padding(.horizontal, 9).padding(.vertical, 6)
                                     .background(Color.secondary.opacity(0.12), in: Capsule())
                             }
                         }
                         .tint(BrandColor.green)
                     }
-                    Text("No disease or eye image is analyzed in this demo. For model-derived percentages, use Research inference and treat outputs as uncalibrated research scores.")
+                    Text("Demo only: no disease or eye image was analyzed. Real research-model scores are available only in Research inference and are uncalibrated; they are not clinical results.")
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(.primary)
                 }

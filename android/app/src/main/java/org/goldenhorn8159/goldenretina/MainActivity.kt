@@ -164,8 +164,11 @@ private fun GoldenRetinaTheme(colorChoice: String, content: @Composable () -> Un
 
 private enum class Destination { HOME, DEMO, GUIDE, SETTINGS }
 private enum class DemoPhase { WELCOME, SEARCHING, CONNECTED, RIGHT_SCAN, RIGHT_DONE, LEFT_SCAN, LEFT_DONE, ANALYZING, RESULTS }
-private data class ConditionItem(val name: String)
-private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>)
+private data class ConditionItem(val name: String, val rightScore: Int, val leftScore: Int)
+private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>) {
+    val rightMax: Int get() = conditions.maxOfOrNull { it.rightScore } ?: 0
+    val leftMax: Int get() = conditions.maxOfOrNull { it.leftScore } ?: 0
+}
 private const val MODEL_MANIFEST_URL = "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/manifest.json"
 private const val BUNDLED_MODEL_VERSION = "20261114-r3"
 
@@ -295,7 +298,7 @@ private fun HomeScreen(modifier: Modifier = Modifier, onStartDemo: () -> Unit) {
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), verticalAlignment = Alignment.Top, modifier = Modifier.padding(bottom = 10.dp)) {
                     Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                    Text("Demo only · No image is captured, no AI runs, and no health result is produced.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Demo only · Example values are illustrative; no real image or medical result is produced.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -346,7 +349,7 @@ private fun HowToUseScreen(modifier: Modifier = Modifier) {
                     GuideStep("2", "Press the goggles button", "In the intended product, the physical button starts acquisition. In the demo, tap the on-screen control to simulate it.")
                     GuideStep("3", "Position and hold still", "The planned flow guides positioning. The animated eye is an illustration; it does not track your gaze.")
                     GuideStep("4", "Scan both eyes", "The demo proceeds from the right eye to the left eye automatically.")
-                    GuideStep("5", "Review grouped conditions", "Expand a condition group to inspect its rows. Demo rows are marked Not analyzed because this simulation does not run disease inference.")
+                    GuideStep("5", "Review the sample summary", "Expand condition groups to see illustrative right- and left-eye percentages. These fixed examples are not produced by an image or disease model.")
                 }
             }
             Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest)) {
@@ -1196,9 +1199,9 @@ private fun DemoAnalysis() {
 private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
     val groups = listOf(
         ConditionGroup("Retina and macula", listOf(
-            ConditionItem("Diabetic retinopathy"), ConditionItem("Age-related macular degeneration"), ConditionItem("DN · RFMiD label (definition unverified)"), ConditionItem("Myopia"), ConditionItem("Branch retinal vein occlusion"), ConditionItem("Tessellated fundus finding"), ConditionItem("Laser-scar finding"), ConditionItem("Central serous retinopathy"), ConditionItem("Retinal scar finding"), ConditionItem("CRS · RFMiD label (definition unverified)"), ConditionItem("Central retinal vein occlusion · low-support model"), ConditionItem("Epiretinal membrane · low-support model"), ConditionItem("Macular scar · low-support model"), ConditionItem("Retinal traction · low-support model"),
+            ConditionItem("Diabetic retinopathy", 28, 19), ConditionItem("Age-related macular degeneration", 14, 11), ConditionItem("DN · RFMiD label (definition unverified)", 5, 4), ConditionItem("Myopia", 31, 26), ConditionItem("Branch retinal vein occlusion", 8, 12), ConditionItem("Tessellated fundus finding", 23, 18), ConditionItem("Laser-scar finding", 4, 4), ConditionItem("Central serous retinopathy", 9, 13), ConditionItem("Retinal scar finding", 7, 6), ConditionItem("CRS · RFMiD label (definition unverified)", 3, 2), ConditionItem("Central retinal vein occlusion · low-support model", 2, 3), ConditionItem("Epiretinal membrane · low-support model", 10, 9), ConditionItem("Macular scar · low-support model", 2, 5), ConditionItem("Retinal traction · low-support model", 6, 8),
         )),
-        ConditionGroup("Optic disc", listOf(ConditionItem("Optic-disc cupping finding"), ConditionItem("Optic-disc pallor finding"), ConditionItem("Optic-disc edema finding"))),
+        ConditionGroup("Optic disc", listOf(ConditionItem("Optic-disc cupping finding", 35, 29), ConditionItem("Optic-disc pallor finding", 11, 13), ConditionItem("Optic-disc edema finding", 4, 6))),
     )
     var expandedGroups by rememberSaveable { mutableStateOf(setOf("Retina and macula")) }
     BoxWithConstraints(Modifier.fillMaxSize()) {
@@ -1209,11 +1212,12 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                 Text("EXAMPLE ONLY", style = MaterialTheme.typography.labelSmall, letterSpacing = .8.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Text("Your demo is complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
-            Text("Here is how a future screening summary could be organized.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Here is an example of the result screen.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text("Condition-by-condition breakdown", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("Expand a group to see its conditions. This guided demo does not analyze an image, so it has no model percentages to show.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Sample image quality: Adequate · simulated   Both eye scans: Complete · simulated", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
+                    Text("The percentages below are fixed illustrative demo values. They were not calculated from an image or model and are not probabilities, diagnoses, or medical risk estimates.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     groups.forEach { group ->
                         Card(
                             onClick = { expandedGroups = if (group.name in expandedGroups) expandedGroups - group.name else expandedGroups + group.name },
@@ -1225,10 +1229,10 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Column(Modifier.weight(1f)) {
                                         Text(group.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                                        Text("${group.conditions.size} conditions", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text("${group.conditions.size} conditions · highest demo score per eye", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                     Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant) {
-                                        Text("NOT ANALYZED", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text("R ${group.rightMax}% · L ${group.leftMax}%", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                                     }
                                 }
                                 if (group.name in expandedGroups) {
@@ -1238,9 +1242,9 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                                             Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
                                             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                                 Text(condition.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                                Text("Right eye · Not analyzed   ·   Left eye · Not analyzed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                                Text("Demo score · Right ${condition.rightScore}% · Left ${condition.leftScore}%", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                             }
-                                            Text("NOT ANALYZED", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                            Text("EXAMPLE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         }
                                         if (index < group.conditions.lastIndex) HorizontalDivider()
                                     }
@@ -1249,7 +1253,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                         }
                     }
                     HorizontalDivider()
-                    Text("No disease or eye image is analyzed in this demo. For model-derived percentages, use Research inference and treat outputs as uncalibrated research scores.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    Text("Demo only: no disease or eye image was analyzed. Real research-model scores are available only in Research inference and are uncalibrated; they are not clinical results.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                 }
             }
             AboutFact("No image from you was captured or analyzed", Icons.Filled.Lock)
