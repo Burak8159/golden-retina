@@ -896,7 +896,14 @@ private final class OnDeviceModelRegistry: ObservableObject {
         return directory
     }
     private static func readInstalledVersions() -> [String: String] {
-        UserDefaults.standard.dictionary(forKey: "goldenRetinaInstalledModelVersions") as? [String: String] ?? [:]
+        guard let saved = UserDefaults.standard.dictionary(forKey: "goldenRetinaInstalledModelVersions") as? [String: String],
+              let support = try? FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: false) else { return [:] }
+        let directory = support.appendingPathComponent("GoldenRetinaModels", isDirectory: true)
+        return saved.filter { id, version in
+            id.range(of: "^[A-Za-z0-9_-]+$", options: .regularExpression) != nil &&
+            version.range(of: "^[A-Za-z0-9._-]{1,64}$", options: .regularExpression) != nil &&
+            FileManager.default.fileExists(atPath: directory.appendingPathComponent("\(id)-\(version).onnx").path)
+        }
     }
     private static func sha256(file: URL) throws -> String {
         let handle = try FileHandle(forReadingFrom: file)

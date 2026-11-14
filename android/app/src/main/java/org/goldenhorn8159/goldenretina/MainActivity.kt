@@ -384,8 +384,13 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
     var busy by remember { mutableStateOf(false) }
     val initialModelStates = remember {
         (listOf("ir_eye_tracker") + MobileResearchInference.diseaseIds).associateWith { id ->
-            prefs.getString("model:$id", if (id == "ir_eye_tracker") "Bundled on-device synthetic research model · v20261114-r3" else "Not installed · check for model updates")
-                ?: "Not installed · check for model updates"
+            val version = prefs.getString("model-version:$id", null)
+            val installedFile = version?.let { File(File(context.filesDir, "golden-retina-models"), "$id-$it.onnx") }
+            when {
+                installedFile?.isFile == true -> "Current update installed · $version · SHA-256 verified"
+                id == "ir_eye_tracker" -> "Bundled on-device synthetic research model · v$BUNDLED_MODEL_VERSION"
+                else -> "Not installed · check for model updates"
+            }
         }
     }
     var modelStates by remember { mutableStateOf(initialModelStates) }
@@ -861,9 +866,10 @@ private object PhoneModelRegistry {
             require(fileUrl.startsWith("https://")) { "$id artifact URL must use HTTPS." }
             require(expected.matches(Regex("[0-9a-f]{64}"))) { "$id has an invalid SHA-256." }
             val installedVersion = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).getString("model-version:$id", null)
+            val installedFile = installedVersion?.let { File(File(context.filesDir, "golden-retina-models"), "$id-$it.onnx") }
             versions[id] = when {
-                installedVersion == version -> "Current update installed · $version"
-                version == bundledVersion -> "Bundled on device · $version"
+                installedVersion == version && installedFile?.isFile == true -> "Current update installed · $version · SHA-256 verified"
+                id == "ir_eye_tracker" && version == bundledVersion -> "Bundled on device · $version"
                 else -> "Update available · $version"
             }
         }
