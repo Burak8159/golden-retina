@@ -609,7 +609,17 @@ private fun EyeScan(eye: String, progress: Float) {
                 drawLine(SoftMint.copy(alpha = .42f), Offset(size.width * .13f, y + 4.dp.toPx()), Offset(size.width * .87f, y + 4.dp.toPx()), strokeWidth = 5.dp.toPx(), cap = StrokeCap.Round)
             }
         }
-        Text(if (progress < .98f) "Capturing the ${eye.lowercase()} eye…" else "$eye eye captured", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(
+            when {
+                progress >= 1f -> "$eye eye sample captured"
+                progress < .34f -> "Finding the ${eye.lowercase()} eye…"
+                progress < .68f -> "Adjusting position and focus…"
+                else -> "Capturing the ${eye.lowercase()} eye…"
+            },
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+        )
         LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth().height(5.dp).clip(CircleShape))
         Text("DEMO IMAGE · NOT A REAL EYE", style = MaterialTheme.typography.labelSmall, letterSpacing = 1.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.weight(1f))
@@ -654,6 +664,25 @@ private fun DemoAnalysis() {
 
 @Composable
 private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
+    val conditions = listOf(
+        "Diabetic retinopathy",
+        "Age-related macular degeneration",
+        "Drusen finding",
+        "Myopic fundus appearance",
+        "Branch retinal vein occlusion",
+        "Optic-disc cupping finding",
+        "Optic-disc pallor finding",
+        "Optic-disc edema finding",
+        "Retinal tessellation",
+        "Retinal laser-scar finding",
+        "Central serous retinopathy",
+        "Retinitis finding",
+        "Chorioretinitis finding",
+        "Central retinal vein occlusion",
+        "Epiretinal membrane appearance",
+        "Macular-scar finding",
+        "Retinal traction finding",
+    )
     BoxWithConstraints(Modifier.fillMaxSize()) {
         Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()).padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -663,26 +692,24 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
             }
             Text("Your demo is complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
             Text("Here is how a future screening summary could be organized.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            BoxWithConstraints(Modifier.fillMaxWidth()) {
-                val horizontal = maxWidth >= 460.dp
-                if (horizontal) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        SampleEyeCard("Right eye", "Example summary A", "0.18", Modifier.weight(1f))
-                        SampleEyeCard("Left eye", "Example summary B", "0.64", Modifier.weight(1f))
-                    }
-                } else {
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        SampleEyeCard("Right eye", "Example summary A", "0.18", Modifier.fillMaxWidth())
-                        SampleEyeCard("Left eye", "Example summary B", "0.64", Modifier.fillMaxWidth())
-                    }
-                }
-            }
             Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Illustrative sample output", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("A future report could summarize each eye and explain whether a clinician should review the images.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Condition-by-condition breakdown", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("These are separate research labels, not mutually exclusive diagnoses. Each row shows where a future per-condition result could appear.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     HorizontalDivider()
-                    Text("The numbers are invented demo values. They are not predictions, probabilities for you, or medical advice.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+                    conditions.forEachIndexed { index, condition ->
+                        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            Icon(Icons.Filled.Visibility, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
+                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Text(condition, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                Text("Right eye · Not analyzed     Left eye · Not analyzed", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Text("DEMO", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary)
+                        }
+                        if (index < conditions.lastIndex) HorizontalDivider()
+                    }
+                    HorizontalDivider()
+                    Text("No disease or eye image is analyzed in this demo. These rows are placeholders, not predictions, probabilities, or medical advice.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                 }
             }
             AboutFact("No image from you was captured or analyzed", Icons.Filled.Security)
@@ -700,21 +727,6 @@ private fun OutlinedAction(label: String, icon: androidx.compose.ui.graphics.vec
         Icon(icon, contentDescription = null)
         Spacer(Modifier.width(7.dp))
         Text(label)
-    }
-}
-
-@Composable
-private fun SampleEyeCard(eye: String, summary: String, value: String, modifier: Modifier = Modifier) {
-    Card(modifier, shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-        Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            RetinaArtwork(Modifier.fillMaxWidth().height(108.dp).clip(RoundedCornerShape(15.dp)))
-            Text(eye, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-            Text(summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                Text(value, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                Text("sample", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(bottom = 3.dp))
-            }
-        }
     }
 }
 

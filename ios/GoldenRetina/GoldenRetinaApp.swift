@@ -737,7 +737,7 @@ struct EyeScanView: View {
             .clipShape(Circle())
             .accessibilityHidden(true)
             VStack(spacing: 10) {
-                Text(progress < 1 ? "Capturing the \(eye.lowercased()) eye…" : "\(eye) eye captured")
+                Text(scanStatus)
                     .font(.headline)
                     .contentTransition(.opacity)
                 ProgressView(value: progress)
@@ -756,6 +756,13 @@ struct EyeScanView: View {
         }
         .padding(.horizontal, 24)
         .padding(.top, 12)
+    }
+
+    private var scanStatus: String {
+        if progress >= 1 { return "\(eye) eye sample captured" }
+        if progress < 0.34 { return "Finding the \(eye.lowercased()) eye…" }
+        if progress < 0.68 { return "Adjusting position and focus…" }
+        return "Capturing the \(eye.lowercased()) eye…"
     }
 }
 
@@ -821,6 +828,14 @@ struct AnalysisView: View {
 }
 
 struct DemoResultsView: View {
+    private let conditions = [
+        "Diabetic retinopathy", "Age-related macular degeneration", "Drusen finding",
+        "Myopic fundus appearance", "Branch retinal vein occlusion",
+        "Optic-disc cupping finding", "Optic-disc pallor finding", "Optic-disc edema finding",
+        "Retinal tessellation", "Retinal laser-scar finding", "Central serous retinopathy",
+        "Retinitis finding", "Chorioretinitis finding", "Central retinal vein occlusion",
+        "Epiretinal membrane appearance", "Macular-scar finding", "Retinal traction finding"
+    ]
     let onReplay: () -> Void
     let onDone: () -> Void
     var body: some View {
@@ -841,18 +856,34 @@ struct DemoResultsView: View {
                         .font(.body)
                         .foregroundStyle(.secondary)
                 }
-                HStack(spacing: 12) {
-                    MiniEyeCard(eye: "Right eye", status: "Sample reviewed", score: "0.18")
-                    MiniEyeCard(eye: "Left eye", status: "Sample for review", score: "0.64")
-                }
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("Illustrative sample output", systemImage: "doc.text.magnifyingglass")
+                    Label("Condition-by-condition breakdown", systemImage: "doc.text.magnifyingglass")
                         .font(.headline)
-                    Text("A future report could summarize each eye and explain whether a clinician should review the images.")
+                    Text("These are separate research labels, not mutually exclusive diagnoses. Each row shows where a future per-condition result could appear.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     Divider()
-                    Text("The numbers above are invented demo values. They are not predictions, probabilities for you, or medical advice.")
+                    ForEach(conditions, id: \.self) { condition in
+                        HStack(alignment: .top, spacing: 12) {
+                            Image(systemName: "eye")
+                                .foregroundStyle(BrandColor.green)
+                                .frame(width: 22)
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(condition).font(.subheadline.weight(.semibold))
+                                Text("Right eye · Not analyzed     Left eye · Not analyzed")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer(minLength: 0)
+                            Text("DEMO")
+                                .font(.caption2.weight(.bold))
+                                .foregroundStyle(BrandColor.green)
+                        }
+                        .padding(.vertical, 5)
+                        if condition != conditions.last { Divider() }
+                    }
+                    Divider()
+                    Text("No disease or eye image is analyzed in this demo. These rows are placeholders, not predictions, probabilities, or medical advice.")
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(.primary)
                 }
@@ -883,28 +914,5 @@ struct DemoResultsView: View {
             .frame(maxWidth: .infinity)
         }
         .background(Color(uiColor: .systemGroupedBackground))
-    }
-}
-
-struct MiniEyeCard: View {
-    let eye: String
-    let status: String
-    let score: String
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            RetinaArtwork().frame(height: 86).clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .accessibilityHidden(true)
-            Text(eye).font(.subheadline.weight(.bold))
-            Text(status).font(.caption).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
-                Text(score).font(.title2.bold())
-                Text("demo").font(.caption2.weight(.semibold)).foregroundStyle(.secondary)
-            }
-        }
-        .padding(12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.background, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 18, style: .continuous).stroke(.quaternary, lineWidth: 1))
-        .accessibilityElement(children: .combine)
     }
 }
