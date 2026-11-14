@@ -1425,7 +1425,7 @@ struct DemoResultsView: View {
                         Text("Left · \(highestLeft.leftScore)%").tag(DemoEye.left)
                     }
                     .pickerStyle(.segmented)
-                    Text("Highest example score: \(highestSelected.name)")
+                    Text("Highest score: \(highestSelected.name)")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(.secondary)
                     ForEach(groups) { group in
@@ -1436,15 +1436,17 @@ struct DemoResultsView: View {
                             }
                         )) {
                             ForEach(group.conditions) { condition in
-                                HStack(alignment: .top, spacing: 10) {
+                                HStack(alignment: .center, spacing: 10) {
                                     Image(systemName: "eye").foregroundStyle(BrandColor.green).frame(width: 22)
-                                    VStack(alignment: .leading, spacing: 5) {
-                                        Text(condition.name).font(.subheadline.weight(.semibold))
-                                        Text("Demo score · \(selectedEye.rawValue) \(condition.score(for: selectedEye))%").font(.caption).foregroundStyle(.secondary)
-                                    }
+                                    Text(condition.name).font(.subheadline.weight(.semibold))
+                                        .frame(maxWidth: .infinity, alignment: .leading)
                                     Spacer(minLength: 0)
-                                    Text("EXAMPLE")
-                                        .font(.caption2.weight(.bold)).foregroundStyle(.secondary)
+                                    Text("\(condition.score(for: selectedEye))%")
+                                        .font(.subheadline.weight(.bold))
+                                        .foregroundStyle(BrandColor.green)
+                                        .padding(.horizontal, 10).padding(.vertical, 7)
+                                        .background(BrandColor.green.opacity(0.12), in: Capsule())
+                                        .accessibilityLabel("\(selectedEye.rawValue) eye illustrative score \(condition.score(for: selectedEye)) percent")
                                 }
                                 .padding(.vertical, 7)
                             }

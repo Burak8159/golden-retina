@@ -1228,7 +1228,7 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                         Tab(selected = selectedEye == 0, onClick = { selectedEye = 0 }, text = { Text("Right · ${rightTop.rightScore}%") })
                         Tab(selected = selectedEye == 1, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftTop.leftScore}%") })
                     }
-                    Text("Highest example score: ${selectedTop.name}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Highest score: ${selectedTop.name}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     groups.forEach { group ->
                         Card(
                             onClick = { expandedGroups = if (group.name in expandedGroups) expandedGroups - group.name else expandedGroups + group.name },
@@ -1249,13 +1249,12 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
                                 if (group.name in expandedGroups) {
                                     HorizontalDivider()
                                     group.conditions.forEachIndexed { index, condition ->
-                                        Row(verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                                             Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                                            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                                Text(condition.name, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                                Text("Demo score · ${if (selectedEye == 0) "Right ${condition.rightScore}" else "Left ${condition.leftScore}"}%", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                            Text(condition.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
+                                                Text("${if (selectedEye == 0) condition.rightScore else condition.leftScore}%", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                                             }
-                                            Text("EXAMPLE", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                         }
                                         if (index < group.conditions.lastIndex) HorizontalDivider()
                                     }
