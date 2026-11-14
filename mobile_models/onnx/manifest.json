@@ -5,7 +5,7 @@
   "inference": "on-device only; the app does not upload selected images",
   "models": {
     "ir_eye_tracker": {
-      "display_name": "Eye localization · synthetic research model",
+      "display_name": "Eye localization \u00b7 synthetic research model",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "ir_eye_tracker.onnx",
@@ -43,7 +43,7 @@
       "bytes": 1959735
     },
     "rfmid_dr": {
-      "display_name": "Diabetic retinopathy · RFMiD",
+      "display_name": "Diabetic retinopathy \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_dr.onnx",
@@ -96,7 +96,7 @@
       "bytes": 55766875
     },
     "rfmid_armd": {
-      "display_name": "Age-related macular degeneration · RFMiD",
+      "display_name": "Age-related macular degeneration \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_armd.onnx",
@@ -149,7 +149,7 @@
       "bytes": 55766875
     },
     "rfmid_dn": {
-      "display_name": "DN · RFMiD label · RFMiD",
+      "display_name": "Drusen \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_dn.onnx",
@@ -202,7 +202,7 @@
       "bytes": 55766875
     },
     "rfmid_mya": {
-      "display_name": "Myopia · RFMiD",
+      "display_name": "Myopia \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_mya.onnx",
@@ -255,7 +255,7 @@
       "bytes": 55766875
     },
     "rfmid_brvo": {
-      "display_name": "Branch retinal vein occlusion · RFMiD",
+      "display_name": "Branch retinal vein occlusion \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_brvo.onnx",
@@ -308,7 +308,7 @@
       "bytes": 55766875
     },
     "rfmid_odc": {
-      "display_name": "Optic-disc cupping finding · RFMiD",
+      "display_name": "Optic-disc cupping finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_odc.onnx",
@@ -361,7 +361,7 @@
       "bytes": 55766875
     },
     "rfmid_odp": {
-      "display_name": "Optic-disc pallor finding · RFMiD",
+      "display_name": "Optic-disc pallor finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_odp.onnx",
@@ -414,7 +414,7 @@
       "bytes": 47002663
     },
     "rfmid_ode": {
-      "display_name": "Optic-disc edema finding · RFMiD",
+      "display_name": "Optic-disc edema finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_ode.onnx",
@@ -467,7 +467,7 @@
       "bytes": 55766875
     },
     "rfmid_tsln": {
-      "display_name": "Tessellated fundus finding · RFMiD",
+      "display_name": "Tessellation finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_tsln.onnx",
@@ -520,7 +520,7 @@
       "bytes": 55766875
     },
     "rfmid_ls": {
-      "display_name": "Laser-scar finding · RFMiD",
+      "display_name": "Laser-scar finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_ls.onnx",
@@ -573,7 +573,7 @@
       "bytes": 55766875
     },
     "rfmid_csr": {
-      "display_name": "Central serous retinopathy · RFMiD",
+      "display_name": "Central serous retinopathy \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_csr.onnx",
@@ -626,7 +626,7 @@
       "bytes": 55766875
     },
     "rfmid_rs": {
-      "display_name": "Retinal scar finding · RFMiD",
+      "display_name": "Retinitis finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_rs.onnx",
@@ -679,7 +679,7 @@
       "bytes": 55766875
     },
     "rfmid_crs": {
-      "display_name": "CRS · RFMiD label · RFMiD",
+      "display_name": "Chorioretinitis \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_crs.onnx",
@@ -732,7 +732,7 @@
       "bytes": 55766875
     },
     "rfmid_crvo": {
-      "display_name": "Central retinal vein occlusion · RFMiD",
+      "display_name": "Central retinal vein occlusion \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_crvo.onnx",
@@ -785,7 +785,7 @@
       "bytes": 55766875
     },
     "rfmid_erm": {
-      "display_name": "Epiretinal membrane appearance · RFMiD",
+      "display_name": "Epiretinal membrane \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_erm.onnx",
@@ -838,7 +838,7 @@
       "bytes": 55766875
     },
     "rfmid_ms": {
-      "display_name": "Macular-scar finding · RFMiD",
+      "display_name": "Macular-scar finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_ms.onnx",
@@ -891,7 +891,7 @@
       "bytes": 55766875
     },
     "rfmid_rt": {
-      "display_name": "Retinal traction finding · RFMiD",
+      "display_name": "Retinal-traction finding \u00b7 RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_rt.onnx",
@@ -943,5 +943,12 @@
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_rt.onnx",
       "bytes": 55766875
     }
-  }
+  },
+  "consumer_inference_ids": [
+    "rfmid_dr",
+    "rfmid_armd",
+    "rfmid_mya",
+    "rfmid_brvo"
+  ],
+  "consumer_inference_rule": "Post hoc development-display filter applied after reviewing the recorded RFMiD image-split test summary: at least 20 positive test images and sensitivity >= 0.70 at threshold 0.5. This is not prespecified or confirmatory; selected metrics are exploratory and require independent re-evaluation."
 }

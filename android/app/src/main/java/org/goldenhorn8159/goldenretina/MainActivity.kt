@@ -164,7 +164,7 @@ private fun GoldenRetinaTheme(colorChoice: String, content: @Composable () -> Un
     MaterialTheme(colorScheme = scheme, content = content)
 }
 
-private enum class Destination { HOME, DEMO, GUIDE, SETTINGS }
+private enum class Destination { HOME, DEMO, ANALYZE, GUIDE, SETTINGS }
 private enum class DemoPhase { WELCOME, SEARCHING, CONNECTED, RIGHT_SCAN, RIGHT_DONE, LEFT_SCAN, LEFT_DONE, ANALYZING, RESULTS }
 private data class ConditionItem(val name: String, val rightScore: Int, val leftScore: Int)
 private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>) {
@@ -180,10 +180,11 @@ private fun GoldenRetinaApp(colorChoice: String, onColorChoice: (String) -> Unit
     BackHandler(enabled = destination == Destination.DEMO.name) { destination = Destination.HOME.name }
 
     when (Destination.valueOf(destination)) {
-        Destination.HOME, Destination.DEMO, Destination.GUIDE, Destination.SETTINGS -> MainTabs(
+        Destination.HOME, Destination.DEMO, Destination.ANALYZE, Destination.GUIDE, Destination.SETTINGS -> MainTabs(
             selected = Destination.valueOf(destination),
             onSelect = { destination = it.name },
             onStartDemo = { destination = Destination.DEMO.name },
+            onOpenResearch = { destination = Destination.ANALYZE.name },
             colorChoice = colorChoice,
             onColorChoice = onColorChoice,
         )
@@ -191,7 +192,7 @@ private fun GoldenRetinaApp(colorChoice: String, onColorChoice: (String) -> Unit
 }
 
 @Composable
-private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onStartDemo: () -> Unit, colorChoice: String, onColorChoice: (String) -> Unit) {
+private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onStartDemo: () -> Unit, onOpenResearch: () -> Unit, colorChoice: String, onColorChoice: (String) -> Unit) {
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -206,6 +207,12 @@ private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onS
                     onClick = { onSelect(Destination.DEMO) },
                     icon = { Icon(Icons.Filled.Search, contentDescription = null) },
                     label = { Text("Demo") },
+                )
+                NavigationBarItem(
+                    selected = selected == Destination.ANALYZE,
+                    onClick = onOpenResearch,
+                    icon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                    label = { Text("Analyze") },
                 )
                 NavigationBarItem(
                     selected = selected == Destination.GUIDE,
@@ -224,7 +231,8 @@ private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onS
     ) { insets ->
         when (selected) {
             Destination.HOME -> HomeScreen(Modifier.padding(insets), onStartDemo)
-            Destination.DEMO -> DemoExperience(modifier = Modifier.padding(insets), onExit = { onSelect(Destination.HOME) })
+            Destination.DEMO -> DemoExperience(modifier = Modifier.padding(insets), onExit = { onSelect(Destination.HOME) }, onOpenResearch = onOpenResearch)
+            Destination.ANALYZE -> OnDeviceInferenceScreen(onBack = { onSelect(Destination.HOME) })
             Destination.GUIDE -> HowToUseScreen(Modifier.padding(insets))
             Destination.SETTINGS -> SettingsScreen(Modifier.padding(insets), colorChoice, onColorChoice)
         }
@@ -526,7 +534,7 @@ private fun modelDisplayName(id: String): String = when (id) {
     "ir_eye_tracker" -> "Eye localization · synthetic research model"
     "rfmid_dr" -> "Diabetic retinopathy · RFMiD"
     "rfmid_armd" -> "Age-related macular degeneration · RFMiD"
-    "rfmid_dn" -> "DN · RFMiD label"
+    "rfmid_dn" -> "Drusen · RFMiD"
     "rfmid_mya" -> "Myopia · RFMiD"
     "rfmid_brvo" -> "Branch retinal vein occlusion · RFMiD"
     "rfmid_odc" -> "Optic-disc cupping finding · RFMiD"
@@ -536,7 +544,7 @@ private fun modelDisplayName(id: String): String = when (id) {
     "rfmid_ls" -> "Laser-scar finding · RFMiD"
     "rfmid_csr" -> "Central serous retinopathy · RFMiD"
     "rfmid_rs" -> "Retinal scar finding · RFMiD"
-    "rfmid_crs" -> "CRS · RFMiD label"
+    "rfmid_crs" -> "Chorioretinitis · RFMiD"
     "rfmid_crvo" -> "Central retinal vein occlusion · low support"
     "rfmid_erm" -> "Epiretinal membrane · low support"
     "rfmid_ms" -> "Macular scar · low support"
@@ -557,8 +565,14 @@ private data class MobileEyeResult(val pupilPixels: Int, val centerX: Double?, v
 private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    var selectedImage by remember { mutableStateOf<Bitmap?>(null) }
-    var diseaseResults by remember { mutableStateOf<List<MobileDiseaseScore>>(emptyList()) }
+    var selectedEye by remember { mutableStateOf(0) }
+    var rightImage by remember { mutableStateOf<Bitmap?>(null) }
+    var leftImage by remember { mutableStateOf<Bitmap?>(null) }
+    val selectedImage = if (selectedEye == 0) rightImage else leftImage
+    var rightDiseaseResults by remember { mutableStateOf<List<MobileDiseaseScore>>(emptyList()) }
+    var leftDiseaseResults by remember { mutableStateOf<List<MobileDiseaseScore>>(emptyList()) }
+    var imageTargetEye by remember { mutableStateOf(0) }
+    val diseaseResults = if (selectedEye == 0) rightDiseaseResults else leftDiseaseResults
     var expandedScoreGroups by remember { mutableStateOf(setOf("Retina and macula")) }
     var eyeResult by remember { mutableStateOf<MobileEyeResult?>(null) }
     var running by remember { mutableStateOf(false) }
@@ -569,14 +583,14 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
     val imagePicker = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             scope.launch {
+                val targetEye = imageTargetEye
                 loadingImage = true
-                selectedImage = null
-                diseaseResults = emptyList()
+                if (targetEye == 0) { rightImage = null; rightDiseaseResults = emptyList() } else { leftImage = null; leftDiseaseResults = emptyList() }
                 eyeResult = null
                 status = "Preparing the selected image locally…"
                 val decoded = runCatching { withContext(Dispatchers.IO) { decodeSelectedImage(context, uri) } }.getOrNull()
-                selectedImage = decoded
-                status = if (decoded == null) "Could not open that image. Choose a readable JPEG, PNG, or WebP image." else "Image loaded locally. Choose the matching research model below."
+                if (targetEye == 0) { rightImage = decoded; rightDiseaseResults = emptyList() } else { leftImage = decoded; leftDiseaseResults = emptyList() }
+                status = if (decoded == null) "Could not open that image. Choose a readable JPEG, PNG, or WebP image." else "${if (targetEye == 0) "Right" else "Left"} eye image loaded locally. Run its research models."
                 loadingImage = false
             }
         }
@@ -587,18 +601,22 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
             Text("On-device model lab", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         }
-        Text("Inference runs on this phone. This screen does not upload or store the selected image.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Button(enabled = !running && !loadingImage, onClick = { imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) {
+        Text("Inference runs on this phone. Images stay on-device. Add one color fundus photo for each eye; each eye is analyzed separately.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        PrimaryTabRow(selectedTabIndex = selectedEye) {
+            Tab(selected = selectedEye == 0, enabled = !running && !loadingImage, onClick = { selectedEye = 0 }, text = { Text("Right · ${rightDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
+            Tab(selected = selectedEye == 1, enabled = !running && !loadingImage, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
+        }
+        Button(enabled = !running && !loadingImage, onClick = { imageTargetEye = selectedEye; imagePicker.launch("image/*") }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) {
             Icon(Icons.Filled.Search, contentDescription = null)
             Spacer(Modifier.width(8.dp))
-            Text("Choose an image")
+            Text("Choose ${if (selectedEye == 0) "right" else "left"}-eye fundus photo")
         }
         selectedImage?.let { bitmap ->
             Image(bitmap.asImageBitmap(), contentDescription = "Selected image", modifier = Modifier.fillMaxWidth().heightIn(max = 280.dp).clip(RoundedCornerShape(16.dp)))
         }
         Button(enabled = selectedImage != null && installedDiseaseIds.isNotEmpty() && !running && !loadingImage, onClick = {
             val bitmap = selectedImage ?: return@Button
-            diseaseResults = emptyList()
+            if (selectedEye == 0) rightDiseaseResults = emptyList() else leftDiseaseResults = emptyList()
             eyeResult = null
             running = true
             runningDiseaseModels = true
@@ -615,8 +633,8 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                         }
                     }
                 }
-                result.onSuccess { diseaseResults = it; status = "Completed locally. Research scores are not diagnostic findings." }
-                    .onFailure { diseaseResults = emptyList(); status = "Disease inference failed: ${it.message ?: "model/runtime error"}" }
+                result.onSuccess { if (selectedEye == 0) rightDiseaseResults = it else leftDiseaseResults = it; status = "Completed locally for the ${if (selectedEye == 0) "right" else "left"} eye. Research scores are not diagnoses." }
+                    .onFailure { if (selectedEye == 0) rightDiseaseResults = emptyList() else leftDiseaseResults = emptyList(); status = "Disease inference failed: ${it.message ?: "model/runtime error"}" }
                 running = false
                 runningDiseaseModels = false
             }
@@ -625,12 +643,11 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             Text("No disease models are installed yet. Open Settings, check for updates, and download only the condition models you need.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (diseaseResults.isNotEmpty()) {
-            Text("Disease model scores", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text("Each condition and group is shown as a percentage. These are raw model scores, not calibrated patient-risk estimates or diagnoses; ‘low support’ describes the evidence behind a model, not the patient’s risk. Group values show the highest score in that group.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("${if (selectedEye == 0) "Right" else "Left"} eye · per-disease model scores", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text("These percentages are raw model scores for the selected image, not calibrated probabilities, patient-risk estimates, or diagnoses. Group values show the highest model score for this eye.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         listOf(
-            "Retina and macula" to listOf("rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_tsln", "rfmid_ls", "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt"),
-            "Optic disc" to listOf("rfmid_odc", "rfmid_odp", "rfmid_ode"),
+            "Retina and macula" to listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"),
         ).forEach { (groupName, modelIds) ->
             val rows = diseaseResults.filter { it.id in modelIds }
             val highest = rows.maxOfOrNull { it.value }
@@ -662,7 +679,6 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
         }
         Button(enabled = selectedImage != null && !running && !loadingImage, onClick = {
             val bitmap = selectedImage ?: return@Button
-            diseaseResults = emptyList()
             eyeResult = null
             running = true
             runningDiseaseModels = false
@@ -721,7 +737,7 @@ private fun decodeSelectedImage(context: Context, uri: Uri): Bitmap? {
 }
 
 private object MobileResearchInference {
-    val diseaseIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls", "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt")
+    val diseaseIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo")
 
     fun availableDiseaseIds(context: Context): List<String> = diseaseIds.filter { id ->
         val version = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).getString("model-version:$id", null)
@@ -977,7 +993,7 @@ private fun AboutFact(text: String, icon: androidx.compose.ui.graphics.vector.Im
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DemoExperience(modifier: Modifier = Modifier, onExit: () -> Unit) {
+private fun DemoExperience(modifier: Modifier = Modifier, onExit: () -> Unit, onOpenResearch: () -> Unit) {
     var phaseName by rememberSaveable { mutableStateOf(DemoPhase.WELCOME.name) }
     val phase = DemoPhase.valueOf(phaseName)
     val scanning = phase == DemoPhase.RIGHT_SCAN || phase == DemoPhase.LEFT_SCAN
@@ -1025,7 +1041,7 @@ private fun DemoExperience(modifier: Modifier = Modifier, onExit: () -> Unit) {
                     DemoPhase.LEFT_SCAN -> EyeScan("Left", progress)
                     DemoPhase.LEFT_DONE -> EyeCaptured("Left", "Preparing the example summary automatically…")
                     DemoPhase.ANALYZING -> DemoAnalysis()
-                    DemoPhase.RESULTS -> DemoResults(onReplay = { phaseName = DemoPhase.WELCOME.name }, onDone = onExit)
+                    DemoPhase.RESULTS -> DemoResults(onReplay = { phaseName = DemoPhase.WELCOME.name }, onDone = onExit, onAnalyze = onOpenResearch)
                 }
             }
         }
@@ -1198,79 +1214,32 @@ private fun DemoAnalysis() {
 }
 
 @Composable
-private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit) {
-    val groups = listOf(
-        ConditionGroup("Retina and macula", listOf(
-            ConditionItem("Diabetic retinopathy", 28, 19), ConditionItem("Age-related macular degeneration", 14, 11), ConditionItem("DN · RFMiD label (definition unverified)", 5, 4), ConditionItem("Myopia", 31, 26), ConditionItem("Branch retinal vein occlusion", 8, 12), ConditionItem("Tessellated fundus finding", 23, 18), ConditionItem("Laser-scar finding", 4, 4), ConditionItem("Central serous retinopathy", 9, 13), ConditionItem("Retinal scar finding", 7, 6), ConditionItem("CRS · RFMiD label (definition unverified)", 3, 2), ConditionItem("Central retinal vein occlusion · low-support model", 2, 3), ConditionItem("Epiretinal membrane · low-support model", 10, 9), ConditionItem("Macular scar · low-support model", 2, 5), ConditionItem("Retinal traction · low-support model", 6, 8),
-        )),
-        ConditionGroup("Optic disc", listOf(ConditionItem("Optic-disc cupping finding", 35, 29), ConditionItem("Optic-disc pallor finding", 11, 13), ConditionItem("Optic-disc edema finding", 4, 6))),
-    )
-    var expandedGroups by rememberSaveable { mutableStateOf(setOf("Retina and macula")) }
-    var selectedEye by rememberSaveable { mutableStateOf(0) }
-    val rightTop = groups.flatMap { it.conditions }.maxByOrNull { it.rightScore }!!
-    val leftTop = groups.flatMap { it.conditions }.maxByOrNull { it.leftScore }!!
-    val selectedTop = if (selectedEye == 0) rightTop else leftTop
-    BoxWithConstraints(Modifier.fillMaxSize()) {
-        Column(Modifier.align(Alignment.TopCenter).widthIn(max = 680.dp).fillMaxWidth().fillMaxHeight().verticalScroll(rememberScrollState()).padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                DemoPill()
-                Spacer(Modifier.weight(1f))
-                Text("EXAMPLE ONLY", style = MaterialTheme.typography.labelSmall, letterSpacing = .8.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
-            Text("Your demo is complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
-            Text("Here is an example of the result screen.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Condition-by-condition breakdown", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text("Sample image quality: Adequate · simulated   Both eye scans: Complete · simulated", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary)
-                    Text("The percentages below are fixed illustrative demo values. They were not calculated from an image or model and are not probabilities, diagnoses, or medical risk estimates.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    PrimaryTabRow(selectedTabIndex = selectedEye) {
-                        Tab(selected = selectedEye == 0, onClick = { selectedEye = 0 }, text = { Text("Right · ${rightTop.rightScore}%") })
-                        Tab(selected = selectedEye == 1, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftTop.leftScore}%") })
-                    }
-                    Text("Highest score: ${selectedTop.name}", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    groups.forEach { group ->
-                        Card(
-                            onClick = { expandedGroups = if (group.name in expandedGroups) expandedGroups - group.name else expandedGroups + group.name },
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Column(Modifier.weight(1f)) {
-                                        Text(group.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-                                        Text("${group.conditions.size} conditions · highest for ${if (selectedEye == 0) "right" else "left"} eye", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                    }
-                                    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surfaceVariant) {
-                                        Text("${group.conditions.maxOfOrNull { if (selectedEye == 0) it.rightScore else it.leftScore } ?: 0}%", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
-                                    }
-                                }
-                                if (group.name in expandedGroups) {
-                                    HorizontalDivider()
-                                    group.conditions.forEachIndexed { index, condition ->
-                                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                                            Icon(Icons.Filled.Search, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(20.dp))
-                                            Text(condition.name, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
-                                                Text("${if (selectedEye == 0) condition.rightScore else condition.leftScore}%", Modifier.padding(horizontal = 10.dp, vertical = 7.dp), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
-                                            }
-                                        }
-                                        if (index < group.conditions.lastIndex) HorizontalDivider()
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    HorizontalDivider()
-                    Text("Demo only: no disease or eye image was analyzed. Real research-model scores are available only in Research inference and are uncalibrated; they are not clinical results.", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-                }
-            }
-            AboutFact("No image from you was captured or analyzed", Icons.Filled.Lock)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedAction("Replay demo", Icons.Filled.Refresh, onReplay, Modifier.weight(1f))
-                Button(onClick = onDone, modifier = Modifier.weight(1f).heightIn(min = 52.dp), shape = RoundedCornerShape(16.dp)) { Text("Done") }
-            }
+private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit, onAnalyze: () -> Unit) {
+    Column(
+        Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
+        verticalArrangement = Arrangement.spacedBy(18.dp),
+    ) {
+        DemoPill()
+        Text("Demo complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text(
+            "The guided scan sequence was simulated. No eye images were captured or analyzed, so this demo does not produce disease classifications or risk percentages.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Button(onClick = onAnalyze, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+            Icon(Icons.Filled.Search, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Analyze a fundus image")
+        }
+        Text(
+            "The on-device model lab runs installed condition-specific research models on an image you select. It displays raw model scores, not calibrated disease risks or a medical diagnosis.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(Modifier.weight(1f))
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            OutlinedAction("Replay demo", Icons.Filled.Refresh, onReplay, Modifier.weight(1f))
+            Button(onClick = onDone, modifier = Modifier.weight(1f).heightIn(min = 52.dp), shape = RoundedCornerShape(16.dp)) { Text("Done") }
         }
     }
 }

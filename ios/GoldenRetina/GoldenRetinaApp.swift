@@ -25,6 +25,7 @@ enum BrandColor {
 enum AppTab: Hashable {
     case home
     case demo
+    case research
     case guide
     case settings
 }
@@ -40,16 +41,20 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $selection) {
             NavigationStack {
-                HomeView()
+                HomeView(onOpenResearch: { selection = .research })
             }
             .tabItem { Label("Home", systemImage: "house.fill") }
             .tag(AppTab.home)
 
             NavigationStack {
-                DemoFlowView(onExit: { selection = .home })
+                DemoFlowView(onExit: { selection = .home }, onOpenResearch: { selection = .research })
             }
             .tabItem { Label("Demo", systemImage: "eye") }
             .tag(AppTab.demo)
+
+            NavigationStack { OnDeviceInferenceView() }
+                .tabItem { Label("Analyze", systemImage: "waveform.path.ecg") }
+                .tag(AppTab.research)
 
             NavigationStack { HowToUseView() }
                 .tabItem { Label("How to use", systemImage: "questionmark.circle") }
@@ -64,6 +69,7 @@ struct RootView: View {
 }
 
 struct HomeView: View {
+    var onOpenResearch: () -> Void = {}
     @State private var showDemo = false
     @State private var showGogglesInfo = false
 
@@ -110,7 +116,7 @@ struct HomeView: View {
                                     .font(.headline)
                                 DemoBadge()
                             }
-                            Text("See device setup, both eye scans, and sample results")
+                            Text("See simulated device setup and the automatic two-eye scan flow")
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
                                 .multilineTextAlignment(.leading)
@@ -171,7 +177,7 @@ struct HomeView: View {
         .safeAreaPadding(.bottom, 24)
         .background(Color(uiColor: .systemGroupedBackground))
         .navigationBarHidden(true)
-        .fullScreenCover(isPresented: $showDemo) { DemoFlowView() }
+        .fullScreenCover(isPresented: $showDemo) { DemoFlowView(onOpenResearch: { showDemo = false; DispatchQueue.main.async(execute: onOpenResearch) }) }
         .sheet(isPresented: $showGogglesInfo) {
             GogglesUnavailableSheet()
                 .presentationDetents([.medium])
@@ -456,9 +462,7 @@ private struct EyeLocalization {
 
 private enum BundledResearchInference {
     static let diseaseIDs = [
-        "rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_odc",
-        "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls", "rfmid_csr", "rfmid_rs",
-        "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt"
+        "rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"
     ]
 
     static var installedDiseaseIDs: [String] { diseaseIDs.filter { modelURL(id: $0) != nil } }
@@ -572,16 +576,17 @@ private enum BundledResearchInference {
 
 private struct OnDeviceInferenceView: View {
     private let scoreGroups = [
-        DiseaseScoreGroup(id: "Retina and macula", modelIDs: [
-            "rfmid_dr", "rfmid_armd", "rfmid_dn", "rfmid_mya", "rfmid_brvo", "rfmid_tsln",
-            "rfmid_ls", "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm",
-            "rfmid_ms", "rfmid_rt"
-        ]),
-        DiseaseScoreGroup(id: "Optic disc", modelIDs: ["rfmid_odc", "rfmid_odp", "rfmid_ode"])
+        DiseaseScoreGroup(id: "Retina and macula", modelIDs: ["rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"])
     ]
+    private enum EyeSide: String { case right = "Right", left = "Left" }
+    @State private var selectedEye: EyeSide = .right
     @State private var selectedItem: PhotosPickerItem?
-    @State private var selectedImage: UIImage?
-    @State private var diseaseResults: [DiseaseScore] = []
+    @State private var rightImage: UIImage?
+    @State private var leftImage: UIImage?
+    @State private var rightDiseaseResults: [DiseaseScore] = []
+    @State private var leftDiseaseResults: [DiseaseScore] = []
+    private var selectedImage: UIImage? { selectedEye == .right ? rightImage : leftImage }
+    private var diseaseResults: [DiseaseScore] { selectedEye == .right ? rightDiseaseResults : leftDiseaseResults }
     @State private var eyeResult: EyeLocalization?
     @State private var status = "Choose a color fundus photograph or an eye/face frame to run the matching local model."
     @State private var isRunning = false
@@ -595,14 +600,20 @@ private struct OnDeviceInferenceView: View {
                 Text("On-device model lab").font(.largeTitle.bold())
                 Text("Inference runs locally on this iPhone. Images are not uploaded or saved by this screen.")
                     .foregroundStyle(.secondary)
+                Picker("Eye", selection: $selectedEye) {
+                    Text("Right · \(rightDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.right)
+                    Text("Left · \(leftDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.left)
+                }
+                .pickerStyle(.segmented)
+                .disabled(isRunning || isLoadingImage)
                 PhotosPicker(selection: $selectedItem, matching: .images) {
-                    Label("Choose an image", systemImage: "photo.on.rectangle.angled")
+                    Label(rightImage == nil && selectedEye == .right || leftImage == nil && selectedEye == .left ? "Choose \(selectedEye.rawValue.lowercased())-eye fundus photo" : "Replace \(selectedEye.rawValue.lowercased())-eye photo", systemImage: "photo.on.rectangle.angled")
                         .frame(maxWidth: .infinity, minHeight: 52)
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(BrandColor.green)
                 .disabled(isRunning || isLoadingImage)
-                Text("For disease models, choose a retinal fundus photograph. For eye localization, choose an eye or face frame. The guided demo is separate and does not use this image.")
+                Text("Select Right and Left separately, add one color fundus photograph for each eye, then run the disease models on each selected image. Scores are shown under the eye selected here.")
                     .font(.footnote).foregroundStyle(.secondary)
                 if let selectedImage {
                     Image(uiImage: selectedImage).resizable().scaledToFit().frame(maxHeight: 260)
@@ -621,9 +632,9 @@ private struct OnDeviceInferenceView: View {
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 if !diseaseResults.isEmpty {
-                    Text("Disease model scores")
+                    Text("\(selectedEye.rawValue) eye · per-disease model scores")
                         .font(.headline)
-                    Text("Each condition and group is shown as a percentage. These are raw model scores, not calibrated patient-risk estimates or diagnoses; ‘low support’ describes the evidence behind a model, not the patient’s risk. CRVO, ERM, MS (macular scar), and RT are exploratory labels.")
+                    Text("These percentages are raw model scores for the selected image, not calibrated probabilities, patient-risk estimates, or diagnoses.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -685,18 +696,17 @@ private struct OnDeviceInferenceView: View {
         .navigationBarTitleDisplayMode(.inline)
         .onChange(of: selectedItem) { _, item in
             guard let item else { return }
-            selectedImage = nil
-            diseaseResults = []
+            let targetEye = selectedEye
+            if targetEye == .right { rightImage = nil; rightDiseaseResults = [] } else { leftImage = nil; leftDiseaseResults = [] }
             eyeResult = nil
             isLoadingImage = true
             status = "Preparing the selected image locally…"
             Task {
                 defer { isLoadingImage = false }
                 if let data = try? await item.loadTransferable(type: Data.self), let image = prepareModelImage(data) {
-                    selectedImage = image
-                    diseaseResults = []
+                    if targetEye == .right { rightImage = image; rightDiseaseResults = [] } else { leftImage = image; leftDiseaseResults = [] }
                     eyeResult = nil
-                    status = "Image is ready. Choose the appropriate local model action."
+                    status = "\(targetEye.rawValue) eye image is ready. Run its local disease models."
                 } else {
                     status = "Could not load that image. Choose a JPEG, PNG, or HEIC image."
                 }
@@ -706,7 +716,8 @@ private struct OnDeviceInferenceView: View {
 
     private func runDiseaseModels() {
         guard let selectedImage else { return }
-        diseaseResults = []
+        let targetEye = selectedEye
+        if targetEye == .right { rightDiseaseResults = [] } else { leftDiseaseResults = [] }
         eyeResult = nil
         isRunning = true
         isRunningDiseaseModels = true
@@ -723,8 +734,8 @@ private struct OnDeviceInferenceView: View {
                     }
                 }
                 DispatchQueue.main.async {
-                    diseaseResults = values
-                    status = "Completed locally. These are research scores, not diagnostic findings."
+                    if targetEye == .right { rightDiseaseResults = values } else { leftDiseaseResults = values }
+                    status = "Completed locally for the \(targetEye.rawValue.lowercased()) eye. These are research scores, not diagnostic findings."
                     isRunning = false
                     isRunningDiseaseModels = false
                 }
@@ -736,7 +747,6 @@ private struct OnDeviceInferenceView: View {
 
     private func runEyeModel() {
         guard let selectedImage else { return }
-        diseaseResults = []
         eyeResult = nil
         isRunning = true
         isRunningDiseaseModels = false
@@ -761,7 +771,7 @@ private func modelDisplayName(_ id: String) -> String {
     case "ir_eye_tracker": return "Eye localization · synthetic research model"
     case "rfmid_dr": return "Diabetic retinopathy · RFMiD"
     case "rfmid_armd": return "Age-related macular degeneration · RFMiD"
-    case "rfmid_dn": return "DN · RFMiD label"
+    case "rfmid_dn": return "Drusen · RFMiD"
     case "rfmid_mya": return "Myopia · RFMiD"
     case "rfmid_brvo": return "Branch retinal vein occlusion · RFMiD"
     case "rfmid_odc": return "Optic-disc cupping · RFMiD"
@@ -771,7 +781,7 @@ private func modelDisplayName(_ id: String) -> String {
     case "rfmid_ls": return "Laser-scar finding · RFMiD"
     case "rfmid_csr": return "Central serous retinopathy · RFMiD"
     case "rfmid_rs": return "Retinal scar finding · RFMiD"
-    case "rfmid_crs": return "CRS · RFMiD label"
+    case "rfmid_crs": return "Chorioretinitis · RFMiD"
     case "rfmid_crvo": return "Central retinal vein occlusion · RFMiD · low support"
     case "rfmid_erm": return "Epiretinal membrane · RFMiD · low support"
     case "rfmid_ms": return "Macular scar · RFMiD · low support"
@@ -997,6 +1007,7 @@ struct DemoFlowView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     var onExit: (() -> Void)? = nil
+    var onOpenResearch: (() -> Void)? = nil
     @State private var phase: DemoPhase = .welcome
     @State private var scanProgress = 0.0
     @State private var scanKey = UUID()
@@ -1032,7 +1043,7 @@ struct DemoFlowView: View {
                     case .leftScan: EyeScanView(eye: "Left", progress: scanProgress)
                     case .leftDone: CapturedView(eye: "Left", nextStep: "Preparing the example summary automatically…")
                     case .analyzing: AnalysisView()
-                    case .results: DemoResultsView(onReplay: reset, onDone: exitDemo)
+                    case .results: DemoResultsView(onReplay: reset, onDone: exitDemo, onAnalyze: { if let onOpenResearch { onOpenResearch() } else { exitDemo() } })
                     }
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -1364,138 +1375,33 @@ private struct EyeTrackingArtwork: View {
 }
 
 struct DemoResultsView: View {
-    private enum DemoEye: String { case right = "Right", left = "Left" }
-    private struct ExampleCondition: Identifiable {
-        let name: String
-        let rightScore: Int
-        let leftScore: Int
-        var id: String { name }
-        func score(for eye: DemoEye) -> Int { eye == .right ? rightScore : leftScore }
-    }
-    private struct ExampleGroup: Identifiable {
-        let title: String
-        let conditions: [ExampleCondition]
-        var id: String { title }
-        func maximum(for eye: DemoEye) -> Int { conditions.map { $0.score(for: eye) }.max() ?? 0 }
-    }
-    @State private var expandedGroups: Set<String> = ["Retina and macula"]
-    @State private var selectedEye: DemoEye = .right
-    private let groups = [
-        ExampleGroup(title: "Retina and macula", conditions: [
-            .init(name: "Diabetic retinopathy", rightScore: 28, leftScore: 19), .init(name: "Age-related macular degeneration", rightScore: 14, leftScore: 11), .init(name: "DN · RFMiD label (definition unverified)", rightScore: 5, leftScore: 4), .init(name: "Myopia", rightScore: 31, leftScore: 26), .init(name: "Branch retinal vein occlusion", rightScore: 8, leftScore: 12), .init(name: "Tessellated fundus finding", rightScore: 23, leftScore: 18), .init(name: "Laser-scar finding", rightScore: 4, leftScore: 4), .init(name: "Central serous retinopathy", rightScore: 9, leftScore: 13), .init(name: "Retinal scar finding", rightScore: 7, leftScore: 6), .init(name: "CRS · RFMiD label (definition unverified)", rightScore: 3, leftScore: 2), .init(name: "Central retinal vein occlusion · low-support model", rightScore: 2, leftScore: 3), .init(name: "Epiretinal membrane · low-support model", rightScore: 10, leftScore: 9), .init(name: "Macular scar · low-support model", rightScore: 2, leftScore: 5), .init(name: "Retinal traction · low-support model", rightScore: 6, leftScore: 8)
-        ]),
-        ExampleGroup(title: "Optic disc", conditions: [
-            .init(name: "Optic-disc cupping finding", rightScore: 35, leftScore: 29), .init(name: "Optic-disc pallor finding", rightScore: 11, leftScore: 13), .init(name: "Optic-disc edema finding", rightScore: 4, leftScore: 6)
-        ])
-    ]
-    private var highestRight: ExampleCondition { groups.flatMap(\.conditions).max { $0.rightScore < $1.rightScore }! }
-    private var highestLeft: ExampleCondition { groups.flatMap(\.conditions).max { $0.leftScore < $1.leftScore }! }
-    private var highestSelected: ExampleCondition { selectedEye == .right ? highestRight : highestLeft }
     let onReplay: () -> Void
     let onDone: () -> Void
+    let onAnalyze: () -> Void
+
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                HStack {
-                    DemoBadge()
-                    Spacer()
-                    Text("EXAMPLE ONLY")
-                        .font(.caption.weight(.bold))
-                        .tracking(0.8)
-                        .foregroundStyle(.secondary)
-                }
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Your demo is complete")
-                        .font(.largeTitle.bold())
-                    Text("Here is an example of the result screen.")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-                }
-                VStack(alignment: .leading, spacing: 12) {
-                    Label("Condition-by-condition breakdown", systemImage: "doc.text.magnifyingglass")
-                        .font(.headline)
-                    Text("Sample image quality: Adequate · simulated     Both eye scans: Complete · simulated")
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundStyle(BrandColor.green)
-                    Text("The percentages below are fixed illustrative demo values. They were not calculated from an image or model and are not probabilities, diagnoses, or medical risk estimates.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                    Picker("Eye", selection: $selectedEye) {
-                        Text("Right · \(highestRight.rightScore)%").tag(DemoEye.right)
-                        Text("Left · \(highestLeft.leftScore)%").tag(DemoEye.left)
-                    }
-                    .pickerStyle(.segmented)
-                    Text("Highest score: \(highestSelected.name)")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                    ForEach(groups) { group in
-                        DisclosureGroup(isExpanded: Binding(
-                            get: { expandedGroups.contains(group.id) },
-                            set: { expanded in
-                                if expanded { expandedGroups.insert(group.id) } else { expandedGroups.remove(group.id) }
-                            }
-                        )) {
-                            ForEach(group.conditions) { condition in
-                                HStack(alignment: .center, spacing: 10) {
-                                    Image(systemName: "eye").foregroundStyle(BrandColor.green).frame(width: 22)
-                                    Text(condition.name).font(.subheadline.weight(.semibold))
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                    Spacer(minLength: 0)
-                                    Text("\(condition.score(for: selectedEye))%")
-                                        .font(.subheadline.weight(.bold))
-                                        .foregroundStyle(BrandColor.green)
-                                        .padding(.horizontal, 10).padding(.vertical, 7)
-                                        .background(BrandColor.green.opacity(0.12), in: Capsule())
-                                        .accessibilityLabel("\(selectedEye.rawValue) eye illustrative score \(condition.score(for: selectedEye)) percent")
-                                }
-                                .padding(.vertical, 7)
-                            }
-                        } label: {
-                            HStack {
-                                VStack(alignment: .leading, spacing: 3) {
-                                    Text(group.title).font(.subheadline.weight(.bold))
-                                    Text("\(group.conditions.count) conditions · highest demo score per eye").font(.caption).foregroundStyle(.secondary)
-                                }
-                                Spacer()
-                                    Text("Highest \(group.maximum(for: selectedEye))%")
-                                    .font(.caption.weight(.bold))
-                                    .foregroundStyle(BrandColor.green)
-                                    .padding(.horizontal, 9).padding(.vertical, 6)
-                                    .background(Color.secondary.opacity(0.12), in: Capsule())
-                            }
-                        }
-                        .tint(BrandColor.green)
-                    }
-                    Text("Demo only: no disease or eye image was analyzed. Real research-model scores are available only in Research inference and are uncalibrated; they are not clinical results.")
-                        .font(.footnote.weight(.medium))
-                        .foregroundStyle(.primary)
-                }
-                .padding(18)
-                .background(.background, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-                .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous).stroke(.quaternary, lineWidth: 1))
-
-                Label("No image from you was captured or analyzed", systemImage: "camera.metering.unknown")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(BrandColor.green)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                HStack(spacing: 12) {
-                    Button(action: onReplay) {
-                        Label("Replay demo", systemImage: "arrow.counterclockwise")
-                            .frame(maxWidth: .infinity, minHeight: 50)
-                    }
-                    .buttonStyle(.bordered)
-                    Button(action: onDone) {
-                        Text("Done").frame(maxWidth: .infinity, minHeight: 50)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .tint(BrandColor.green)
-                }
+        VStack(alignment: .leading, spacing: 18) {
+            DemoBadge()
+            Text("Demo complete").font(.largeTitle.bold())
+            Text("The guided scan sequence was simulated. No eye images were captured or analyzed, so this demo does not produce disease classifications or risk percentages.")
+                .foregroundStyle(.secondary)
+            Button(action: onAnalyze) {
+                Label("Analyze a fundus image", systemImage: "waveform.path.ecg")
+                    .frame(maxWidth: .infinity, minHeight: 52)
             }
-            .padding(22)
-            .frame(maxWidth: 600)
-            .frame(maxWidth: .infinity)
+            .buttonStyle(.borderedProminent)
+            .tint(BrandColor.green)
+            Text("The on-device model lab runs the installed condition-specific research models on an image you select. It displays raw model scores, not calibrated disease risks or a medical diagnosis.")
+                .font(.footnote).foregroundStyle(.secondary)
+            Spacer()
+            HStack {
+                Button("Replay demo", action: onReplay).buttonStyle(.bordered)
+                Spacer()
+                Button("Done", action: onDone).buttonStyle(.bordered)
+            }
         }
+        .padding(24)
+        .frame(maxWidth: 600, maxHeight: .infinity, alignment: .topLeading)
         .background(Color(uiColor: .systemGroupedBackground))
     }
 }
