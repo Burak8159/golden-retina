@@ -14,9 +14,11 @@ The repository contains an earlier local research interface and API, plus model-
 
 ## What it can do today
 
-The earlier interface returns separate image-level scores for the labels in its RFMiD multi-label checkpoint. The active specialist program is separately evaluating 17 candidate labels or findings: DR, ARMD, drusen (DN), myopic fundus appearance (MYA), branch retinal vein occlusion (BRVO), optic-disc cupping (ODC), pallor (ODP), edema (ODE), tessellation (TSLN), laser-scar finding (LS), central serous retinopathy (CSR), retinitis finding (RS), chorioretinitis finding (CRS), central retinal vein occlusion (CRVO), epiretinal membrane appearance (ERM), macular scar (MS), and retinal traction (RT). The last four have very few positive examples and are exploratory. Media haze is tracked separately as a visibility/quality signal, not a disease. These labels describe the research dataset's annotation targets; they should not be read as a validated list of clinical diagnoses the product can make.
+The earlier interface returns separate image-level scores for the labels in its RFMiD multi-label checkpoint. The active specialist program is separately evaluating 17 candidate labels or findings: DR, ARMD, drusen (DN), myopic fundus appearance (MYA), branch retinal vein occlusion (BRVO), optic-disc cupping (ODC), pallor (ODP), edema (ODE), tessellation (TSLN), laser-scar finding (LS), central serous retinopathy (CSR), retinitis finding (RS), chorioretinitis finding (CRS), central retinal vein occlusion (CRVO), epiretinal membrane appearance (ERM), macular scar (MS), and retinal traction (RT). The last four have very few positive examples and are exploratory. All 17 targets now have one RFMiD image-split test result; this does not establish patient-level or clinical validity. Media haze is tracked separately as a visibility/quality signal, not a disease. These labels describe the research dataset's annotation targets; they should not be read as a validated list of clinical diagnoses the product can make.
 
 The software does **not** examine every eye condition. It accepts fundus photographs only; it cannot replace OCT, visual-field testing, corneal imaging, slit-lamp examination, or a clinician's history and examination. A score for a dataset label should not be interpreted as a complete diagnosis.
+
+Separate [iOS](../ios/GoldenRetina/README.md) and [Android](../android/README.md) concept apps show a simulated device-discovery, connection, right-eye/left-eye scan, and sample-results journey. The goggles path is locked because the hardware is not available. The demo does not use Bluetooth or a camera, does not call a screening model, and does not produce patient-specific results.
 
 ## Current evidence—why this is still research
 
@@ -29,8 +31,11 @@ The current specialist results are from a held-out **image split** within RFMiD.
 | Drusen finding | 92.97% | 2.17% | 45 / 46 |
 | Optic-disc pallor finding | 96.25% | 0.00% | 24 / 24 |
 | Central serous retinopathy label | 97.66% | 92.31% | 1 / 13 |
+| Epiretinal membrane appearance label | 99.22% | 0.00% | 5 / 5 |
+| Macular scar finding (not multiple sclerosis) | 98.44% | 28.57% | 5 / 7 |
+| Retinal traction finding | 99.38% | 20.00% | 4 / 5 |
 
-These are dataset-specific image-level measurements. Several positive counts are small, patient-level separation cannot be verified from the staged metadata, and the test set has already been used once for the reported evaluation. The complete per-disease results and technical methods are in the [technical system note](golden_retina_technical_system_note_20261114.md).
+These are dataset-specific image-level measurements. Several positive counts are small, patient-level separation cannot be verified from the staged metadata, and the test set has already been used once for the reported evaluation. The complete per-disease results and technical methods are in the [technical system note](golden_retina_technical_system_note_20261114.md). The separate DR DINOv2 recovery uses training and validation data only; the earlier DR test result remains the reported result.
 
 **A high accuracy value does not mean that a model safely rules out disease.** For example, the drusen model's accuracy was 92.97% while it missed 45 of 46 positive test images. The current outputs must not be used to reassure a patient, delay care, initiate treatment, or make referral decisions.
 

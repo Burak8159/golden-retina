@@ -7,8 +7,8 @@ import os
 
 ROOT = Path(__file__).resolve().parents[2]
 WEB = Path(__file__).resolve().parent
-STATUS = ROOT / "results" / "technical_dev_20261108_rerun" / "status.json"
-CANDIDATES = ROOT / "configs" / "expanded_foundation_model_candidates_20261108.json"
+STATUS = ROOT / "results" / "disease_expansion_20261114" / "status.json"
+CANDIDATES = ROOT / "configs" / "rfmid_expert_architecture_sweep_20261114.json"
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -16,7 +16,46 @@ class Handler(BaseHTTPRequestHandler):
         if self.path == "/api/status":
             try:
                 status = json.loads(STATUS.read_text(encoding="utf-8"))
-                status["candidate_roster"] = json.loads(CANDIDATES.read_text(encoding="utf-8")).get("candidates", [])
+                config = json.loads(CANDIDATES.read_text(encoding="utf-8"))
+                specialist = status.get("per_disease_specialist_status", {})
+                roster = []
+                for target, architectures in config.get("candidate_architectures", {}).items():
+                    result = specialist.get(target, {})
+                    assignment = next(
+                        (x for x in status.get("disease_model_assignments", []) if x.get("target") == target),
+                        {},
+                    )
+                    baseline = assignment.get("baseline_metrics", {})
+                    metric_text = ""
+                    if baseline:
+                        metric_text = (
+                            f"Baseline accuracy {baseline.get('accuracy_at_0_5', float('nan')):.1%}; "
+                            f"AUROC {baseline.get('auroc', float('nan')):.3f}"
+                        )
+                    roster.append({
+                        "name": assignment.get("display", target),
+                        "family": " / ".join(architectures),
+                        "availability_status": result.get("status_label", "Queued"),
+                        "terms_status": assignment.get("tier", "support tier unrecorded"),
+                        "decision": " · ".join(x for x in [result.get("evidence", ""), metric_text] if x),
+                    })
+                for target, label, family in [
+                    ("HYGD_GON", "Glaucoma suspect / GON · historical model", "RETFound-MAE ViT-L/16 · existing internal validation"),
+                ]:
+                    result = specialist.get(target, {})
+                    if result:
+                        roster.append({"name": label, "family": family,
+                                       "availability_status": result.get("status_label", "Historical evidence"),
+                                       "terms_status": "Not part of the active RFMiD sweep",
+                                       "decision": result.get("evidence", "")})
+                mh = next((b for b in status.get("blocks", []) if b.get("id") == 23), {})
+                if mh:
+                    roster.append({"name": "Media haze / fundus visibility · quality signal",
+                                   "family": "ConvNeXt-Tiny multi-label baseline · not a disease head",
+                                   "availability_status": mh.get("status_label", "Quality signal"),
+                                   "terms_status": "Separate non-disease quality evidence",
+                                   "decision": mh.get("evidence", "")})
+                status["candidate_roster"] = roster
                 body = json.dumps(status, ensure_ascii=False).encode("utf-8")
             except OSError:
                 self.send_error(503, "Progress data is not available yet")

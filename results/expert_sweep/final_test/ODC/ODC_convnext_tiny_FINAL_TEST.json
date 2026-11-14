@@ -1,0 +1,52 @@
+{
+  "status": "RFMiD_OFFICIAL_IMAGE_SPLIT_RESEARCH_ONLY_PATIENT_INDEPENDENCE_UNVERIFIED",
+  "target": "ODC",
+  "architecture": "convnext_tiny",
+  "evidence_tier": "primary_support",
+  "support_caution": "Primary-support image-level development result; not clinical validation.",
+  "pretrained": true,
+  "pretraining_source": "ImageNet",
+  "pretrained_model_id": "torchvision.models.convnext_tiny",
+  "pretrained_model_revision": "torchvision DEFAULT weights; exact package version recorded in run summary",
+  "software_versions": {
+    "torch": "2.9.1+cu129",
+    "torchvision": "0.24.1+cu129"
+  },
+  "input": "color fundus photograph",
+  "input_size": 320,
+  "checkpoint_epoch": 3,
+  "split_support": {
+    "train": {
+      "positive": 282,
+      "negative": 1638
+    },
+    "valid": {
+      "positive": 72,
+      "negative": 568
+    },
+    "test": {
+      "positive": 91,
+      "negative": 549
+    }
+  },
+  "test_metrics": {
+    "n": 640,
+    "positive": 91,
+    "negative": 549,
+    "accuracy_at_0_5": 0.8921875,
+    "sensitivity_at_0_5": 0.4065934065934066,
+    "specificity_at_0_5": 0.9726775956284153,
+    "auroc": 0.9162213014672032,
+    "average_precision": 0.6830179657063897,
+    "confusion_at_0_5": {
+      "tp": 37,
+      "tn": 534,
+      "fp": 15,
+      "fn": 54
+    }
+  },
+  "patient_independence_verified": false,
+  "image_ids_available": false,
+  "checkpoint_sha256": "23f7f25d05164e03716b3e3edd46c39d7559e3fcb2d1b1fd417c41ad4f578b74",
+  "limitation": "Retrospective public-dataset experiment; not device-matched clinical validation or a clinical diagnosis."
+}

@@ -1,9 +1,3 @@
-*.py text eol=lf
-*.md text eol=lf
-*.tex text eol=lf
-*.csv text eol=lf
-*.json text eol=lf
-*.jsonl text eol=lf
-*.yaml text eol=lf
-*.yml text eol=lf
-
+# Keep the generated Windows Gradle wrapper intact without CR-at-EOL warnings.
+android/gradlew.bat -whitespace
+results/expert_sweep/per_disease_metrics.csv text eol=lf

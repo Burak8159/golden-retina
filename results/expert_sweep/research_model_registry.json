@@ -1,0 +1,932 @@
+{
+  "registry_version": "1.0",
+  "project": "Golden Retina",
+  "generated_at_utc": "2026-11-14T12:10:45Z",
+  "dataset": "ctmedtech/RFMID",
+  "dataset_revision": "16ee0cf528e9cb6ec38a6d7b1f3e4580172bc1da",
+  "evidence_scope": "retrospective image-split model development; not patient-level or clinical validation",
+  "targets": [
+    {
+      "label": "DR",
+      "label_description": "DR",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9617633023144834,
+          "candidate_checkpoint_sha256": "4f7a7dcbf872205cc50253ea9e9e153ace1fb815b3734d545872ad50c630a199",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": null,
+          "candidate_checkpoint_sha256": null,
+          "status": "not_started_or_no_summary"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9617633023144834,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 124,
+        "metrics": {
+          "accuracy_at_0_5": 0.928125,
+          "sensitivity_at_0_5": 0.8629032258064516,
+          "specificity_at_0_5": 0.9437984496124031,
+          "auroc": 0.9753610277569392,
+          "average_precision": 0.920264397513034,
+          "confusion_at_0_5": {
+            "tp": 107,
+            "tn": 487,
+            "fp": 29,
+            "fn": 17
+          }
+        },
+        "checkpoint_sha256": "4f7a7dcbf872205cc50253ea9e9e153ace1fb815b3734d545872ad50c630a199"
+      },
+      "positive_image_support_train_valid_test": [
+        376,
+        132,
+        124
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "ARMD",
+      "label_description": "ARMD",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9630180101416331,
+          "candidate_checkpoint_sha256": "ee75437a1d74fae3185e3652522bc1a757befdb99fa825492601229890b20ca1",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.8636125196712712,
+          "candidate_checkpoint_sha256": "795a5ee311982b526ebdf125a6e2c2a9a1c41865459808de0e46ad771d37a287",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9630180101416331,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 31,
+        "metrics": {
+          "accuracy_at_0_5": 0.9484375,
+          "sensitivity_at_0_5": 0.7419354838709677,
+          "specificity_at_0_5": 0.9589490968801314,
+          "auroc": 0.9538111128767414,
+          "average_precision": 0.6746180961499554,
+          "confusion_at_0_5": {
+            "tp": 23,
+            "tn": 584,
+            "fp": 25,
+            "fn": 8
+          }
+        },
+        "checkpoint_sha256": "ee75437a1d74fae3185e3652522bc1a757befdb99fa825492601229890b20ca1"
+      },
+      "positive_image_support_train_valid_test": [
+        100,
+        38,
+        31
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "DN",
+      "label_description": "DN",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.7693785682916118,
+          "candidate_checkpoint_sha256": "699ba90968b6902a4bb10ee70a91bad869d4feb9a7b7b2a5231ba53555ce0484",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.5651441955789782,
+          "candidate_checkpoint_sha256": "0254abd8a5bc3a3171b070773b14757f35685716f878a5f7da7338dad9a9f930",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.7693785682916118,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 46,
+        "metrics": {
+          "accuracy_at_0_5": 0.9296875,
+          "sensitivity_at_0_5": 0.021739130434782608,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.8109171424388816,
+          "average_precision": 0.2832094210740822,
+          "confusion_at_0_5": {
+            "tp": 1,
+            "tn": 594,
+            "fp": 0,
+            "fn": 45
+          }
+        },
+        "checkpoint_sha256": "699ba90968b6902a4bb10ee70a91bad869d4feb9a7b7b2a5231ba53555ce0484"
+      },
+      "positive_image_support_train_valid_test": [
+        138,
+        46,
+        46
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "MYA",
+      "label_description": "MYA",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "efficientnet_b0",
+          "best_validation_auroc": 0.9851485148514851,
+          "candidate_checkpoint_sha256": "efc2537fe6b5e69cd57359733f7876d73f4b0b2ad93de268e327d57ef561d882",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9921859833042128,
+          "candidate_checkpoint_sha256": "dd2b02e4c452dd2b26c09f8406c634b436f780541eb4c1dd3f79ba4c54abb54e",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9921859833042128,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 32,
+        "metrics": {
+          "accuracy_at_0_5": 0.971875,
+          "sensitivity_at_0_5": 1.0,
+          "specificity_at_0_5": 0.9703947368421053,
+          "auroc": 0.9955026726973685,
+          "average_precision": 0.8910448475967385,
+          "confusion_at_0_5": {
+            "tp": 32,
+            "tn": 590,
+            "fp": 18,
+            "fn": 0
+          }
+        },
+        "checkpoint_sha256": "dd2b02e4c452dd2b26c09f8406c634b436f780541eb4c1dd3f79ba4c54abb54e"
+      },
+      "positive_image_support_train_valid_test": [
+        101,
+        34,
+        32
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "BRVO",
+      "label_description": "BRVO",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "efficientnet_b0",
+          "best_validation_auroc": 0.8744979212176732,
+          "candidate_checkpoint_sha256": "7d701955129b87273c6ead9c1b639bd3a8c13c283a775d218ba937ae9e690360",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9268550489747023,
+          "candidate_checkpoint_sha256": "3304b4cd322af975f23793be515b6ee19a71c87ec641077bef51034ef074a2ab",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9268550489747023,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 23,
+        "metrics": {
+          "accuracy_at_0_5": 0.95625,
+          "sensitivity_at_0_5": 0.782608695652174,
+          "specificity_at_0_5": 0.9627228525121556,
+          "auroc": 0.9114931999154393,
+          "average_precision": 0.5930654866163528,
+          "confusion_at_0_5": {
+            "tp": 18,
+            "tn": 594,
+            "fp": 23,
+            "fn": 5
+          }
+        },
+        "checkpoint_sha256": "3304b4cd322af975f23793be515b6ee19a71c87ec641077bef51034ef074a2ab"
+      },
+      "positive_image_support_train_valid_test": [
+        73,
+        23,
+        23
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "ODC",
+      "label_description": "ODC",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "resnet50",
+          "best_validation_auroc": 0.8583846830985915,
+          "candidate_checkpoint_sha256": "bdbf3a8689b18a035b4ebf9b004d7111f71b245982f48eba90f409e8c171235a",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9321449530516432,
+          "candidate_checkpoint_sha256": "23f7f25d05164e03716b3e3edd46c39d7559e3fcb2d1b1fd417c41ad4f578b74",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9321449530516432,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 91,
+        "metrics": {
+          "accuracy_at_0_5": 0.8921875,
+          "sensitivity_at_0_5": 0.4065934065934066,
+          "specificity_at_0_5": 0.9726775956284153,
+          "auroc": 0.9162213014672032,
+          "average_precision": 0.6830179657063897,
+          "confusion_at_0_5": {
+            "tp": 37,
+            "tn": 534,
+            "fp": 15,
+            "fn": 54
+          }
+        },
+        "checkpoint_sha256": "23f7f25d05164e03716b3e3edd46c39d7559e3fcb2d1b1fd417c41ad4f578b74"
+      },
+      "positive_image_support_train_valid_test": [
+        282,
+        72,
+        91
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "ODP",
+      "label_description": "ODP",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "resnet50",
+          "best_validation_auroc": 0.7827298922575796,
+          "candidate_checkpoint_sha256": "fbbddeeb61d2af3403641cc8a66a73f02ada7a2acfc63190f3c9992caa9beebf",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.741574793284891,
+          "candidate_checkpoint_sha256": "d16adecceb9a5d3d42af7b48ebc02c32433e47903a17d1267728bf36b2ee5e51",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "resnet50",
+      "selected_validation_auroc": 0.7827298922575796,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 24,
+        "metrics": {
+          "accuracy_at_0_5": 0.9625,
+          "sensitivity_at_0_5": 0.0,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.7587256493506493,
+          "average_precision": 0.1282817865068345,
+          "confusion_at_0_5": {
+            "tp": 0,
+            "tn": 616,
+            "fp": 0,
+            "fn": 24
+          }
+        },
+        "checkpoint_sha256": "fbbddeeb61d2af3403641cc8a66a73f02ada7a2acfc63190f3c9992caa9beebf"
+      },
+      "positive_image_support_train_valid_test": [
+        65,
+        26,
+        24
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "ODE",
+      "label_description": "ODE",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "resnet50",
+          "best_validation_auroc": 0.9652280944688053,
+          "candidate_checkpoint_sha256": "874232f5080d18d00313a9c4245eb315e72710d2ec98e443d4c6e153afc0b430",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9701515501192399,
+          "candidate_checkpoint_sha256": "a36b81f6a55710f095428e0311e53fdd055164c2fe505b66cddf52e263c728ea",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9701515501192399,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 17,
+        "metrics": {
+          "accuracy_at_0_5": 0.978125,
+          "sensitivity_at_0_5": 0.8235294117647058,
+          "specificity_at_0_5": 0.9823434991974318,
+          "auroc": 0.952270795958833,
+          "average_precision": 0.7877028649367798,
+          "confusion_at_0_5": {
+            "tp": 14,
+            "tn": 612,
+            "fp": 11,
+            "fn": 3
+          }
+        },
+        "checkpoint_sha256": "a36b81f6a55710f095428e0311e53fdd055164c2fe505b66cddf52e263c728ea"
+      },
+      "positive_image_support_train_valid_test": [
+        58,
+        21,
+        17
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "TSLN",
+      "label_description": "TSLN",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.96076254180602,
+          "candidate_checkpoint_sha256": "8b5c367cfbb63de33199b598647b3c68f9aa53ad7b22b1d0b9fc1bde33eb99e6",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.6484949832775919,
+          "candidate_checkpoint_sha256": "f8482875222034c8f98184ba00697959e574a1c17a13cbd9b519b7c29b38f015",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.96076254180602,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 53,
+        "metrics": {
+          "accuracy_at_0_5": 0.928125,
+          "sensitivity_at_0_5": 0.5849056603773585,
+          "specificity_at_0_5": 0.959114139693356,
+          "auroc": 0.9509819677927421,
+          "average_precision": 0.6034326696315859,
+          "confusion_at_0_5": {
+            "tp": 31,
+            "tn": 563,
+            "fp": 24,
+            "fn": 22
+          }
+        },
+        "checkpoint_sha256": "8b5c367cfbb63de33199b598647b3c68f9aa53ad7b22b1d0b9fc1bde33eb99e6"
+      },
+      "positive_image_support_train_valid_test": [
+        186,
+        65,
+        53
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "LS",
+      "label_description": "LS",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9023227268435464,
+          "candidate_checkpoint_sha256": "df7cac8e3cdb633453b9e2522a6d76b24861a6dfbfb45a69cd66e94d8d23897f",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.7417618732886413,
+          "candidate_checkpoint_sha256": "f2bd0705db19fae2fda03fdc2ca3c6400244d984798305ced907ea6698213e08",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9023227268435464,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 15,
+        "metrics": {
+          "accuracy_at_0_5": 0.98125,
+          "sensitivity_at_0_5": 0.3333333333333333,
+          "specificity_at_0_5": 0.9968,
+          "auroc": 0.9025066666666667,
+          "average_precision": 0.354101118962697,
+          "confusion_at_0_5": {
+            "tp": 5,
+            "tn": 623,
+            "fp": 2,
+            "fn": 10
+          }
+        },
+        "checkpoint_sha256": "df7cac8e3cdb633453b9e2522a6d76b24861a6dfbfb45a69cd66e94d8d23897f"
+      },
+      "positive_image_support_train_valid_test": [
+        47,
+        17,
+        15
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "CSR",
+      "label_description": "CSR",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9887266946090475,
+          "candidate_checkpoint_sha256": "c6ca25ac50ddb5f8de057100ef1256b7d6037679d827c086c70e9cc47abd539d",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.6726405549934962,
+          "candidate_checkpoint_sha256": "9366187e9e87648bb63fd57b9ad449a2b9c6ca7b177757da225bc7f49618b2ce",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9887266946090475,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 13,
+        "metrics": {
+          "accuracy_at_0_5": 0.9765625,
+          "sensitivity_at_0_5": 0.9230769230769231,
+          "specificity_at_0_5": 0.9776714513556619,
+          "auroc": 0.9942338363390995,
+          "average_precision": 0.8225781163281164,
+          "confusion_at_0_5": {
+            "tp": 12,
+            "tn": 613,
+            "fp": 14,
+            "fn": 1
+          }
+        },
+        "checkpoint_sha256": "c6ca25ac50ddb5f8de057100ef1256b7d6037679d827c086c70e9cc47abd539d"
+      },
+      "positive_image_support_train_valid_test": [
+        37,
+        11,
+        13
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "RS",
+      "label_description": "RS",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9879050661798265,
+          "candidate_checkpoint_sha256": "bc92cbb9db4021998a036b45c7b4543c8c50dfb98405b00e24a6cfe14f3359d1",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.8492697398448197,
+          "candidate_checkpoint_sha256": "f297e7dfc41dc7a7186d290bc5865ebc0d7e6222d0f9e048d343bd28140f0a07",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9879050661798265,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 14,
+        "metrics": {
+          "accuracy_at_0_5": 0.975,
+          "sensitivity_at_0_5": 0.5,
+          "specificity_at_0_5": 0.9856230031948882,
+          "auroc": 0.9623459607485166,
+          "average_precision": 0.5257897386656785,
+          "confusion_at_0_5": {
+            "tp": 7,
+            "tn": 617,
+            "fp": 9,
+            "fn": 7
+          }
+        },
+        "checkpoint_sha256": "bc92cbb9db4021998a036b45c7b4543c8c50dfb98405b00e24a6cfe14f3359d1"
+      },
+      "positive_image_support_train_valid_test": [
+        43,
+        14,
+        14
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "CRS",
+      "label_description": "CRS",
+      "tier": "primary_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.8022835669894494,
+          "candidate_checkpoint_sha256": "03fcfb3f1174371927b40adadd83117b7c9857de58a911ff744b6c1d59f1b41b",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.6612227200462495,
+          "candidate_checkpoint_sha256": "45e9d3b6e74c7f6bff1cedf2a3ed7e80f01ecdfb94df40c7d82486af9c42e99f",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.8022835669894494,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 11,
+        "metrics": {
+          "accuracy_at_0_5": 0.9828125,
+          "sensitivity_at_0_5": 0.0,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.8955051307992484,
+          "average_precision": 0.16825861184725271,
+          "confusion_at_0_5": {
+            "tp": 0,
+            "tn": 629,
+            "fp": 0,
+            "fn": 11
+          }
+        },
+        "checkpoint_sha256": "03fcfb3f1174371927b40adadd83117b7c9857de58a911ff744b6c1d59f1b41b"
+      },
+      "positive_image_support_train_valid_test": [
+        32,
+        11,
+        11
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "CRVO",
+      "label_description": "Central retinal vein occlusion label (low support)",
+      "tier": "exploratory_low_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "efficientnet_b0",
+          "best_validation_auroc": 0.9845727848101266,
+          "candidate_checkpoint_sha256": "65c46148031752a67a0425bdcfcaed4028a92b142853b6226c23e5e8f0297039",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9956487341772152,
+          "candidate_checkpoint_sha256": "1751ad4dac34a6618fc0b2662b5ee89537b98e6b305122e6540e84283fa0049b",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9956487341772152,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 9,
+        "metrics": {
+          "accuracy_at_0_5": 0.9765625,
+          "sensitivity_at_0_5": 0.7777777777777778,
+          "specificity_at_0_5": 0.9793977812995246,
+          "auroc": 0.9825673534072901,
+          "average_precision": 0.7501356965799459,
+          "confusion_at_0_5": {
+            "tp": 7,
+            "tn": 618,
+            "fp": 13,
+            "fn": 2
+          }
+        },
+        "checkpoint_sha256": "1751ad4dac34a6618fc0b2662b5ee89537b98e6b305122e6540e84283fa0049b"
+      },
+      "positive_image_support_train_valid_test": [
+        28,
+        8,
+        9
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "ERM",
+      "label_description": "Epiretinal membrane appearance label (low support)",
+      "tier": "exploratory_low_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.8016249153689912,
+          "candidate_checkpoint_sha256": "66a3c233aa903bb9e721ebe7164b7d268837c181025ee9140c7377813e277a80",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "dinov2_vits14",
+          "best_validation_auroc": 0.5505529225908373,
+          "candidate_checkpoint_sha256": "e65dcac1ea99df3cbdfea7379ec0c41ae5baa0c4f9e5aa59c35325ecd9c3b015",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.8016249153689912,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 5,
+        "metrics": {
+          "accuracy_at_0_5": 0.9921875,
+          "sensitivity_at_0_5": 0.0,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.8316535433070866,
+          "average_precision": 0.21715900191568574,
+          "confusion_at_0_5": {
+            "tp": 0,
+            "tn": 635,
+            "fp": 0,
+            "fn": 5
+          }
+        },
+        "checkpoint_sha256": "66a3c233aa903bb9e721ebe7164b7d268837c181025ee9140c7377813e277a80"
+      },
+      "positive_image_support_train_valid_test": [
+        14,
+        7,
+        5
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "MS",
+      "label_description": "Macular scar finding (low support; not multiple sclerosis)",
+      "tier": "exploratory_low_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "efficientnet_b0",
+          "best_validation_auroc": 0.8018897637795276,
+          "candidate_checkpoint_sha256": "1b018d9db2dbb202df5bc25d8ac02664d1de5d7c1386ba7aa307621a0da40fdb",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.8721259842519685,
+          "candidate_checkpoint_sha256": "984cea977d7e4bbfb3c7885499a7d3e0c44d59aed0f22b7a36908589d8a8900a",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.8721259842519685,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 7,
+        "metrics": {
+          "accuracy_at_0_5": 0.984375,
+          "sensitivity_at_0_5": 0.2857142857142857,
+          "specificity_at_0_5": 0.9921011058451816,
+          "auroc": 0.8933649289099526,
+          "average_precision": 0.22762822209451558,
+          "confusion_at_0_5": {
+            "tp": 2,
+            "tn": 628,
+            "fp": 5,
+            "fn": 5
+          }
+        },
+        "checkpoint_sha256": "984cea977d7e4bbfb3c7885499a7d3e0c44d59aed0f22b7a36908589d8a8900a"
+      },
+      "positive_image_support_train_valid_test": [
+        15,
+        5,
+        7
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    },
+    {
+      "label": "RT",
+      "label_description": "Retinal traction finding (low support; OCT preferred for extent)",
+      "tier": "exploratory_low_support",
+      "input_modality": "single color fundus image",
+      "candidate_models": [
+        {
+          "architecture": "resnet50",
+          "best_validation_auroc": 0.9645110410094637,
+          "candidate_checkpoint_sha256": "80d2d146dc33bb86bc03aa882cdccc3a6e3b2f60b53eb82636fa6ccdc107a54e",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        },
+        {
+          "architecture": "convnext_tiny",
+          "best_validation_auroc": 0.9860672975814931,
+          "candidate_checkpoint_sha256": "d4ae8a8f8233ddc282ae7e7030894be04c85d16018bbcdb9fe02e185ff7820a7",
+          "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED"
+        }
+      ],
+      "selection_rule": "validation AUROC only",
+      "selected_architecture": "convnext_tiny",
+      "selected_validation_auroc": 0.9860672975814931,
+      "test_evaluation": {
+        "split": "official RFMiD image-level test split",
+        "threshold": 0.5,
+        "n_images": 640,
+        "positive_images": 5,
+        "metrics": {
+          "accuracy_at_0_5": 0.99375,
+          "sensitivity_at_0_5": 0.2,
+          "specificity_at_0_5": 1.0,
+          "auroc": 0.9318110236220473,
+          "average_precision": 0.5191530691530691,
+          "confusion_at_0_5": {
+            "tp": 1,
+            "tn": 635,
+            "fp": 0,
+            "fn": 4
+          }
+        },
+        "checkpoint_sha256": "d4ae8a8f8233ddc282ae7e7030894be04c85d16018bbcdb9fe02e185ff7820a7"
+      },
+      "positive_image_support_train_valid_test": [
+        14,
+        6,
+        5
+      ],
+      "patient_ids_available": false,
+      "patient_independence_verified": false,
+      "intended_camera_validated": false,
+      "clinical_use_eligible": false,
+      "checkpoint_local": true,
+      "status": "FINAL_TEST_COMPLETE"
+    }
+  ],
+  "separate_evidence": {
+    "glaucoma_gon": "Historical internal-validation evidence only; not part of the RFMiD sweep.",
+    "media_haze": "Image-visibility/quality signal, not a disease classifier."
+  }
+}

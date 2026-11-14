@@ -21,7 +21,7 @@
 </head>
 <body>
 <main>
-  <header class="top"><div><h1>Golden Retina</h1><p class="sub">Research-model rerun · 10 active candidates · 34 blocks · spend-controlled</p></div><span class="live" id="live">● Live local tracker</span></header>
+  <header class="top"><div><h1>Golden Retina</h1><p class="sub" id="planSummary">Per-disease retinal model sweep · live status and evidence</p></div><span class="live" id="live">● Live local tracker</span></header>
   <section class="cards">
     <div class="card"><div class="label">Completed blocks</div><div class="value" id="completed">—</div><div class="small">of <span id="plannedTotal">—</span> active stages planned</div></div>
     <div class="card"><div class="label">Current block</div><div class="value" id="current">—</div><div class="small" id="currentName">Loading</div></div>
@@ -30,7 +30,7 @@
   </section>
   <div class="notice" id="gate"><strong>Loading current gate…</strong><span></span></div>
   <section class="panel" style="margin-bottom:14px"><h2>Issues &amp; gates</h2><div class="issuegrid" id="issues"></div></section>
-  <section class="panel" style="margin-bottom:14px"><h2>Expanded model candidates</h2><p class="sub">Newly identified candidates are listed with their checkpoint access and terms status. Only models cleared for this noncommercial research run can proceed to a probe.</p><div class="issuegrid" id="candidateRoster"></div></section>
+  <section class="panel" style="margin-bottom:14px"><h2>Per-disease targets and model evidence</h2><p class="sub">Each active disease or finding has its own candidate models, support tier, and current evidence. Historical GON and MH quality evidence are separately identified.</p><div class="issuegrid" id="candidateRoster"></div></section>
   <div class="layout">
     <section class="panel"><h2>Work plan</h2><div class="progress"><i id="bar"></i></div><div class="filters" id="filters"></div><div class="blocks" id="blocks"></div></section>
     <div class="rightstack">
@@ -40,7 +40,7 @@
   </div>
   <section class="panel" id="mbrset-followup" style="margin-top:14px">
     <h2>When mBRSET arrives</h2>
-    <p class="sub">Queued until Burak notifies us that the files have arrived. Store the dataset in private, access-controlled project storage, then begin this work immediately after the initial 34-block program and its closeout checks are complete. Use the existing Golden Retina software suite; do not add a new model family.</p>
+    <p class="sub">Queued until Burak notifies us that the files have arrived. Store the dataset in private, access-controlled project storage, then begin immediately after the current 32-block program and its closeout checks are complete. Use the existing Golden Retina software suite; do not add a new model family.</p>
     <div class="issuegrid" style="margin-top:12px">
       <article class="issue"><strong>Time cap</strong><p>12 hours maximum for the mBRSET follow-up.</p><small>Begin only after the arrival notice and a quick file/label integrity check.</small></article>
       <article class="issue"><strong>Planned spending ceiling</strong><p>₺1,400 planned compute and operating ceiling.</p><small>Stop or reduce work before crossing the planned ceiling.</small></article>
@@ -51,61 +51,27 @@
   <section class="panel" id="overall-limits" style="margin-top:14px">
     <h2>Budget definitions and separate phase caps</h2>
     <div class="issuegrid" style="margin-top:12px">
-      <article class="issue"><strong>Current rerun · planned spend</strong><p>₺1,900 for the 34-block L4 effort.</p><small>“Spent” is an accrued estimate: elapsed L4 VM and attached-disk runtime at recorded rates, converted using a conservative USD/TRY rate, plus recorded outbound artifact transfer. It is not the settled Google invoice.</small></article>
+      <article class="issue"><strong>Current rerun · planned spend</strong><p>₺1,900 for the current L4 effort.</p><small>“Spent” is an accrued estimate: elapsed L4 VM and attached-disk runtime at recorded rates, converted using a conservative USD/TRY rate, plus recorded outbound artifact transfer. It is not the settled Google invoice.</small></article>
       <article class="issue"><strong>Current rerun · reserve and hard spend cap</strong><p>₺1,900 planned ceiling · ₺80 protected contingency · ₺1,980 absolute maximum.</p><small>Planned headroom = ₺1,900 minus estimated spend. Hard-cap headroom = ₺1,980 minus estimated spend. No separate project time limit. The ₺80 reserve is not routine spend. Cloud billing is delayed and budget alerts do not stop a VM; the live estimate is tracked conservatively, with the Golden Retina VM shutdown at the planned spend ceiling.</small></article>
-      <article class="issue"><strong>mBRSET · separate future phase</strong><p>12 hours · ₺1,400 planned + ₺75 reserve = ₺1,475 hard cap.</p><small>Not part of the initial program’s spend. Start only after Burak reports arrival and the initial Block 34 closeout is complete.</small></article>
+      <article class="issue"><strong>mBRSET · separate future phase</strong><p>12 hours · ₺1,400 planned + ₺75 reserve = ₺1,475 hard cap.</p><small>Not part of the current program’s spend. Start only after Burak reports arrival and the initial Block 32 closeout is complete.</small></article>
     </div>
-    <p class="foot">Budget percentage is estimated spend divided by the ₺1,980 hard cap; the tracker also reports the ₺1,900 planned ceiling and ₺80 contingency separately. Cloud billing is delayed, so estimates may differ from the final invoice, including tax, storage, network and other unmetered items. There is no separate elapsed-time cap: continue while the run remains within budget, and stop at the ₺1,900 planned ceiling to preserve the ₺80 margin. The 34 active blocks total 68 nominal block-hours; actual duration depends on compute throughput and spend. Use one Golden Retina L4 only; RTX remains unauthorized. At closeout, shut down only Golden Retina cloud resources.</p>
+    <p class="foot">Budget percentage is estimated spend divided by the ₺1,980 hard cap; the tracker also reports the ₺1,900 planned ceiling and ₺80 contingency separately. Cloud billing is delayed, so estimates may differ from the final invoice, including tax, storage, network and other unmetered items. There is no separate elapsed-time cap: continue while the run remains within budget, and preserve the ₺80 margin for justified completion needs. Use one Golden Retina L4 only; RTX remains unauthorized. At closeout, shut down only Golden Retina cloud resources.</p>
   </section>
   <section class="panel" id="hard-time-cap" style="margin-top:14px;border-color:#694047">
     <h2>Budget-controlled closeout · current rerun</h2>
     <p><strong>Current rule:</strong> no independent time deadline · stop at the ₺1,900 planned spend ceiling and preserve the ₺80 reserve.</p>
-    <p class="foot">Block 34 artifact pull, checksums, permitted publication, and Golden Retina cloud shutdown are the closeout target. An earlier VM scheduling safeguard is being cleared at a saved-checkpoint boundary; current training is not being discarded. The separate mBRSET follow-up remains a distinct phase with its own budget.</p>
+    <p class="foot">Block 32 artifact pull, checksums, permitted publication, and Golden Retina cloud shutdown are the closeout target. The separate mBRSET follow-up remains a distinct phase with its own budget.</p>
   </section>
 </main>
 <script>
-const stages=[
- ["Checkout, cloud, data locations and cost gate", "Inspect repository state, available data/storage and cloud resources; do not launch a VM."],
- ["Dataset, label, metadata and rights inventory", "Map supported diagnoses, patient/eye identifiers, quality and acquisition fields, dataset terms and usable model weights."],
- ["Duplicate audit and frozen split design", "Check duplicates and overlap; freeze patient/source manifests. Stop training if independence cannot be established."],
- ["Reproduce ConvNeXt-Tiny baseline", "Run the recorded baseline on frozen manifests and save config, logs and checkpoint hash."],
- ["Baseline error and subgroup audit", "Break results down by disease, patient, source and available quality strata."],
- ["Candidate 1/10 · FLAIR", "Verify the staged checkpoint hash/provenance, then run a frozen-feature probe on the frozen validation split if cleared."],
- ["Candidate 2/10 · DINOv2", "Use the exact locally available DINOv2 checkpoint after hash/provenance check; frozen-feature validation probe."],
- ["Candidate 3/10 · DINOv3", "Conditional probe only after account-level gated access and applicable model terms are cleared; otherwise record blocked with no download/use."],
- ["Candidate 4/10 · RETFound-MAE", "Verify access, exact MAE checkpoint, weight terms, upstream obligations and hash before probing."],
- ["Candidate 5/10 · RETFound-DINOv2", "Verify access, exact DINOv2 checkpoint, weight terms, upstream obligations and hash before probing."],
- ["Candidate 6/10 · RETFound-DINOv3", "Probe only if gated access is granted and exact checkpoint plus inherited DINOv3 terms are documented; otherwise mark blocked."],
- ["Candidate 7/10 · VisionFM", "Internal noncommercial research probe only under the checkpoint restrictions; do not redistribute weights or present as a clinical decision service."],
- ["Candidate 8/10 · UrFound", "Verify official checkpoint availability, exact weight terms and source obligations; probe only if cleared."],
- ["Candidate 9/10 · OPENEye-FM", "Check exact checkpoint and source-specific restrictions. Pretraining overlap means any result is exploratory, not independent transfer evidence."],
- ["Candidate 10/10 · RETFound-Green", "Read and record the model-specific checkpoint terms before download/use; do not infer permission from related licenses."],
- ["Select candidates using nested patient-grouped validation", "Compare eligible candidate probes without consulting exposed or reserved test data for selection."],
- ["Adapt leading candidate, part 1", "Masked multi-label training with source-balanced sampling and resumable checkpoints."],
- ["Adapt leading candidate, part 2", "Continue the leading candidate under frozen splits and config; stop if validation deteriorates."],
- ["Adapt leading candidate, part 3", "Track disease-wise and source-wise behavior; preserve error records."],
- ["Adapt leading candidate, part 4", "Complete or stop based on prespecified validation criteria."],
- ["Adapt runner-up, part 1", "Use the same split and evaluation protocol for fair comparison."],
- ["Adapt runner-up, part 2", "Continue only if validation evidence warrants the cost."],
- ["Runner-up stop decision", "Stop repeat variations without consistent validation benefit."],
- ["Quality-supervision ablation", "Use real quality labels only; report disease-specific effects."],
- ["Source-invariance ablation", "Compare with the same model without this component; retain only if validation supports it."],
- ["Paired-view fusion or independent-seed replication", "Use paired fusion only where same-eye pairing is verified; otherwise replicate the leader."],
- ["Freeze candidate, preprocessing and thresholds", "Record model, preprocessing, thresholds and hashes before any final scoring."],
- ["Exploratory Zhejiang transfer check", "Zhejiang was used previously; any rerun is exploratory, not fresh independent confirmation."],
- ["Patient-level uncertainty and error reporting", "Report patient-level intervals and disease/source/quality results only where labels support them."],
- ["Package versioned research inference service", "Package separate supported-condition scores and quality status; label outputs research-only."],
- ["End-to-end service and failure-mode checks", "Check invalid images, auth, network loss, timeouts, restarts and stale results."],
- ["Pull, checksum, safe publish and cloud shutdown", "Publish only permitted code/aggregates; pull private artifacts and delete only Golden Retina resources."],
- ["RETFound-MAE frozen-feature probe", "Authenticated account access is verified. Run the official ViT-L/16 frozen-feature probe on the private L4 under CC BY-NC noncommercial research terms."],
- ["RETFound-MAE partial supervised adaptation", "Fine-tune the last ViT block and task heads on patient-grouped training rows; choose checkpoints using validation only and leave all test rows unopened."]
-];
+let stages=[];
 let data=null,filter='all',selected=1,lastCurrent=null;
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function stateFor(i){const b=(data.blocks||[]).find(x=>x.id===i+1);return b?.status||'planned'}
 function render(){if(!data)return;
+ stages=(data.blocks||[]).map(b=>[b.name||`Block ${b.id}`,b.description||'']);
  const done=(data.blocks||[]).filter(x=>x.status==='complete').length;
- const cur=data.current_block||1;if(lastCurrent!==cur){selected=cur-1;lastCurrent=cur}document.querySelector('#completed').textContent=done;document.querySelector('#plannedTotal').textContent=data.total_blocks||stages.length;document.querySelector('#current').textContent=`${cur} / ${data.total_blocks||stages.length}`;document.querySelector('#currentName').textContent=stages[cur-1]?.[0]||'';
+ const cur=data.current_block||1;if(lastCurrent!==cur){selected=cur-1;lastCurrent=cur}document.querySelector('#completed').textContent=done;document.querySelector('#plannedTotal').textContent=data.total_blocks||stages.length;document.querySelector('#current').textContent=`${cur} / ${data.total_blocks||stages.length}`;document.querySelector('#currentName').textContent=stages[cur-1]?.[0]||'';document.querySelector('#planSummary').textContent=data.plan_summary||'Per-disease retinal model sweep · live status and evidence';
  document.querySelector('#gpu').textContent=data.gpu_status||'Not started';
  const budget=data.budget||{};let spent=Number(budget.spent_try??budget.estimated_spent_try??0);if(budget.accrual_active&&budget.as_of_utc&&Number.isFinite(Number(budget.accrual_rate_try_per_hour))){spent+=Math.max(0,Date.now()-Date.parse(budget.as_of_utc))/3600000*Number(budget.accrual_rate_try_per_hour)}const limit=Number(budget.hard_total_try??budget.hard_ceiling_try??1980),planned=Number(budget.planned_total_try??budget.planned_ceiling_try??1900),reserve=Number(budget.protected_reserve_try??80),pct=limit?Math.min(100,spent/limit*100):0;
  document.querySelector('#budgetValue').textContent=`₺${spent.toFixed(2)} / ₺${limit.toLocaleString('en-US')}`;

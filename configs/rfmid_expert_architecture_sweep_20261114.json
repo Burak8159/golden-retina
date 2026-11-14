@@ -1,0 +1,236 @@
+{
+  "dataset": "ctmedtech/RFMID",
+  "revision": "16ee0cf528e9cb6ec38a6d7b1f3e4580172bc1da",
+  "input_modality": "color fundus image",
+  "primary_support_rule": {
+    "minimum_train_positive": 30,
+    "minimum_train_negative": 30,
+    "minimum_validation_positive": 10,
+    "minimum_test_positive_for_final_report": 10
+  },
+  "candidate_architectures": {
+    "DR": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "ARMD": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "DN": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "MYA": [
+      "efficientnet_b0",
+      "convnext_tiny"
+    ],
+    "BRVO": [
+      "efficientnet_b0",
+      "convnext_tiny"
+    ],
+    "ODC": [
+      "resnet50",
+      "convnext_tiny"
+    ],
+    "ODP": [
+      "resnet50",
+      "convnext_tiny"
+    ],
+    "ODE": [
+      "resnet50",
+      "convnext_tiny"
+    ],
+    "TSLN": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "LS": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "CSR": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "RS": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "CRS": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "CRVO": [
+      "efficientnet_b0",
+      "convnext_tiny"
+    ],
+    "ERM": [
+      "convnext_tiny",
+      "dinov2_vits14"
+    ],
+    "MS": [
+      "efficientnet_b0",
+      "convnext_tiny"
+    ],
+    "RT": [
+      "resnet50",
+      "convnext_tiny"
+    ]
+  },
+  "selection": "Choose the per-target architecture by validation AUROC only. Evaluate only the selected checkpoint on the official test split; this split is not a sealed independent clinical cohort.",
+  "caveat": "Specialist outputs are source-defined findings, not clinical diagnoses; dataset labels and model outputs do not establish capability on the Golden Retina camera.",
+  "target_display": {
+    "CRVO": "Central retinal vein occlusion label (low support)",
+    "ERM": "Epiretinal membrane appearance label (low support)",
+    "MS": "Macular scar finding (low support; not multiple sclerosis)",
+    "RT": "Retinal traction finding (low support; OCT preferred for extent)"
+  },
+  "positive_image_support": {
+    "DR": [
+      376,
+      132,
+      124
+    ],
+    "ARMD": [
+      100,
+      38,
+      31
+    ],
+    "DN": [
+      138,
+      46,
+      46
+    ],
+    "MYA": [
+      101,
+      34,
+      32
+    ],
+    "BRVO": [
+      73,
+      23,
+      23
+    ],
+    "ODC": [
+      282,
+      72,
+      91
+    ],
+    "ODP": [
+      65,
+      26,
+      24
+    ],
+    "ODE": [
+      58,
+      21,
+      17
+    ],
+    "TSLN": [
+      186,
+      65,
+      53
+    ],
+    "LS": [
+      47,
+      17,
+      15
+    ],
+    "CSR": [
+      37,
+      11,
+      13
+    ],
+    "RS": [
+      43,
+      14,
+      14
+    ],
+    "CRS": [
+      32,
+      11,
+      11
+    ],
+    "CRVO": [
+      28,
+      8,
+      9
+    ],
+    "ERM": [
+      14,
+      7,
+      5
+    ],
+    "MS": [
+      15,
+      5,
+      7
+    ],
+    "RT": [
+      14,
+      6,
+      5
+    ]
+  },
+  "support_count_order": [
+    "train",
+    "validation",
+    "test"
+  ],
+  "planned_sweep": {
+    "maximum_wall_seconds": 18000,
+    "per_candidate_training_seconds": 420,
+    "candidate_count": 34,
+    "selection": "Validation AUROC only within each target; test evaluated once for the selected architecture if sweep budget remains."
+  },
+  "support_gate_by_target": {
+    "CRVO": {
+      "tier": "exploratory_low_support",
+      "minimum_train_positive": 10,
+      "minimum_train_negative": 30,
+      "minimum_validation_positive": 5,
+      "minimum_test_positive": 5
+    },
+    "ERM": {
+      "tier": "exploratory_low_support",
+      "minimum_train_positive": 10,
+      "minimum_train_negative": 30,
+      "minimum_validation_positive": 5,
+      "minimum_test_positive": 5
+    },
+    "MS": {
+      "tier": "exploratory_low_support",
+      "minimum_train_positive": 10,
+      "minimum_train_negative": 30,
+      "minimum_validation_positive": 5,
+      "minimum_test_positive": 5
+    },
+    "RT": {
+      "tier": "exploratory_low_support",
+      "minimum_train_positive": 10,
+      "minimum_train_negative": 30,
+      "minimum_validation_positive": 5,
+      "minimum_test_positive": 5
+    }
+  },
+  "target_tier": {
+    "DR": "primary_support",
+    "ARMD": "primary_support",
+    "DN": "primary_support",
+    "MYA": "primary_support",
+    "BRVO": "primary_support",
+    "ODC": "primary_support",
+    "ODP": "primary_support",
+    "ODE": "primary_support",
+    "TSLN": "primary_support",
+    "LS": "primary_support",
+    "CSR": "primary_support",
+    "RS": "primary_support",
+    "CRS": "primary_support",
+    "CRVO": "exploratory_low_support",
+    "ERM": "exploratory_low_support",
+    "MS": "exploratory_low_support",
+    "RT": "exploratory_low_support"
+  }
+}

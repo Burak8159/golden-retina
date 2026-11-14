@@ -1,0 +1,1652 @@
+{
+  "project": "Golden Retina",
+  "plan": "Camera-only disease screening research from dilated color fundus images captured through the project camera and 28D lens; exclude specialized modalities and systemic diagnoses.",
+  "plan_summary": "17 active RFMiD disease/finding targets + separate historical HYGD GON evidence + MH visibility · 34 planned specialist candidates + one DR DINOv2 validation-only recovery",
+  "total_blocks": 32,
+  "planned_work_hours": null,
+  "time_cap_hours": null,
+  "current_block": 31,
+  "blocks": [
+    {
+      "id": 1,
+      "name": "Project, storage and GPU preflight",
+      "description": "Inspect Golden Retina checkout, verify no active VM conflicts, inspect L4 quota, budget model and the newly mounted external SSD.",
+      "status": "complete",
+      "status_label": "Complete · safe isolated compute path verified",
+      "evidence": "Golden Retina-only g2-standard-4 L4 is running in us-west1-a; no unrelated VM/resource was touched. Estimated spend is shown live with delayed invoice caveat."
+    },
+    {
+      "id": 2,
+      "name": "Acquire broad, labeled retinal datasets",
+      "description": "Audit RFMiD fundus labels against the camera + 28D device envelope; document a broad dilated-exam disease list and eliminate non-visible/specialized-modality tasks before training.",
+      "status": "complete",
+      "status_label": "Complete · pinned RFMiD acquisition and camera-scope audit",
+      "evidence": "Pinned HF revision downloaded: 3,200 fundus images (7,987,571,148 bytes) and official train/validation/test labels; Disease_Risk excluded from disease heads."
+    },
+    {
+      "id": 3,
+      "name": "Audit labels, supports, patients and overlap",
+      "description": "Validate joins and classes, compute per-label positive counts, hash images, detect cross-split duplicates and freeze safe train/validation/test manifests before any training.",
+      "status": "complete",
+      "status_label": "Complete · image-level manifests frozen; patient separation unavailable",
+      "evidence": "SHA-256 audit found zero exact duplicate image files across the 3,200 images. Numeric IDs are split-local and reused. Patient IDs are absent; only official image-level splits are frozen, so evidence remains development-only."
+    },
+    {
+      "id": 4,
+      "name": "Prepare reproducible multi-task trainers",
+      "description": "Prepare support-aware multi-label and one-disease fundus trainers for the camera + 28D input contract; retain per-label support and distinguish diseases from findings.",
+      "status": "complete",
+      "status_label": "Complete · reproducible camera-only trainers staged on L4",
+      "evidence": "Support-aware multi-label baseline and one-disease specialist trainer are syntax-checked and transferred; exact RFMiD revision and split support are recorded. No OCT task is included."
+    },
+    {
+      "id": 5,
+      "name": "ConvNeXt-Tiny fundus baseline",
+      "description": "Train support-aware RFMiD multi-label ConvNeXt-Tiny baseline on the official splits; freeze from validation and keep test for one final evaluation.",
+      "status": "complete",
+      "status_label": "Complete · best checkpoint epoch 16; one official image-split test pass",
+      "evidence": "ConvNeXt-Tiny run completed 21 epochs within its 60-minute cap; checkpoint selected using validation. Official RFMiD image-split test: macro AUROC 0.9461, macro AP 0.5387, mean label accuracy 72.72%. Patient independence is unverified; aggregate is not clinical validation."
+    },
+    {
+      "id": 6,
+      "name": "Diabetic retinopathy (DR) · DR",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9281; sensitivity 0.8629; specificity 0.9438; auroc 0.9754; average_precision 0.9203; missed positive images 17/124. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 7,
+      "name": "Age-related macular degeneration label (ARMD) · ARMD",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9484; sensitivity 0.7419; specificity 0.9589; auroc 0.9538; average_precision 0.6746; missed positive images 8/31. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 8,
+      "name": "Drusen finding (DN) · DN",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9297; sensitivity 0.0217; specificity 1.0000; auroc 0.8109; average_precision 0.2832; missed positive images 45/46. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 9,
+      "name": "Myopic fundus appearance (MYA) · MYA",
+      "description": "Train disease/finding-specific full-field experts: efficientnet_b0 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9719; sensitivity 1.0000; specificity 0.9704; auroc 0.9955; average_precision 0.8910; missed positive images 0/32. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 10,
+      "name": "Branch retinal vein occlusion (BRVO) · BRVO",
+      "description": "Train disease/finding-specific full-field experts: efficientnet_b0 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9563; sensitivity 0.7826; specificity 0.9627; auroc 0.9115; average_precision 0.5931; missed positive images 5/23. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 11,
+      "name": "Optic-disc cupping finding (ODC) · ODC",
+      "description": "Train disease/finding-specific full-field experts: resnet50 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.8922; sensitivity 0.4066; specificity 0.9727; auroc 0.9162; average_precision 0.6830; missed positive images 54/91. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 12,
+      "name": "Optic-disc pallor finding (ODP) · ODP",
+      "description": "Train disease/finding-specific full-field experts: resnet50 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · resnet50 selected; one image-split test",
+      "evidence": "Validation selected resnet50; one RFMiD image-split test at threshold 0.5: accuracy 0.9625; sensitivity 0.0000; specificity 1.0000; auroc 0.7587; average_precision 0.1283; missed positive images 24/24. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 13,
+      "name": "Optic-disc edema finding (ODE) · ODE",
+      "description": "Train disease/finding-specific full-field experts: resnet50 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9781; sensitivity 0.8235; specificity 0.9823; auroc 0.9523; average_precision 0.7877; missed positive images 3/17. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 14,
+      "name": "Retinal tessellation (TSLN) · TSLN",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9281; sensitivity 0.5849; specificity 0.9591; auroc 0.9510; average_precision 0.6034; missed positive images 22/53. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 15,
+      "name": "Retinal laser-scar finding (LS) · LS",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9812; sensitivity 0.3333; specificity 0.9968; auroc 0.9025; average_precision 0.3541; missed positive images 10/15. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 16,
+      "name": "Central serous retinopathy label (CSR) · CSR",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9766; sensitivity 0.9231; specificity 0.9777; auroc 0.9942; average_precision 0.8226; missed positive images 1/13. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 17,
+      "name": "Retinitis finding (RS) · RS",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9750; sensitivity 0.5000; specificity 0.9856; auroc 0.9623; average_precision 0.5258; missed positive images 7/14. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 18,
+      "name": "Chorioretinitis finding (CRS) · CRS",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥30 train positives and ≥10 validation/test positives.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9828; sensitivity 0.0000; specificity 1.0000; auroc 0.8955; average_precision 0.1683; missed positive images 11/11. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 19,
+      "name": "Central retinal vein occlusion (CRVO) · Central retinal vein occlusion label (low support)",
+      "description": "Train disease/finding-specific full-field experts: efficientnet_b0 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥10 train positives and ≥5 validation/test positives; exploratory only.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9766; sensitivity 0.7778; specificity 0.9794; auroc 0.9826; average_precision 0.7501; missed positive images 2/9. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 20,
+      "name": "Epiretinal membrane appearance (ERM) · Epiretinal membrane appearance label (low support)",
+      "description": "Train disease/finding-specific full-field experts: convnext_tiny vs dinov2_vits14. Select by validation AUROC, then one image-level test pass; gate: ≥10 train positives and ≥5 validation/test positives; exploratory only.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9922; sensitivity 0.0000; specificity 1.0000; auroc 0.8317; average_precision 0.2172; missed positive images 5/5. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 21,
+      "name": "Macular scar finding (MS) · Macular scar finding (low support; not multiple sclerosis)",
+      "description": "Train disease/finding-specific full-field experts: efficientnet_b0 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥10 train positives and ≥5 validation/test positives; exploratory only.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9844; sensitivity 0.2857; specificity 0.9921; auroc 0.8934; average_precision 0.2276; missed positive images 5/7. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 22,
+      "name": "Retinal traction finding (RT) · Retinal traction finding (low support; OCT preferred for extent)",
+      "description": "Train disease/finding-specific full-field experts: resnet50 vs convnext_tiny. Select by validation AUROC, then one image-level test pass; gate: ≥10 train positives and ≥5 validation/test positives; exploratory only.",
+      "status": "complete",
+      "status_label": "Complete · convnext_tiny selected; one image-split test",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9938; sensitivity 0.2000; specificity 1.0000; auroc 0.9318; average_precision 0.5192; missed positive images 4/5. Image-level result; patient independence and clinical validity are not established."
+    },
+    {
+      "id": 23,
+      "name": "Media haze / fundus visibility (MH; quality signal)",
+      "description": "Review the multi-label baseline output for RFMiD media haze separately as a visibility/quality signal; do not present it as a disease classifier or cataract diagnosis.",
+      "status": "complete",
+      "status_label": "Complete · baseline MH visibility head evaluated",
+      "evidence": "Multi-label baseline MH test (n=640, positives=104): accuracy 0.952, sensitivity 0.865, specificity 0.968, AUROC 0.971, misses 14/104. Visibility/quality signal only, not cataract diagnosis."
+    },
+    {
+      "id": 24,
+      "name": "Glaucoma suspect / GON · HYGD historical model evidence",
+      "description": "Register existing RETFound-MAE ViT-L/16 internal validation result as a separate GON task. This is prior development evidence, not part of the active RFMiD sweep and not an independent test.",
+      "status": "complete",
+      "status_label": "Complete · existing GON result separately registered; no new test",
+      "evidence": "RETFound-MAE ViT-L/16 internal validation: accuracy 96.00%, sensitivity 94.74%, specificity 100.00%, AUROC 0.9779, AUPRC 0.9943 (n=125, 95 positive). No test rows were loaded; not external or clinical validation."
+    },
+    {
+      "id": 25,
+      "name": "DR DINOv2 recovery · validation-only",
+      "description": "Retry the DR DINOv2 candidate after fixing the project venv ABI mismatch. The DR official test was already consumed, so this recovery uses train and validation only; it cannot replace or be compared as a fresh test result.",
+      "status": "complete",
+      "status_label": "Complete · validation-only recovery; candidate not selected",
+      "evidence": "DINOv2-S/14 recovery best validation AUROC 0.8973 at epoch 3, vs selected ConvNeXt-Tiny validation AUROC 0.9618. At threshold 0.5, recovery validation sensitivity 26.5%, specificity 99.4%. DR test was not rerun."
+    },
+    {
+      "id": 26,
+      "name": "Consolidate per-target architecture selections",
+      "description": "Summarize validation-only winner and single official image-split test result for each eligible disease/finding; retain failed or incomplete candidates.",
+      "status": "complete",
+      "status_label": "Complete · evidence recorded",
+      "evidence": "All 17 RFMiD targets have a validation-selected architecture and exactly one official image-split test result; DR DINOv2 recovery is logged separately and is validation-only. Low-support targets retain exploratory status."
+    },
+    {
+      "id": 27,
+      "name": "Per-disease metrics and uncertainty review",
+      "description": "Report support, sensitivity, specificity, AUROC/AUPRC, accuracy and confusion counts for each target; flag low support and missing metrics.",
+      "status": "complete",
+      "status_label": "Complete · evidence recorded",
+      "evidence": "Per-target accuracy, sensitivity, specificity, AUROC, average precision, confusion counts, positive support and image-level Wilson 95% intervals are present in per_disease_metrics.csv. Patient-cluster intervals are unavailable because IDs are absent; results are not aggregated into a misleading single disease accuracy."
+    },
+    {
+      "id": 28,
+      "name": "Build modality-aware model registry",
+      "description": "Record task wording, input modality, source, architecture, checkpoint hash and evidence boundary for every model.",
+      "status": "complete",
+      "status_label": "Complete · evidence recorded",
+      "evidence": "Modality-aware registry records target wording, candidate and selected models, data/split support, checkpoint hashes, test metrics, patient-ID availability, camera validation, and clinical eligibility=false. DR DINOv2 recovery is separately labeled validation-only and did not replace ConvNeXt."
+    },
+    {
+      "id": 29,
+      "name": "Package trainers, configs and run cards",
+      "description": "Prepare reproducible inference/training entry points and safe aggregate reports; exclude raw images and row-level records.",
+      "status": "complete",
+      "status_label": "Complete · source package and release scope audited",
+      "evidence": "Trainers, model configs, tracker, iOS/Android demo sources, technical note, partner brief, aggregate metrics, registry, and run summaries are present. Raw images, row-level outputs, and checkpoint files are excluded from Git staging; local research checkpoints are retained separately."
+    },
+    {
+      "id": 30,
+      "name": "Pull and verify VM artifacts",
+      "description": "Copy needed models, logs and summaries to local project storage; verify each transfer with SHA-256 before shutdown.",
+      "status": "complete",
+      "status_label": "Complete · 139 artifacts pulled and hash-verified",
+      "evidence": "Remote archive SHA-256 matched after transfer (3b413a611d448f2b40fad11134025f2fb5eaee9d2b1e9d2aebbd1dc0c8a771cb); all 139 listed files verified after extraction. Full experiment outputs and checkpoints are local under results/expert_sweep; checkpoint files remain Git-ignored."
+    },
+    {
+      "id": 31,
+      "name": "Commit and push safe project files",
+      "description": "Stage only current disease-scope code, tracker, configs, documentation and permitted aggregates; inspect staged diff and remote result.",
+      "status": "active",
+      "status_label": "In progress · safe source/results publication",
+      "evidence": "Reviewing exact staged paths and diff; publish code, documentation, and permitted aggregate summaries only. Model weights, raw images, and row-level outputs remain local/excluded."
+    },
+    {
+      "id": 32,
+      "name": "Stop Golden Retina VM and verify cloud closeout",
+      "description": "Stop only the named Golden Retina L4 and confirm it is stopped; leave unrelated cloud resources untouched.",
+      "status": "planned",
+      "status_label": "Queued · scoped cloud stop after push",
+      "evidence": "Stop only the Golden Retina L4 instance after the commit is verified remotely, then confirm TERMINATED and stop budget accrual."
+    }
+  ],
+  "gate_title": "Image-split research training underway; independent clinical validation remains open",
+  "gate_detail": "The camera-scope/label audit is complete. Seventeen RFMiD disease or finding targets are listed individually; unsupported labels remain untrained. The official split is image-level with no patient identifiers, so the current work is development evidence only.",
+  "gpu_status": "Golden Retina L4 running · disease sweep process not detected; inspect before closeout · RTX unused",
+  "evidence": [
+    "NEI describes dilation as enabling retinal and optic-nerve inspection and screening for DR, glaucoma and AMD; the camera still captures only its actual field of view.",
+    "RFMiD is a 3,200-image, 46-condition multi-label fundus dataset from three cameras with expert consensus labels; patient-level separation is not established by the official image-level split.",
+    "OCTDL was removed from this camera-only training route; its OCT diagnoses cannot count as outputs from camera + 28D images.",
+    "Existing DR/GON results remain separate historical research evidence. In this run, the RFMiD multi-label ConvNeXt baseline has completed one image-split test pass; per-disease specialists are now training.",
+    "Audited RFMiD positive supports: DR 376/132/124; ARMD 100/38/31; DN 138/46/46; MYA 101/34/32; BRVO 73/23/23; ODC 282/72/91; ODP 65/26/24; ODE 58/21/17; CSR 37/11/13, train/validation/test.",
+    "RFMiD audit: 3,200 images, 7,987,571,148 bytes, zero exact duplicate-content groups; patient IDs absent; `Disease_Risk` excluded from disease heads.",
+    "Model scope correction: all staged RFMiD trainers use full-field fundus images. No macula/disc crop is claimed because RFMiD supplies no ROI coordinates and no localization detector was validated.",
+    "ConvNeXt-Tiny validation at epoch 3: macro AUROC 0.8637 and macro AP 0.3641 across train-support-qualified RFMiD labels. The official image split does not establish patient independence.",
+    "DINOv2-Small public checkpoint cached on the L4 at model revision ed25f3a31f01632728cabb09d1542f84ab7b0056; it was fine-tuned for ARMD, but its validation AUROC (0.8636) was below ConvNeXt-Tiny (0.9630), so it was not selected. This is a target-specific image-split development comparison.",
+    "ConvNeXt-Tiny epoch 21 validation: macro AUROC 0.9408 and macro AP 0.5973; best observed validation remains epoch 16 (0.9452 / 0.6022).",
+    "RFMiD baseline test pass completed after validation-based checkpoint selection: macro AUROC 0.9461, macro AP 0.5387, mean label accuracy 72.72%. RFMiD IDs do not establish patient independence.",
+    "Per-label baseline metrics were extracted from the RFMiD image-split test summary for all 17 specialist targets plus MH visibility; see aggregate/rfmid_convnext_multilabel_baseline_summary.json. Accuracy is threshold-0.5 and can be inflated by class imbalance; sensitivity, specificity, AUROC, AP and misses are shown alongside it.",
+    "DR specialist: ConvNeXt-Tiny test result 92.81% accuracy / 86.29% sensitivity / 94.38% specificity at 0.5, AUROC 0.9754, AP 0.9203; 17/124 misses. DINOv2 initial DR attempt failed from ABI mismatch; environment repaired for subsequent targets. The test has been consumed and will not be reused for the DR recovery.",
+    "ARMD specialist: validation selected ConvNeXt-Tiny over DINOv2-Small (AUROC 0.9630 vs 0.8636); one official image-split test pass: accuracy 94.84%, sensitivity 74.19%, specificity 95.89%, AUROC 0.9538, AP 0.6746; 8/31 positive images missed. Patient independence is unavailable.",
+    "Per-target ConvNeXt-Tiny baseline table saved at results/disease_expansion_20261114/aggregate/rfmid_baseline_metrics_by_target.csv (18 target/quality rows; aggregate only, no row-level IDs).",
+    "Separate historical GON evidence is now tracked: existing RETFound-MAE ViT-L/16 internal validation accuracy 96.00%, sensitivity 94.74%, specificity 100.00%, AUROC 0.9779, AUPRC 0.9943 (n=125; 95 positive). No test rows were loaded; this is not an external or clinical result.",
+    "DN specialist: validation selected ConvNeXt-Tiny over DINOv2-Small (AUROC 0.7694 vs 0.5651). The single image-split test pass at threshold 0.5 yielded accuracy 92.97%, sensitivity 2.17%, specificity 100.00%, AUROC 0.8109, AP 0.2832; 45/46 positive images missed. No post-test threshold tuning.",
+    "Completed RS artifacts mirrored to the reconnected Extreme SSD and verified against the L4 tar SHA-256 (977455a466a7c29c93d130550853b60894c9b9092ed7c45c3d3449c5fc365883); archive contains both candidate checkpoints, validation summaries/logs, and the selected one-pass test summary. No raw images or row-level prediction exports were included.",
+    "RFMiD DR image-split test at threshold 0.5: accuracy=0.9281, sensitivity=0.8629, specificity=0.9438, auroc=0.9754, average_precision=0.9203; missed positives=17/124; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD ARMD image-split test at threshold 0.5: accuracy=0.9484, sensitivity=0.7419, specificity=0.9589, auroc=0.9538, average_precision=0.6746; missed positives=8/31; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD DN image-split test at threshold 0.5: accuracy=0.9297, sensitivity=0.0217, specificity=1.0000, auroc=0.8109, average_precision=0.2832; missed positives=45/46; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD MYA image-split test at threshold 0.5: accuracy=0.9719, sensitivity=1.0000, specificity=0.9704, auroc=0.9955, average_precision=0.8910; missed positives=0/32; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD BRVO image-split test at threshold 0.5: accuracy=0.9563, sensitivity=0.7826, specificity=0.9627, auroc=0.9115, average_precision=0.5931; missed positives=5/23; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD ODC image-split test at threshold 0.5: accuracy=0.8922, sensitivity=0.4066, specificity=0.9727, auroc=0.9162, average_precision=0.6830; missed positives=54/91; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD ODP image-split test at threshold 0.5: accuracy=0.9625, sensitivity=0.0000, specificity=1.0000, auroc=0.7587, average_precision=0.1283; missed positives=24/24; validation-selected resnet50; patient independence and clinical validity not established.",
+    "RFMiD ODE image-split test at threshold 0.5: accuracy=0.9781, sensitivity=0.8235, specificity=0.9823, auroc=0.9523, average_precision=0.7877; missed positives=3/17; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD TSLN image-split test at threshold 0.5: accuracy=0.9281, sensitivity=0.5849, specificity=0.9591, auroc=0.9510, average_precision=0.6034; missed positives=22/53; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD LS image-split test at threshold 0.5: accuracy=0.9812, sensitivity=0.3333, specificity=0.9968, auroc=0.9025, average_precision=0.3541; missed positives=10/15; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD CSR image-split test at threshold 0.5: accuracy=0.9766, sensitivity=0.9231, specificity=0.9777, auroc=0.9942, average_precision=0.8226; missed positives=1/13; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD RS image-split test at threshold 0.5: accuracy=0.9750, sensitivity=0.5000, specificity=0.9856, auroc=0.9623, average_precision=0.5258; missed positives=7/14; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD CRS image-split test at threshold 0.5: accuracy=0.9828, sensitivity=0.0000, specificity=1.0000, auroc=0.8955, average_precision=0.1683; missed positives=11/11; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD CRVO image-split test at threshold 0.5: accuracy=0.9766, sensitivity=0.7778, specificity=0.9794, auroc=0.9826, average_precision=0.7501; missed positives=2/9; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD ERM image-split test at threshold 0.5: accuracy=0.9922, sensitivity=0.0000, specificity=1.0000, auroc=0.8317, average_precision=0.2172; missed positives=5/5; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD MS image-split test at threshold 0.5: accuracy=0.9844, sensitivity=0.2857, specificity=0.9921, auroc=0.8934, average_precision=0.2276; missed positives=5/7; validation-selected convnext_tiny; patient independence and clinical validity not established.",
+    "RFMiD RT image-split test at threshold 0.5: accuracy=0.9938, sensitivity=0.2000, specificity=1.0000, auroc=0.9318, average_precision=0.5192; missed positives=4/5; validation-selected convnext_tiny; patient independence and clinical validity not established."
+  ],
+  "issues": [
+    {
+      "title": "Camera field and image protocol not validated",
+      "detail": "The intended camera and 28D-lens acquisition protocol has not been evaluated on these public images; deployment-domain transfer is untested.",
+      "status": "active",
+      "next_action": "Test the actual camera protocol on a separately collected and labeled cohort."
+    },
+    {
+      "title": "Patient-level independence cannot be established",
+      "detail": "Exact-duplicate audit found no duplicates, but patient IDs are absent and the official splits are image-level; patient independence cannot be verified.",
+      "status": "active",
+      "next_action": "Obtain a patient-identified cohort or explicitly limit conclusions to image-split development."
+    },
+    {
+      "title": "Rare disease labels may be unsupported",
+      "detail": "Seventeen RFMiD disease/finding targets are individually tiered; a separate prior HYGD GON result is historical only. Other sparse RFMiD labels are not trained because support is inadequate.",
+      "status": "active",
+      "next_action": "The 17-target sweep is complete. Keep low-support labels exploratory and seek a patient-identified independent cohort for stronger evaluation."
+    },
+    {
+      "title": "Many clinical diagnoses need unavailable modalities",
+      "detail": "Corneal topography, slit lamp, OCT and systemic measurements are outside the camera + 28D input contract.",
+      "status": "resolved",
+      "next_action": "Keep explicit no-go list; no OCTDL metrics in the camera-only model."
+    },
+    {
+      "title": "Clinical use is not established",
+      "detail": "These public-data experiments do not establish clinical validity, intended-use performance, or real-world benefit.",
+      "status": "active",
+      "next_action": "Keep all outputs research-only pending appropriate external and prospective evaluation."
+    },
+    {
+      "title": "DINOv2 runtime mismatch on initial DR candidate",
+      "detail": "Initial DINOv2 attempt failed because the project venv had an incompatible torchaudio build. Installed the matching torchaudio build only inside the project venv and verified the pinned DINOv2 checkpoint loads offline.",
+      "status": "resolved",
+      "next_action": "Resolved. Recovery completed using train/validation only; it did not exceed ConvNeXt validation AUROC and did not access DR test data."
+    }
+  ],
+  "budget": {
+    "spent_try": null,
+    "estimated_spent_try": 214.45,
+    "planned_total_try": 1900,
+    "hard_total_try": 1980,
+    "protected_reserve_try": 80,
+    "display_label": "Estimated L4 runtime at public on-demand rate; invoice may lag; excludes unrelated resources",
+    "accrual_active": true,
+    "as_of_utc": "2026-11-14T12:12:16Z",
+    "accrual_rate_try_per_hour": 35.6
+  },
+  "current_block_estimate": "Inspect and push scoped release, verify GitHub commit, then stop only the Golden Retina L4 and confirm cloud closeout.",
+  "current_stage_steps": [
+    {
+      "title": "Train DR candidate: convnext_tiny",
+      "status": "complete",
+      "status_label": "Validation summary saved",
+      "evidence": "Validation AUROC 0.9618."
+    },
+    {
+      "title": "Train DR candidate: dinov2_vits14",
+      "status": "active",
+      "status_label": "Training on L4",
+      "evidence": "Train/validation only; test remains closed during selection."
+    },
+    {
+      "title": "Select DR model on validation",
+      "status": "planned",
+      "status_label": "Queued",
+      "evidence": "Validation AUROC only; selected convnext_tiny (0.9618)."
+    },
+    {
+      "title": "Evaluate selected DR model once",
+      "status": "planned",
+      "status_label": "Queued",
+      "evidence": "No threshold tuning on test; report misses with specificity and accuracy."
+    }
+  ],
+  "run_limits": [
+    {
+      "title": "Planned spend",
+      "value": "₺1,900",
+      "detail": "Regular compute and transfer ceiling."
+    },
+    {
+      "title": "Protected overhead",
+      "value": "₺80",
+      "detail": "Contingency reserve; not planned operating spend."
+    },
+    {
+      "title": "Hard total cap",
+      "value": "₺1,980",
+      "detail": "Absolute spend ceiling; estimated spend is not a settled invoice."
+    },
+    {
+      "title": "Wall-clock cap",
+      "value": "No separate time cap",
+      "detail": "Continue within the ₺1,900 planned ceiling; the ₺80 reserve remains protected. Stop only for a safety/access gate or budget boundary. Keep the final closeout sequence in the plan."
+    },
+    {
+      "title": "Compute isolation",
+      "value": "One Golden Retina L4 only",
+      "detail": "RTX unused; do not start, stop, or modify unrelated or Conrad resources."
+    }
+  ],
+  "disease_scope": [
+    {
+      "name": "Diabetic retinopathy grade / referable DR",
+      "dataset_modality": "Color fundus · DDR, DeepDRiD, DRTiD, RFMiD",
+      "status": "supported",
+      "status_label": "Retain · disease-specific grading task",
+      "candidate_architecture": "Full-field binary ConvNeXt-Tiny vs DINOv2 ViT-S/14; separate grading task remains outside this RFMiD sweep",
+      "notes": "RFMiD support: 376 train / 132 validation / 124 test positives. Separate DR grading workflows exist, but RFMiD grade semantics differ."
+    },
+    {
+      "name": "AMD / drusen / macular pigment and atrophy findings",
+      "dataset_modality": "Color fundus · RFMiD ARMD/DN and related findings",
+      "status": "supported",
+      "status_label": "Retain · separate ARMD and drusen finding targets",
+      "candidate_architecture": "Full-field ConvNeXt-Tiny vs DINOv2 ViT-S/14; crop deferred without validated localization",
+      "notes": "RFMiD ARMD support 100/38/31; DN drusen support 138/46/46. Train separate ARMD/drusen tasks; do not equate drusen with AMD."
+    },
+    {
+      "name": "Glaucomatous optic-disc appearance / GON suspect",
+      "dataset_modality": "Color fundus · HYGD and RFMiD disc findings",
+      "status": "supported",
+      "status_label": "Retain as suspect/finding, not definitive glaucoma",
+      "candidate_architecture": "Full-field ConvNeXt-Tiny vs DINOv2; crop deferred without validated disc localization",
+      "notes": "RFMiD ODC support 282/72/91 positives; HYGD has a separate GON task. Disc image is only a suspect signal, not a diagnosis."
+    },
+    {
+      "name": "Retinal vascular occlusions and hemorrhagic retinopathy signs",
+      "dataset_modality": "Color fundus · RFMiD BRVO/CRVO/BRAO/CRAO/HR; low-support labels likely",
+      "status": "conditional",
+      "status_label": "Conditional · train only if support threshold is met",
+      "candidate_architecture": "Full-field EfficientNet-B0 / ConvNeXt-Tiny vs DINOv2 candidate; lesion crops deferred",
+      "notes": "RFMiD BRVO support 73/23/23 (primary tier); CRVO 28/8/9 (low-support exploratory); BRAO 2/2/0 and CRAO 2/2/0 untrained. No acute occlusion rule-out claim."
+    },
+    {
+      "name": "Pathologic myopia, RP, ERM, CSR, macular-hole and scar findings",
+      "dataset_modality": "Color fundus · RFMiD MYA/RP/ERM/CSR/MH/MHL/LS/MS/PTCR/CRS",
+      "status": "conditional",
+      "status_label": "Conditional · finding-level outputs; rare labels exploratory",
+      "candidate_architecture": "Full-field ConvNeXt-Tiny; compare DINOv2 only on same split",
+      "notes": "MYA 101/34/32 primary; ERM 14/7/5 low-support exploratory; CSR 37/11/13 primary; MS 15/5/7 and RT 14/6/5 low-support exploratory; MHL 11/3/3 and RP 6/2/2 untrained."
+    },
+    {
+      "name": "Disc edema, pallor, cupping and other optic-nerve findings",
+      "dataset_modality": "Color fundus · RFMiD ODE/ODP/ODC/AION-related labels",
+      "status": "conditional",
+      "status_label": "Conditional · finding-only and clinician review",
+      "candidate_architecture": "Full-field ResNet-50 optic-disc finding tasks; no localized crop labels",
+      "notes": "RFMiD ODE 58/21/17, ODP 65/26/24, ODC 282/72/91. Image-level findings only; causes cannot be determined from one photograph."
+    },
+    {
+      "name": "Retinal detachment, tear, lattice and peripheral holes",
+      "dataset_modality": "Peripheral retina · planned camera field not verified as complete",
+      "status": "out_of_scope",
+      "status_label": "No-go for camera-only rule-out",
+      "candidate_architecture": "None selected",
+      "notes": "No verified retinal-detachment column in the audited RFMiD label CSV; peripheral capture is not guaranteed."
+    },
+    {
+      "name": "DME / macular edema / macular traction as definitive diagnoses",
+      "dataset_modality": "Color fundus may show clues; OCT excluded from device input",
+      "status": "out_of_scope",
+      "status_label": "No-go as definitive classification on this device",
+      "candidate_architecture": "None; only nonspecific visible macular-abnormality flag may be explored",
+      "notes": "No OCT in device input; no definitive edema model. DME/OCTDL is excluded from this camera-only run."
+    },
+    {
+      "name": "Cataract / media opacity",
+      "dataset_modality": "Anterior segment; fundus image may only be degraded",
+      "status": "out_of_scope",
+      "status_label": "No-go as disease diagnosis; image-quality gate only",
+      "candidate_architecture": "Media-haze/visibility signal only if source label is retained; no cataract or separate quality model trained in this run",
+      "notes": "No anterior-segment image in the current input contract."
+    },
+    {
+      "name": "Keratitis, corneal ulcer, corneal dystrophy, corneal edema",
+      "dataset_modality": "Cornea/anterior segment · slit lamp or anterior imaging required",
+      "status": "out_of_scope",
+      "status_label": "Absolute no-go",
+      "candidate_architecture": "None",
+      "notes": "Not visible in the posterior fundus camera path."
+    },
+    {
+      "name": "Keratoconus",
+      "dataset_modality": "Corneal shape · topography/tomography required",
+      "status": "out_of_scope",
+      "status_label": "Absolute no-go",
+      "candidate_architecture": "None",
+      "notes": "Example explicitly excluded by the camera + 28D-only constraint."
+    },
+    {
+      "name": "Dry eye, blepharitis, conjunctivitis, anterior uveitis, hyphema",
+      "dataset_modality": "External/anterior segment · slit lamp and symptoms",
+      "status": "out_of_scope",
+      "status_label": "Absolute no-go",
+      "candidate_architecture": "None",
+      "notes": "Not classifiable from a fundus image."
+    },
+    {
+      "name": "Nephropathy and systemic disease",
+      "dataset_modality": "Laboratory/systemic data; retinal findings are indirect",
+      "status": "out_of_scope",
+      "status_label": "Absolute no-go",
+      "candidate_architecture": "None",
+      "notes": "Not an eye disease and not diagnosable from the planned image."
+    },
+    {
+      "name": "ROP, inherited disease subtype, optic neuritis, endophthalmitis, ocular tumor",
+      "dataset_modality": "Specialized pediatric imaging, clinical context, multimodal tests or examination",
+      "status": "out_of_scope",
+      "status_label": "No-go for this cohort/device run",
+      "candidate_architecture": "None selected",
+      "notes": "Visible clues do not validate disease-specific detection; no suitable supported cohort is staged."
+    },
+    {
+      "name": "RFMiD other source-defined labels (e.g. tortuous vessels, shunt, exudation, pigment changes, vitreous/preretinal hemorrhage, vasculitis)",
+      "dataset_modality": "Color fundus · RFMiD exact columns",
+      "status": "conditional",
+      "status_label": "Keep in inventory; train/report only support-eligible labels",
+      "candidate_architecture": "Full-field ConvNeXt-Tiny or DINOv2 head selected on validation only",
+      "notes": "Full audited label supports are in the disease-scope document. Several targets have 0–6 training positives; the trainer masks heads below 10 positives or negatives."
+    }
+  ],
+  "last_update_utc": "2026-11-14T12:12:16Z",
+  "updated_at": "2026-11-14T12:12:16Z",
+  "completed_blocks": 30,
+  "disease_model_assignments": [
+    {
+      "target": "DR",
+      "display": "DR",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        376,
+        132,
+        124
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 124,
+        "negative": 516,
+        "train_positive": 376,
+        "accuracy_at_0_5": 0.946875,
+        "sensitivity_at_0_5": 0.9354838709677419,
+        "specificity_at_0_5": 0.9496124031007752,
+        "auroc": 0.982737871967992,
+        "average_precision": 0.9414245947827363,
+        "confusion": {
+          "tp": 116,
+          "tn": 490,
+          "fp": 26,
+          "fn": 8
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "ConvNeXt candidate completed; DINOv2 candidate failed initial runtime; retry queued validation-only"
+    },
+    {
+      "target": "ARMD",
+      "display": "ARMD",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        100,
+        38,
+        31
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 31,
+        "negative": 609,
+        "train_positive": 100,
+        "accuracy_at_0_5": 0.959375,
+        "sensitivity_at_0_5": 0.6451612903225806,
+        "specificity_at_0_5": 0.9753694581280788,
+        "auroc": 0.959849568303406,
+        "average_precision": 0.6264422630871217,
+        "confusion": {
+          "tp": 20,
+          "tn": 594,
+          "fp": 15,
+          "fn": 11
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "ConvNeXt candidate completed; DINOv2 candidate in progress; test pending"
+    },
+    {
+      "target": "DN",
+      "display": "DN",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        138,
+        46,
+        46
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 46,
+        "negative": 594,
+        "train_positive": 138,
+        "accuracy_at_0_5": 0.9015625,
+        "sensitivity_at_0_5": 0.5652173913043478,
+        "specificity_at_0_5": 0.9276094276094277,
+        "auroc": 0.8782389108476065,
+        "average_precision": 0.5402295400669263,
+        "confusion": {
+          "tp": 26,
+          "tn": 551,
+          "fp": 43,
+          "fn": 20
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "MYA",
+      "display": "MYA",
+      "candidate_architectures": [
+        "efficientnet_b0",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        101,
+        34,
+        32
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 32,
+        "negative": 608,
+        "train_positive": 101,
+        "accuracy_at_0_5": 0.9890625,
+        "sensitivity_at_0_5": 0.84375,
+        "specificity_at_0_5": 0.9967105263157895,
+        "auroc": 0.9939350328947368,
+        "average_precision": 0.9399903890513248,
+        "confusion": {
+          "tp": 27,
+          "tn": 606,
+          "fp": 2,
+          "fn": 5
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "BRVO",
+      "display": "BRVO",
+      "candidate_architectures": [
+        "efficientnet_b0",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        73,
+        23,
+        23
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 23,
+        "negative": 617,
+        "train_positive": 73,
+        "accuracy_at_0_5": 0.98125,
+        "sensitivity_at_0_5": 0.7391304347826086,
+        "specificity_at_0_5": 0.9902755267423015,
+        "auroc": 0.9448241843421887,
+        "average_precision": 0.8062935119769251,
+        "confusion": {
+          "tp": 17,
+          "tn": 611,
+          "fp": 6,
+          "fn": 6
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "ODC",
+      "display": "ODC",
+      "candidate_architectures": [
+        "resnet50",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        282,
+        72,
+        91
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 91,
+        "negative": 549,
+        "train_positive": 282,
+        "accuracy_at_0_5": 0.8984375,
+        "sensitivity_at_0_5": 0.5714285714285714,
+        "specificity_at_0_5": 0.9526411657559198,
+        "auroc": 0.9170619908324826,
+        "average_precision": 0.7050250414417342,
+        "confusion": {
+          "tp": 52,
+          "tn": 523,
+          "fp": 26,
+          "fn": 39
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "ODP",
+      "display": "ODP",
+      "candidate_architectures": [
+        "resnet50",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        65,
+        26,
+        24
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 24,
+        "negative": 616,
+        "train_positive": 65,
+        "accuracy_at_0_5": 0.9609375,
+        "sensitivity_at_0_5": 0.25,
+        "specificity_at_0_5": 0.9886363636363636,
+        "auroc": 0.8831507034632035,
+        "average_precision": 0.302850318861507,
+        "confusion": {
+          "tp": 6,
+          "tn": 609,
+          "fp": 7,
+          "fn": 18
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "ODE",
+      "display": "ODE",
+      "candidate_architectures": [
+        "resnet50",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        58,
+        21,
+        17
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 17,
+        "negative": 623,
+        "train_positive": 58,
+        "accuracy_at_0_5": 0.9890625,
+        "sensitivity_at_0_5": 0.7058823529411765,
+        "specificity_at_0_5": 0.9967897271268058,
+        "auroc": 0.9441034840902653,
+        "average_precision": 0.7593431165825332,
+        "confusion": {
+          "tp": 12,
+          "tn": 621,
+          "fp": 2,
+          "fn": 5
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "TSLN",
+      "display": "TSLN",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        186,
+        65,
+        53
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 53,
+        "negative": 587,
+        "train_positive": 186,
+        "accuracy_at_0_5": 0.9484375,
+        "sensitivity_at_0_5": 0.7924528301886793,
+        "specificity_at_0_5": 0.9625212947189097,
+        "auroc": 0.9686927453312333,
+        "average_precision": 0.7273215734427156,
+        "confusion": {
+          "tp": 42,
+          "tn": 565,
+          "fp": 22,
+          "fn": 11
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "LS",
+      "display": "LS",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        47,
+        17,
+        15
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 15,
+        "negative": 625,
+        "train_positive": 47,
+        "accuracy_at_0_5": 0.9890625,
+        "sensitivity_at_0_5": 0.6,
+        "specificity_at_0_5": 0.9984,
+        "auroc": 0.9434133333333333,
+        "average_precision": 0.7523670090258325,
+        "confusion": {
+          "tp": 9,
+          "tn": 624,
+          "fp": 1,
+          "fn": 6
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "CSR",
+      "display": "CSR",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        37,
+        11,
+        13
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 13,
+        "negative": 627,
+        "train_positive": 37,
+        "accuracy_at_0_5": 0.9828125,
+        "sensitivity_at_0_5": 0.6153846153846154,
+        "specificity_at_0_5": 0.9904306220095693,
+        "auroc": 0.9825788246840879,
+        "average_precision": 0.6207101177528199,
+        "confusion": {
+          "tp": 8,
+          "tn": 621,
+          "fp": 6,
+          "fn": 5
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "RS",
+      "display": "RS",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        43,
+        14,
+        14
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 14,
+        "negative": 626,
+        "train_positive": 43,
+        "accuracy_at_0_5": 0.9875,
+        "sensitivity_at_0_5": 0.7142857142857143,
+        "specificity_at_0_5": 0.9936102236421726,
+        "auroc": 0.9766088544043816,
+        "average_precision": 0.6866946778711485,
+        "confusion": {
+          "tp": 10,
+          "tn": 622,
+          "fp": 4,
+          "fn": 4
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "CRS",
+      "display": "CRS",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        32,
+        11,
+        11
+      ],
+      "tier": "primary_support",
+      "support_gate": {
+        "minimum_train_positive": 30,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 10,
+        "minimum_test_positive_for_final_report": 10
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 11,
+        "negative": 629,
+        "train_positive": 32,
+        "accuracy_at_0_5": 0.9828125,
+        "sensitivity_at_0_5": 0.2727272727272727,
+        "specificity_at_0_5": 0.9952305246422893,
+        "auroc": 0.944861974273739,
+        "average_precision": 0.4188734813868425,
+        "confusion": {
+          "tp": 3,
+          "tn": 626,
+          "fp": 3,
+          "fn": 8
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "CRVO",
+      "display": "Central retinal vein occlusion label (low support)",
+      "candidate_architectures": [
+        "efficientnet_b0",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        28,
+        8,
+        9
+      ],
+      "tier": "exploratory_low_support",
+      "support_gate": {
+        "tier": "exploratory_low_support",
+        "minimum_train_positive": 10,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 5,
+        "minimum_test_positive": 5
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 9,
+        "negative": 631,
+        "train_positive": 28,
+        "accuracy_at_0_5": 0.9921875,
+        "sensitivity_at_0_5": 0.6666666666666666,
+        "specificity_at_0_5": 0.9968304278922345,
+        "auroc": 0.9889064976228209,
+        "average_precision": 0.8022446689113355,
+        "confusion": {
+          "tp": 6,
+          "tn": 629,
+          "fp": 2,
+          "fn": 3
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "ERM",
+      "display": "Epiretinal membrane appearance label (low support)",
+      "candidate_architectures": [
+        "convnext_tiny",
+        "dinov2_vits14"
+      ],
+      "positive_image_support": [
+        14,
+        7,
+        5
+      ],
+      "tier": "exploratory_low_support",
+      "support_gate": {
+        "tier": "exploratory_low_support",
+        "minimum_train_positive": 10,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 5,
+        "minimum_test_positive": 5
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 5,
+        "negative": 635,
+        "train_positive": 14,
+        "accuracy_at_0_5": 0.990625,
+        "sensitivity_at_0_5": 0.2,
+        "specificity_at_0_5": 0.9968503937007874,
+        "auroc": 0.8374803149606299,
+        "average_precision": 0.25004776743481577,
+        "confusion": {
+          "tp": 1,
+          "tn": 633,
+          "fp": 2,
+          "fn": 4
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "MS",
+      "display": "Macular scar finding (low support; not multiple sclerosis)",
+      "candidate_architectures": [
+        "efficientnet_b0",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        15,
+        5,
+        7
+      ],
+      "tier": "exploratory_low_support",
+      "support_gate": {
+        "tier": "exploratory_low_support",
+        "minimum_train_positive": 10,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 5,
+        "minimum_test_positive": 5
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 7,
+        "negative": 633,
+        "train_positive": 15,
+        "accuracy_at_0_5": 0.984375,
+        "sensitivity_at_0_5": 0.0,
+        "specificity_at_0_5": 0.995260663507109,
+        "auroc": 0.9361317986910404,
+        "average_precision": 0.14485990200275914,
+        "confusion": {
+          "tp": 0,
+          "tn": 630,
+          "fp": 3,
+          "fn": 7
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "RT",
+      "display": "Retinal traction finding (low support; OCT preferred for extent)",
+      "candidate_architectures": [
+        "resnet50",
+        "convnext_tiny"
+      ],
+      "positive_image_support": [
+        14,
+        6,
+        5
+      ],
+      "tier": "exploratory_low_support",
+      "support_gate": {
+        "tier": "exploratory_low_support",
+        "minimum_train_positive": 10,
+        "minimum_train_negative": 30,
+        "minimum_validation_positive": 5,
+        "minimum_test_positive": 5
+      },
+      "baseline_metrics": {
+        "n": 640,
+        "positive": 5,
+        "negative": 635,
+        "train_positive": 14,
+        "accuracy_at_0_5": 0.9921875,
+        "sensitivity_at_0_5": 0.0,
+        "specificity_at_0_5": 1.0,
+        "auroc": 0.9748031496062992,
+        "average_precision": 0.4197592361975924,
+        "confusion": {
+          "tp": 0,
+          "tn": 635,
+          "fp": 0,
+          "fn": 5
+        },
+        "included_in_supported_macro": true
+      },
+      "selection": "Validation AUROC only; one official image-split test for the selected candidate.",
+      "evidence_status": "Per-disease baseline measured; specialist candidate comparison pending"
+    },
+    {
+      "target": "HYGD_GON",
+      "display": "Glaucoma suspect / GON (HYGD; historical)",
+      "label_source": "HYGD historical model",
+      "candidate_architectures": [
+        "RETFound-MAE ViT-L/16 (existing model)"
+      ],
+      "support_note": "Internal validation only: 95 positive / 30 negative images (n=125); no test rows were loaded.",
+      "tier": "historical_internal_validation",
+      "selection": "Historical result only; not part of the active RFMiD specialist sweep.",
+      "evidence_status": "Historical model result · internal validation only",
+      "specialist_evidence": "Existing RETFound-MAE ViT-L/16 HYGD GON validation: accuracy 96.00%, sensitivity 94.74%, specificity 100.00%, AUROC 0.9779, AUPRC 0.9943 (125 images; 95 positive / 30 negative). No test rows were loaded; not an independent or clinical result."
+    }
+  ],
+  "per_disease_baseline_metrics": {
+    "DR": {
+      "n": 640,
+      "positive": 124,
+      "negative": 516,
+      "train_positive": 376,
+      "accuracy_at_0_5": 0.946875,
+      "sensitivity_at_0_5": 0.9354838709677419,
+      "specificity_at_0_5": 0.9496124031007752,
+      "auroc": 0.982737871967992,
+      "average_precision": 0.9414245947827363,
+      "confusion": {
+        "tp": 116,
+        "tn": 490,
+        "fp": 26,
+        "fn": 8
+      },
+      "included_in_supported_macro": true
+    },
+    "ARMD": {
+      "n": 640,
+      "positive": 31,
+      "negative": 609,
+      "train_positive": 100,
+      "accuracy_at_0_5": 0.959375,
+      "sensitivity_at_0_5": 0.6451612903225806,
+      "specificity_at_0_5": 0.9753694581280788,
+      "auroc": 0.959849568303406,
+      "average_precision": 0.6264422630871217,
+      "confusion": {
+        "tp": 20,
+        "tn": 594,
+        "fp": 15,
+        "fn": 11
+      },
+      "included_in_supported_macro": true
+    },
+    "DN": {
+      "n": 640,
+      "positive": 46,
+      "negative": 594,
+      "train_positive": 138,
+      "accuracy_at_0_5": 0.9015625,
+      "sensitivity_at_0_5": 0.5652173913043478,
+      "specificity_at_0_5": 0.9276094276094277,
+      "auroc": 0.8782389108476065,
+      "average_precision": 0.5402295400669263,
+      "confusion": {
+        "tp": 26,
+        "tn": 551,
+        "fp": 43,
+        "fn": 20
+      },
+      "included_in_supported_macro": true
+    },
+    "MYA": {
+      "n": 640,
+      "positive": 32,
+      "negative": 608,
+      "train_positive": 101,
+      "accuracy_at_0_5": 0.9890625,
+      "sensitivity_at_0_5": 0.84375,
+      "specificity_at_0_5": 0.9967105263157895,
+      "auroc": 0.9939350328947368,
+      "average_precision": 0.9399903890513248,
+      "confusion": {
+        "tp": 27,
+        "tn": 606,
+        "fp": 2,
+        "fn": 5
+      },
+      "included_in_supported_macro": true
+    },
+    "BRVO": {
+      "n": 640,
+      "positive": 23,
+      "negative": 617,
+      "train_positive": 73,
+      "accuracy_at_0_5": 0.98125,
+      "sensitivity_at_0_5": 0.7391304347826086,
+      "specificity_at_0_5": 0.9902755267423015,
+      "auroc": 0.9448241843421887,
+      "average_precision": 0.8062935119769251,
+      "confusion": {
+        "tp": 17,
+        "tn": 611,
+        "fp": 6,
+        "fn": 6
+      },
+      "included_in_supported_macro": true
+    },
+    "ODC": {
+      "n": 640,
+      "positive": 91,
+      "negative": 549,
+      "train_positive": 282,
+      "accuracy_at_0_5": 0.8984375,
+      "sensitivity_at_0_5": 0.5714285714285714,
+      "specificity_at_0_5": 0.9526411657559198,
+      "auroc": 0.9170619908324826,
+      "average_precision": 0.7050250414417342,
+      "confusion": {
+        "tp": 52,
+        "tn": 523,
+        "fp": 26,
+        "fn": 39
+      },
+      "included_in_supported_macro": true
+    },
+    "ODP": {
+      "n": 640,
+      "positive": 24,
+      "negative": 616,
+      "train_positive": 65,
+      "accuracy_at_0_5": 0.9609375,
+      "sensitivity_at_0_5": 0.25,
+      "specificity_at_0_5": 0.9886363636363636,
+      "auroc": 0.8831507034632035,
+      "average_precision": 0.302850318861507,
+      "confusion": {
+        "tp": 6,
+        "tn": 609,
+        "fp": 7,
+        "fn": 18
+      },
+      "included_in_supported_macro": true
+    },
+    "ODE": {
+      "n": 640,
+      "positive": 17,
+      "negative": 623,
+      "train_positive": 58,
+      "accuracy_at_0_5": 0.9890625,
+      "sensitivity_at_0_5": 0.7058823529411765,
+      "specificity_at_0_5": 0.9967897271268058,
+      "auroc": 0.9441034840902653,
+      "average_precision": 0.7593431165825332,
+      "confusion": {
+        "tp": 12,
+        "tn": 621,
+        "fp": 2,
+        "fn": 5
+      },
+      "included_in_supported_macro": true
+    },
+    "TSLN": {
+      "n": 640,
+      "positive": 53,
+      "negative": 587,
+      "train_positive": 186,
+      "accuracy_at_0_5": 0.9484375,
+      "sensitivity_at_0_5": 0.7924528301886793,
+      "specificity_at_0_5": 0.9625212947189097,
+      "auroc": 0.9686927453312333,
+      "average_precision": 0.7273215734427156,
+      "confusion": {
+        "tp": 42,
+        "tn": 565,
+        "fp": 22,
+        "fn": 11
+      },
+      "included_in_supported_macro": true
+    },
+    "LS": {
+      "n": 640,
+      "positive": 15,
+      "negative": 625,
+      "train_positive": 47,
+      "accuracy_at_0_5": 0.9890625,
+      "sensitivity_at_0_5": 0.6,
+      "specificity_at_0_5": 0.9984,
+      "auroc": 0.9434133333333333,
+      "average_precision": 0.7523670090258325,
+      "confusion": {
+        "tp": 9,
+        "tn": 624,
+        "fp": 1,
+        "fn": 6
+      },
+      "included_in_supported_macro": true
+    },
+    "CSR": {
+      "n": 640,
+      "positive": 13,
+      "negative": 627,
+      "train_positive": 37,
+      "accuracy_at_0_5": 0.9828125,
+      "sensitivity_at_0_5": 0.6153846153846154,
+      "specificity_at_0_5": 0.9904306220095693,
+      "auroc": 0.9825788246840879,
+      "average_precision": 0.6207101177528199,
+      "confusion": {
+        "tp": 8,
+        "tn": 621,
+        "fp": 6,
+        "fn": 5
+      },
+      "included_in_supported_macro": true
+    },
+    "RS": {
+      "n": 640,
+      "positive": 14,
+      "negative": 626,
+      "train_positive": 43,
+      "accuracy_at_0_5": 0.9875,
+      "sensitivity_at_0_5": 0.7142857142857143,
+      "specificity_at_0_5": 0.9936102236421726,
+      "auroc": 0.9766088544043816,
+      "average_precision": 0.6866946778711485,
+      "confusion": {
+        "tp": 10,
+        "tn": 622,
+        "fp": 4,
+        "fn": 4
+      },
+      "included_in_supported_macro": true
+    },
+    "CRS": {
+      "n": 640,
+      "positive": 11,
+      "negative": 629,
+      "train_positive": 32,
+      "accuracy_at_0_5": 0.9828125,
+      "sensitivity_at_0_5": 0.2727272727272727,
+      "specificity_at_0_5": 0.9952305246422893,
+      "auroc": 0.944861974273739,
+      "average_precision": 0.4188734813868425,
+      "confusion": {
+        "tp": 3,
+        "tn": 626,
+        "fp": 3,
+        "fn": 8
+      },
+      "included_in_supported_macro": true
+    },
+    "CRVO": {
+      "n": 640,
+      "positive": 9,
+      "negative": 631,
+      "train_positive": 28,
+      "accuracy_at_0_5": 0.9921875,
+      "sensitivity_at_0_5": 0.6666666666666666,
+      "specificity_at_0_5": 0.9968304278922345,
+      "auroc": 0.9889064976228209,
+      "average_precision": 0.8022446689113355,
+      "confusion": {
+        "tp": 6,
+        "tn": 629,
+        "fp": 2,
+        "fn": 3
+      },
+      "included_in_supported_macro": true
+    },
+    "ERM": {
+      "n": 640,
+      "positive": 5,
+      "negative": 635,
+      "train_positive": 14,
+      "accuracy_at_0_5": 0.990625,
+      "sensitivity_at_0_5": 0.2,
+      "specificity_at_0_5": 0.9968503937007874,
+      "auroc": 0.8374803149606299,
+      "average_precision": 0.25004776743481577,
+      "confusion": {
+        "tp": 1,
+        "tn": 633,
+        "fp": 2,
+        "fn": 4
+      },
+      "included_in_supported_macro": true
+    },
+    "MS": {
+      "n": 640,
+      "positive": 7,
+      "negative": 633,
+      "train_positive": 15,
+      "accuracy_at_0_5": 0.984375,
+      "sensitivity_at_0_5": 0.0,
+      "specificity_at_0_5": 0.995260663507109,
+      "auroc": 0.9361317986910404,
+      "average_precision": 0.14485990200275914,
+      "confusion": {
+        "tp": 0,
+        "tn": 630,
+        "fp": 3,
+        "fn": 7
+      },
+      "included_in_supported_macro": true
+    },
+    "RT": {
+      "n": 640,
+      "positive": 5,
+      "negative": 635,
+      "train_positive": 14,
+      "accuracy_at_0_5": 0.9921875,
+      "sensitivity_at_0_5": 0.0,
+      "specificity_at_0_5": 1.0,
+      "auroc": 0.9748031496062992,
+      "average_precision": 0.4197592361975924,
+      "confusion": {
+        "tp": 0,
+        "tn": 635,
+        "fp": 0,
+        "fn": 5
+      },
+      "included_in_supported_macro": true
+    },
+    "MH": {
+      "n": 640,
+      "positive": 104,
+      "negative": 536,
+      "train_positive": 317,
+      "accuracy_at_0_5": 0.9515625,
+      "sensitivity_at_0_5": 0.8653846153846154,
+      "specificity_at_0_5": 0.9682835820895522,
+      "auroc": 0.9707860935706085,
+      "average_precision": 0.900461786687974,
+      "confusion": {
+        "tp": 90,
+        "tn": 519,
+        "fp": 17,
+        "fn": 14
+      },
+      "included_in_supported_macro": true
+    }
+  },
+  "per_disease_specialist_status": {
+    "DR": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9281; sensitivity 0.8629; specificity 0.9438; auroc 0.9754; average_precision 0.9203; missed positive images 17/124. Image-level result; patient independence and clinical validity are not established."
+    },
+    "ARMD": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9484; sensitivity 0.7419; specificity 0.9589; auroc 0.9538; average_precision 0.6746; missed positive images 8/31. Image-level result; patient independence and clinical validity are not established."
+    },
+    "DN": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9297; sensitivity 0.0217; specificity 1.0000; auroc 0.8109; average_precision 0.2832; missed positive images 45/46. Image-level result; patient independence and clinical validity are not established."
+    },
+    "MYA": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9719; sensitivity 1.0000; specificity 0.9704; auroc 0.9955; average_precision 0.8910; missed positive images 0/32. Image-level result; patient independence and clinical validity are not established."
+    },
+    "BRVO": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9563; sensitivity 0.7826; specificity 0.9627; auroc 0.9115; average_precision 0.5931; missed positive images 5/23. Image-level result; patient independence and clinical validity are not established."
+    },
+    "ODC": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.8922; sensitivity 0.4066; specificity 0.9727; auroc 0.9162; average_precision 0.6830; missed positive images 54/91. Image-level result; patient independence and clinical validity are not established."
+    },
+    "ODP": {
+      "status": "test_complete",
+      "status_label": "Test complete · resnet50 selected on validation",
+      "evidence": "Validation selected resnet50; one RFMiD image-split test at threshold 0.5: accuracy 0.9625; sensitivity 0.0000; specificity 1.0000; auroc 0.7587; average_precision 0.1283; missed positive images 24/24. Image-level result; patient independence and clinical validity are not established."
+    },
+    "ODE": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9781; sensitivity 0.8235; specificity 0.9823; auroc 0.9523; average_precision 0.7877; missed positive images 3/17. Image-level result; patient independence and clinical validity are not established."
+    },
+    "TSLN": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9281; sensitivity 0.5849; specificity 0.9591; auroc 0.9510; average_precision 0.6034; missed positive images 22/53. Image-level result; patient independence and clinical validity are not established."
+    },
+    "LS": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9812; sensitivity 0.3333; specificity 0.9968; auroc 0.9025; average_precision 0.3541; missed positive images 10/15. Image-level result; patient independence and clinical validity are not established."
+    },
+    "CSR": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9766; sensitivity 0.9231; specificity 0.9777; auroc 0.9942; average_precision 0.8226; missed positive images 1/13. Image-level result; patient independence and clinical validity are not established."
+    },
+    "RS": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9750; sensitivity 0.5000; specificity 0.9856; auroc 0.9623; average_precision 0.5258; missed positive images 7/14. Image-level result; patient independence and clinical validity are not established."
+    },
+    "CRS": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9828; sensitivity 0.0000; specificity 1.0000; auroc 0.8955; average_precision 0.1683; missed positive images 11/11. Image-level result; patient independence and clinical validity are not established."
+    },
+    "CRVO": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9766; sensitivity 0.7778; specificity 0.9794; auroc 0.9826; average_precision 0.7501; missed positive images 2/9. Image-level result; patient independence and clinical validity are not established."
+    },
+    "ERM": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9922; sensitivity 0.0000; specificity 1.0000; auroc 0.8317; average_precision 0.2172; missed positive images 5/5. Image-level result; patient independence and clinical validity are not established."
+    },
+    "MS": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9844; sensitivity 0.2857; specificity 0.9921; auroc 0.8934; average_precision 0.2276; missed positive images 5/7. Image-level result; patient independence and clinical validity are not established."
+    },
+    "RT": {
+      "status": "test_complete",
+      "status_label": "Test complete · convnext_tiny selected on validation",
+      "evidence": "Validation selected convnext_tiny; one RFMiD image-split test at threshold 0.5: accuracy 0.9938; sensitivity 0.2000; specificity 1.0000; auroc 0.9318; average_precision 0.5192; missed positive images 4/5. Image-level result; patient independence and clinical validity are not established."
+    },
+    "HYGD_GON": {
+      "status": "historical_internal_validation",
+      "status_label": "Historical model result · internal validation only",
+      "evidence": "Existing RETFound-MAE ViT-L/16 HYGD GON validation: accuracy 96.00%, sensitivity 94.74%, specificity 100.00%, AUROC 0.9779, AUPRC 0.9943 (125 images; 95 positive / 30 negative). No test rows were loaded; not an independent or clinical result."
+    }
+  }
+}

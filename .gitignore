@@ -17,6 +17,10 @@ external/model_cache/
 *.onnx
 !eye_finding_ai/artifacts/eye_pupil_unet.pt
 *_rtx_patch.zip
+results/remote_closeout_20261114/
+results/expert_sweep/**/*.log
+results/expert_sweep/launcher.pid
+results/dr_dinov2_validation_recovery/
 
 # Restricted or bulky datasets
 external/

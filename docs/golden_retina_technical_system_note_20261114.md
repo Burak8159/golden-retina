@@ -3,7 +3,7 @@
 ## Technical system note
 
 **Snapshot date:** 14 November 2026
-**Evidence snapshot:** 14 November 2026, 10:31 UTC. Twelve disease/finding specialists have completed one held-out image-split test pass; CRS DINOv2 training is in progress; four low-support targets remain queued.
+**Evidence snapshot:** 14 November 2026, 12:09 UTC. All 17 disease/finding specialists have completed one held-out image-split test pass. The separate DR DINOv2 recovery is validation-only and does not reopen the DR test split. Patient-level independence and intended-device validity remain unverified.
 **Status:** Research and development. Not a clinically validated diagnostic system.
 
 ## 1. Executive summary
@@ -87,12 +87,17 @@ The CNNs use the corresponding TorchVision default ImageNet weights. DINOv2 uses
 - **Maximum epochs:** 25. Training is also bounded to 420 seconds per candidate in the current sweep; early stopping occurs after five consecutive epochs without validation-AUROC improvement.
 - **Checkpoint rule:** retain the epoch with the best validation AUROC. The architecture winner is the candidate with the larger validation AUROC for that target.
 - **Test policy:** evaluate only the validation-selected checkpoint once on the official image test split. Test performance is not used to choose architectures, epochs, or thresholds.
+
 - **Reported operating threshold:** fixed score threshold `0.5`; no clinical calibration or test-set threshold search is claimed.
 - **Software/hardware:** the run card records Torch `2.9.1+cu129`, TorchVision `0.24.1+cu129`, and the L4 execution environment. Candidate checkpoints and per-run summaries contain the detailed provenance and SHA-256 values.
 
+### 4.3 DR DINOv2 validation-only recovery
+
+After correcting the runtime mismatch, a separate DINOv2-S/14 DR candidate was trained for three epochs using training and validation data only. Its best validation AUROC was 0.8973 at epoch 3, below the previously selected ConvNeXt-Tiny validation AUROC of 0.9618. At the fixed 0.5 threshold, the recovery validation sensitivity was 26.5% and specificity was 99.4%. This candidate was not selected and was not evaluated on the DR test split; the original ConvNeXt test result remains the sole reported DR test result. The run summary and checkpoint hash are recorded separately in the registry.
+
 ## 5. Snapshot results
 
-The following values are for the single selected specialist per completed target, on the RFMiD official **image-level** test split, at threshold 0.5. `Misses` is the count of positive test images classified below threshold. AUROC and average precision use continuous sigmoid scores. No patient-cluster confidence intervals are available because patient IDs are absent.
+The following values are for the single validation-selected specialist per target, on the RFMiD official **image-level** test split, at threshold 0.5. `Misses` is the count of positive test images classified below threshold. AUROC and average precision use continuous sigmoid scores. No patient-cluster confidence intervals are available because patient IDs are absent.
 
 | Target | Validation-selected model | Test positive images | Accuracy | Sensitivity | Specificity | AUROC | AP | Misses / positive |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
@@ -107,13 +112,20 @@ The following values are for the single selected specialist per completed target
 | TSLN | ConvNeXt-Tiny | 53 | 92.81% | 58.49% | 95.91% | 0.9510 | 0.6034 | 22 / 53 |
 | LS | ConvNeXt-Tiny | 15 | 98.12% | 33.33% | 99.68% | 0.9025 | 0.3541 | 10 / 15 |
 | CSR | ConvNeXt-Tiny | 13 | 97.66% | 92.31% | 97.77% | 0.9942 | 0.8226 | 1 / 13 |
+| CRS | ConvNeXt-Tiny | 11 | 98.28% | 0.00% | 100.00% | 0.8955 | 0.1683 | 11 / 11 |
 | RS | ConvNeXt-Tiny | 14 | 97.50% | 50.00% | 98.56% | 0.9623 | 0.5258 | 7 / 14 |
+| CRVO | ConvNeXt-Tiny | 9 | 97.66% | 77.78% | 97.94% | 0.9826 | 0.7501 | 2 / 9 |
+| ERM | ConvNeXt-Tiny | 5 | 99.22% | 0.00% | 100.00% | 0.8317 | 0.2172 | 5 / 5 |
+| MS (macular scar) | ConvNeXt-Tiny | 7 | 98.44% | 28.57% | 99.21% | 0.8934 | 0.2276 | 5 / 7 |
+| RT (retinal traction) | ConvNeXt-Tiny | 5 | 99.38% | 20.00% | 100.00% | 0.9318 | 0.5192 | 4 / 5 |
+
+Image-level 95% Wilson intervals for accuracy, sensitivity, and specificity are in [`results/expert_sweep/per_disease_metrics.csv`](../results/expert_sweep/per_disease_metrics.csv). They quantify image-sample uncertainty only; patient-cluster uncertainty cannot be estimated without patient identifiers.
 
 ### 5.1 Interpretation
 
-Accuracy alone is particularly misleading for rare findings. DN achieved 92.97% accuracy while missing 45 of 46 positive images; ODP achieved 96.25% accuracy while missing all 24 positive images. These are failure results, not successful screening performance. MYA's 0/32 misses and CSR's 1/13 misses are small image counts and do not establish a low clinical miss risk. The metrics also depend on the RFMiD image prevalence and do not estimate real-world predictive value.
+Accuracy alone is particularly misleading for rare findings. DN achieved 92.97% accuracy while missing 45 of 46 positive images; ODP achieved 96.25% accuracy while missing all 24 positive images; CRS achieved 98.28% accuracy while missing all 11 positive images; ERM achieved 99.22% accuracy while missing all five positive images; and macular-scar MS achieved 98.44% accuracy while missing five of seven positive images; RT achieved 99.38% accuracy while missing four of five positive images. These are failure or weak-sensitivity results, not successful screening performance. MYA's 0/32 misses and CSR's 1/13 misses are small image counts and do not establish a low clinical miss risk. The metrics also depend on RFMiD image prevalence and do not estimate real-world predictive value.
 
-The model sweep is still in progress. At this snapshot, CRS is training; the four low-support targets remain to be analyzed under their exploratory tier; the validation-only DR DINOv2 recovery, consolidated uncertainty review, model registry, packaging, artifact pull, safe GitHub publication, and Golden Retina cloud shutdown are not yet complete. Results must be refreshed from the final run summary before using this note as a final experiment report.
+The 17-target sweep and its one-pass image-split evaluations are complete. A separate DR DINOv2 recovery was trained on train/validation data only because the DR test split had already been consumed. Its validation AUROC (0.8973) was below the selected ConvNeXt-Tiny (0.9618), so it did not replace the selected model and was not tested. Consolidated results are available in the linked CSV and registry. Artifact pull, safe GitHub publication, and Golden Retina cloud shutdown are tracked separately. The rare-support CRVO and ERM/MS/RT estimates remain exploratory, especially where the test split has fewer than ten positive images.
 
 ## 6. Existing non-sweep evidence (kept separate)
 
@@ -132,6 +144,11 @@ The model sweep is still in progress. At this snapshot, CRS is training; the fou
 | `results/expert_sweep/sweep_summary.json` | Target-level candidate selection and test status |
 | `results/expert_sweep/candidates/<target>/<architecture>/` | Per-candidate validation history, summary, and console log |
 | `results/expert_sweep/final_test/<target>/` | One-pass selected-candidate test summary and log |
+| `results/expert_sweep/live_remote_snapshot.json` | Latest aggregate snapshot pulled from the active L4 run; no row-level predictions |
+| `results/expert_sweep/per_disease_metrics.csv` | Per-target support, selected model, test metrics, misses, and image-level Wilson intervals |
+| `results/expert_sweep/research_model_registry.json` | Versioned modality-aware research inventory; clinical-use eligibility is false for every target |
+| `results/expert_sweep/dr_dinov2_validation_recovery_summary.json` | DR DINOv2 validation-only recovery; no test evaluation |
+| `results/artifact_manifest_20261114.sha256` | SHA-256 manifest for remote sweep summaries, logs, and checkpoints after pull |
 | `results/disease_expansion_20261114/status.json` | Tracker snapshot, support tiers, issues, and progress |
 
 Images, model checkpoints, and any row-level outputs are not part of the public source release by default. A release must be limited to code, provenance, aggregate results, and artifacts whose licenses permit redistribution. The official data descriptor and the hosted mirror may have different applicable terms; verify before redistribution.

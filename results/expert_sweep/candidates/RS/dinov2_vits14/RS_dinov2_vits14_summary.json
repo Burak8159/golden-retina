@@ -1,0 +1,113 @@
+{
+  "status": "RFMiD_VALIDATION_SELECTED_CANDIDATE_TEST_NOT_EVALUATED",
+  "target": "RS",
+  "architecture": "dinov2_vits14",
+  "evidence_tier": "primary_support",
+  "support_caution": "Primary-support candidate on image-level splits; not clinical validation.",
+  "pretrained": true,
+  "pretraining_source": "self-supervised DINOv2 checkpoint",
+  "pretrained_model_id": "facebook/dinov2-small",
+  "pretrained_model_revision": "ed25f3a31f01632728cabb09d1542f84ab7b0056",
+  "software_versions": {
+    "torch": "2.9.1+cu129",
+    "torchvision": "0.24.1+cu129"
+  },
+  "input": "color fundus photograph",
+  "input_size": 224,
+  "seed": 20261114,
+  "best_epoch_by_validation_auroc": 3,
+  "best_validation_auroc": 0.8492697398448197,
+  "split_support": {
+    "train": {
+      "positive": 43,
+      "negative": 1877
+    },
+    "valid": {
+      "positive": 14,
+      "negative": 626
+    },
+    "test": {
+      "positive": 14,
+      "negative": 626
+    }
+  },
+  "minimum_train_support": {
+    "positive": 30,
+    "negative": 30
+  },
+  "config": {
+    "optimizer": "AdamW",
+    "learning_rate": 2e-05,
+    "weight_decay": 0.0002,
+    "loss": "BCEWithLogitsLoss with square-root inverse-prevalence weight clipped to [1,10]",
+    "validation_selection": "AUROC; test split is not evaluated during candidate training",
+    "report_threshold": 0.5
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.5345177984486024,
+      "validation": {
+        "n": 640,
+        "positive": 14,
+        "negative": 626,
+        "accuracy_at_0_5": 0.978125,
+        "sensitivity_at_0_5": 0.0,
+        "specificity_at_0_5": 1.0,
+        "auroc": 0.8170926517571885,
+        "average_precision": 0.09249802126505374,
+        "confusion_at_0_5": {
+          "tp": 0,
+          "tn": 626,
+          "fp": 0,
+          "fn": 14
+        }
+      }
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.3005192993208766,
+      "validation": {
+        "n": 640,
+        "positive": 14,
+        "negative": 626,
+        "accuracy_at_0_5": 0.978125,
+        "sensitivity_at_0_5": 0.0,
+        "specificity_at_0_5": 1.0,
+        "auroc": 0.7784116841624829,
+        "average_precision": 0.08228669559149165,
+        "confusion_at_0_5": {
+          "tp": 0,
+          "tn": 626,
+          "fp": 0,
+          "fn": 14
+        }
+      }
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.35170541630814905,
+      "validation": {
+        "n": 640,
+        "positive": 14,
+        "negative": 626,
+        "accuracy_at_0_5": 0.978125,
+        "sensitivity_at_0_5": 0.0,
+        "specificity_at_0_5": 1.0,
+        "auroc": 0.8492697398448197,
+        "average_precision": 0.1649782896553868,
+        "confusion_at_0_5": {
+          "tp": 0,
+          "tn": 626,
+          "fp": 0,
+          "fn": 14
+        }
+      }
+    }
+  ],
+  "test_metrics": null,
+  "patient_independence_verified": false,
+  "image_ids_available": false,
+  "checkpoint_sha256": "f297e7dfc41dc7a7186d290bc5865ebc0d7e6222d0f9e048d343bd28140f0a07",
+  "limitation": "Retrospective public-dataset experiment; not device-matched clinical validation or a clinical diagnosis."
+}

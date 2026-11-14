@@ -37,6 +37,14 @@ specificity 91.8% at the development threshold. These are retrospective
 dataset-split measurements, not evidence of performance in a clinic or on new
 populations. The split's patient-level independence has not been verified.
 
+## Mobile concept apps
+
+Native iOS and Android app concepts demonstrate a guided, fully simulated
+goggles-and-eye-scan journey. They do not capture images, use Bluetooth, call a
+screening model, or produce clinical results. The goggles route remains locked
+until hardware and its connection protocol exist. See the [iOS project](ios/GoldenRetina/README.md)
+and [Android project](android/README.md).
+
 ## Try the Local Research Interface
 
 The RFMiD checkpoint is a local model artifact and is not distributed in this
@@ -75,6 +83,9 @@ Audience-specific project briefs are available: the [technical system note](docs
 documents the current per-disease specialist sweep and its evidence boundaries;
 the [customer and research-partner brief](docs/golden_retina_customer_partner_brief_20261114.md)
 describes the prototype's present capabilities and non-clinical status.
+The [per-disease metrics ledger](results/expert_sweep/per_disease_metrics.csv)
+and [research-model registry](results/expert_sweep/research_model_registry.json)
+are the current aggregate research snapshot. The specialist results are image-split development evidence, not patient-level validation.
 
 ## Impact Path
 
