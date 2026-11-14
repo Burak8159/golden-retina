@@ -53,3 +53,4 @@ paper/*.pdf
 .DS_Store
 .idea/
 .vscode/
+**/xcuserdata/

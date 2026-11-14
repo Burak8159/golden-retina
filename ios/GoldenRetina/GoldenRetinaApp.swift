@@ -160,35 +160,39 @@ struct HomeView: View {
     }
 
     private var hero: some View {
-        ZStack(alignment: .bottomLeading) {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .fill(Color(red: 0.08, green: 0.28, blue: 0.25))
-            RetinaArtwork()
-                .frame(width: 190, height: 190)
-                .opacity(0.95)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .padding(.trailing, 4)
-                .padding(.top, 8)
-                .accessibilityHidden(true)
-            VStack(alignment: .leading, spacing: 10) {
-                Text("A clearer view of eye screening")
-                    .font(.title2.bold())
-                    .foregroundStyle(.white)
-                    .fixedSize(horizontal: false, vertical: true)
-                Text("Follow a simple, step-by-step product demonstration.")
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.84))
-                    .fixedSize(horizontal: false, vertical: true)
-                Label("Guided experience", systemImage: "sparkles")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(BrandColor.mint)
-                    .padding(.top, 3)
+        GeometryReader { geometry in
+            let artworkSize = min(geometry.size.width * 0.36, 154)
+            ZStack(alignment: .leading) {
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(Color(red: 0.08, green: 0.28, blue: 0.25))
+                RetinaArtwork()
+                    .frame(width: artworkSize, height: artworkSize)
+                    .opacity(0.9)
+                    .position(
+                        x: geometry.size.width - artworkSize / 2,
+                        y: geometry.size.height * 0.52
+                    )
+                    .accessibilityHidden(true)
+                VStack(alignment: .leading, spacing: 9) {
+                    Text("A clearer view of eye screening")
+                        .font(.title3.bold())
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text("Follow a simple, step-by-step product demonstration.")
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.84))
+                        .fixedSize(horizontal: false, vertical: true)
+                    Label("Guided experience", systemImage: "sparkles")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(BrandColor.mint)
+                        .padding(.top, 3)
+                }
+                .frame(maxWidth: min(geometry.size.width * 0.56, 205), alignment: .leading)
+                .padding(22)
             }
-            .padding(22)
-            .frame(maxWidth: 245, alignment: .leading)
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         }
         .frame(height: 230)
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
     }
 }
 
@@ -474,6 +478,7 @@ struct RetinaArtwork: View {
             context.stroke(Path(ellipseIn: disc.insetBy(dx: 8, dy: 8)), with: .color(.white.opacity(0.28)), lineWidth: 1)
             let optic = CGPoint(x: center.x - radius * 0.43, y: center.y + radius * 0.14)
             let angles: [CGFloat] = [-1.35, -1.0, -0.68, -0.35, 0.0, 0.42, 0.75, 1.08, 1.38, 1.72, 2.1, 2.45]
+            context.clip(to: Path(ellipseIn: disc))
             for (index, angle) in angles.enumerated() {
                 var path = Path()
                 path.move(to: optic)
