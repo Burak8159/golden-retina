@@ -1219,28 +1219,79 @@ private fun DemoAnalysis() {
 
 @Composable
 private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit, onAnalyze: () -> Unit) {
+    var selectedEye by remember { mutableStateOf(1) }
+    val leftScores = listOf(
+        "Diabetic retinopathy" to .627f,
+        "Age-related macular degeneration" to .149f,
+        "Myopia" to .085f,
+        "Branch retinal vein occlusion" to .051f,
+    )
+    val rightScores = listOf(
+        "Diabetic retinopathy" to .124f,
+        "Age-related macular degeneration" to .087f,
+        "Myopia" to .231f,
+        "Branch retinal vein occlusion" to .042f,
+    )
+    val scores = if (selectedEye == 1) leftScores else rightScores
+    val eyeName = if (selectedEye == 1) "Left" else "Right"
     Column(
         Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(18.dp),
     ) {
         DemoPill()
-        Text("Demo complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text("Sample analysis", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+        Text("A sample report preview", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Text(
-            "The guided scan sequence was simulated. No eye images were captured or analyzed, so this demo does not produce disease classifications or risk percentages.",
+            "These fixed example scores demonstrate the results layout. No eye images were captured or analyzed, and these are not predictions for you.",
             style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+
+        PrimaryTabRow(selectedTabIndex = if (selectedEye == 1) 0 else 1) {
+            Tab(selected = selectedEye == 1, onClick = { selectedEye = 1 }, text = { Text("Left") })
+            Tab(selected = selectedEye == 0, onClick = { selectedEye = 0 }, text = { Text("Right") })
+        }
+        Text(
+            "$eyeName eye · sample model scores",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
+        Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+            Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Retina and macula", fontWeight = FontWeight.SemiBold)
+                        Text("Highest sample score", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Text("${"%.1f".format(scores.maxOf { it.second } * 100)}%", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                }
+                HorizontalDivider()
+                scores.forEach { (condition, score) ->
+                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(condition, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                            Text("${"%.1f".format(score * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                        }
+                        LinearProgressIndicator(progress = { score }, modifier = Modifier.fillMaxWidth().height(5.dp))
+                        Text(
+                            if (score >= .5f) "Positive at research cutoff" else "Negative at research cutoff",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
+        Text(
+            "Sample scores use a 0.50 research cutoff. They are raw model-score examples, not calibrated disease risks or a diagnosis. The real analysis screen runs installed models on an image you select.",
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Button(onClick = onAnalyze, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
             Icon(Icons.Filled.Search, contentDescription = null)
             Spacer(Modifier.width(8.dp))
-            Text("Analyze a fundus image")
+            Text("Analyze your own fundus image")
         }
-        Text(
-            "The on-device model lab runs installed condition-specific research models on an image you select. It displays raw model scores, not calibrated disease risks or a medical diagnosis.",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        Spacer(Modifier.weight(1f))
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedAction("Replay demo", Icons.Filled.Refresh, onReplay, Modifier.weight(1f))
             Button(onClick = onDone, modifier = Modifier.weight(1f).heightIn(min = 52.dp), shape = RoundedCornerShape(16.dp)) { Text("Done") }

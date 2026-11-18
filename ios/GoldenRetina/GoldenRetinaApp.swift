@@ -1382,30 +1382,88 @@ struct DemoResultsView: View {
     let onReplay: () -> Void
     let onDone: () -> Void
     let onAnalyze: () -> Void
+    @State private var selectedEye: String = "Left"
+
+    private let leftScores: [(String, Double)] = [
+        ("Diabetic retinopathy", 0.627),
+        ("Age-related macular degeneration", 0.149),
+        ("Myopia", 0.085),
+        ("Branch retinal vein occlusion", 0.051)
+    ]
+    private let rightScores: [(String, Double)] = [
+        ("Diabetic retinopathy", 0.124),
+        ("Age-related macular degeneration", 0.087),
+        ("Myopia", 0.231),
+        ("Branch retinal vein occlusion", 0.042)
+    ]
+
+    private var scores: [(String, Double)] { selectedEye == "Left" ? leftScores : rightScores }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            DemoBadge()
-            Text("Demo complete").font(.largeTitle.bold())
-            Text("The guided scan sequence was simulated. No eye images were captured or analyzed, so this demo does not produce disease classifications or risk percentages.")
-                .foregroundStyle(.secondary)
-            Button(action: onAnalyze) {
-                Label("Analyze a fundus image", systemImage: "waveform.path.ecg")
-                    .frame(maxWidth: .infinity, minHeight: 52)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                DemoBadge()
+                Text("Sample analysis").font(.largeTitle.bold())
+                Text("A sample report preview")
+                    .font(.title3.weight(.semibold))
+                Text("These fixed example scores demonstrate the results layout. No eye images were captured or analyzed, and these are not predictions for you.")
+                    .font(.subheadline).foregroundStyle(.secondary)
+
+                Picker("Eye", selection: $selectedEye) {
+                    Text("Left").tag("Left")
+                    Text("Right").tag("Right")
+                }
+                .pickerStyle(.segmented)
+
+                VStack(alignment: .leading, spacing: 14) {
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("\(selectedEye) eye")
+                                .font(.headline)
+                            Text("Retina and macula")
+                                .font(.subheadline).foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Text(String(format: "%.1f%%", (scores.map(\.1).max() ?? 0) * 100))
+                            .font(.title3.bold()).monospacedDigit()
+                    }
+                    Divider()
+                    ForEach(scores.indices, id: \.self) { index in
+                        let name = scores[index].0
+                        let score = scores[index].1
+                        VStack(alignment: .leading, spacing: 7) {
+                            HStack(alignment: .firstTextBaseline) {
+                                Text(name).font(.subheadline.weight(.semibold))
+                                Spacer(minLength: 8)
+                                Text(String(format: "%.1f%%", score * 100))
+                                    .font(.subheadline.bold()).monospacedDigit()
+                            }
+                            ProgressView(value: score).tint(BrandColor.green)
+                            Text(score >= 0.5 ? "Positive at research cutoff" : "Negative at research cutoff")
+                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .padding(16)
+                .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 18))
+
+                Text("Sample scores use a 0.50 research cutoff. They are raw model-score examples, not calibrated disease risks or a diagnosis. The real analysis screen runs installed models on an image you select.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                Button(action: onAnalyze) {
+                    Label("Analyze your own fundus image", systemImage: "waveform.path.ecg")
+                        .frame(maxWidth: .infinity, minHeight: 52)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(BrandColor.green)
+                HStack {
+                    Button("Replay demo", action: onReplay).buttonStyle(.bordered)
+                    Spacer()
+                    Button("Done", action: onDone).buttonStyle(.bordered)
+                }
             }
-            .buttonStyle(.borderedProminent)
-            .tint(BrandColor.green)
-            Text("The on-device model lab runs the installed condition-specific research models on an image you select. It displays raw model scores, not calibrated disease risks or a medical diagnosis.")
-                .font(.footnote).foregroundStyle(.secondary)
-            Spacer()
-            HStack {
-                Button("Replay demo", action: onReplay).buttonStyle(.bordered)
-                Spacer()
-                Button("Done", action: onDone).buttonStyle(.bordered)
-            }
+            .padding(24)
+            .frame(maxWidth: 600, alignment: .topLeading)
         }
-        .padding(24)
-        .frame(maxWidth: 600, maxHeight: .infinity, alignment: .topLeading)
         .background(Color(uiColor: .systemGroupedBackground))
     }
 }
