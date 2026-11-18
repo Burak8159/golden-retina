@@ -561,6 +561,26 @@ private fun formatModelSize(bytes: Long): String = when {
 private data class MobileDiseaseScore(val id: String, val value: Float)
 private data class MobileEyeResult(val pupilPixels: Int, val centerX: Double?, val centerY: Double?, val score: Float?)
 
+private data class MobileDiseaseGroup(val name: String, val ids: List<String>)
+
+private object MobileDiseaseCatalog {
+    val coreIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo")
+    val diseaseIds = coreIds + listOf(
+        "rfmid_dn", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls",
+        "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt",
+    )
+    val groups = listOf(
+        MobileDiseaseGroup("Diabetic retinopathy", listOf("rfmid_dr")),
+        MobileDiseaseGroup("Retinal vein occlusions", listOf("rfmid_brvo", "rfmid_crvo")),
+        MobileDiseaseGroup("Macula and central retina", listOf("rfmid_armd", "rfmid_dn", "rfmid_csr", "rfmid_erm", "rfmid_ms")),
+        MobileDiseaseGroup("Optic-disc findings", listOf("rfmid_odc", "rfmid_odp", "rfmid_ode")),
+        MobileDiseaseGroup("Myopia and fundus patterns", listOf("rfmid_mya", "rfmid_tsln")),
+        MobileDiseaseGroup("Chorioretinal inflammation", listOf("rfmid_crs")),
+        MobileDiseaseGroup("Scarring and treatment findings", listOf("rfmid_ls", "rfmid_rs")),
+        MobileDiseaseGroup("Retinal structural findings", listOf("rfmid_rt")),
+    )
+}
+
 @Composable
 private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
     val context = LocalContext.current
@@ -573,7 +593,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
     var leftDiseaseResults by remember { mutableStateOf<List<MobileDiseaseScore>>(emptyList()) }
     var imageTargetEye by remember { mutableStateOf(0) }
     val diseaseResults = if (selectedEye == 0) rightDiseaseResults else leftDiseaseResults
-    var expandedScoreGroups by remember { mutableStateOf(setOf("Retina and macula")) }
+    var expandedScoreGroups by remember { mutableStateOf(setOf("Diabetic retinopathy")) }
     var eyeResult by remember { mutableStateOf<MobileEyeResult?>(null) }
     var running by remember { mutableStateOf(false) }
     var runningDiseaseModels by remember { mutableStateOf(false) }
@@ -601,7 +621,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
             Text("On-device model lab", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         }
-        Text("On-device research classifiers: diabetic retinopathy, age-related macular degeneration, myopia, and branch retinal vein occlusion. No glaucoma classifier is installed.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("17 optional RFMiD research heads in 8 groups. Four are the post-hoc core shortlist; the rest are exploratory and include image findings, not only diseases. Install only the models you need. No glaucoma classifier is installed.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("Images stay on this phone. Add one color fundus photo for each eye; each eye is analyzed separately.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         PrimaryTabRow(selectedTabIndex = if (selectedEye == 0) 1 else 0) {
             Tab(selected = selectedEye == 1, enabled = !running && !loadingImage, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
@@ -647,10 +667,9 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             Text("${if (selectedEye == 0) "Right" else "Left"} eye · per-disease model scores", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
             Text("Research classification uses the model's 0.50 cutoff. Percentages are raw model scores, not calibrated probabilities, patient-risk estimates, or diagnoses. Group values show the highest score for this eye.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        listOf(
-            "Retina and macula" to listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"),
-        ).forEach { (groupName, modelIds) ->
-            val rows = diseaseResults.filter { it.id in modelIds }
+        MobileDiseaseCatalog.groups.forEach { group ->
+            val groupName = group.name
+            val rows = diseaseResults.filter { it.id in group.ids }
             val highest = rows.maxOfOrNull { it.value }
             if (highest != null) {
                 Card(
@@ -671,7 +690,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                                         Text(modelDisplayName(item.id), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                        Text(if (item.value >= 0.5f) "Positive at research cutoff" else "Negative at research cutoff", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text("${if (item.id in MobileDiseaseCatalog.coreIds) "Core shortlist" else "Exploratory head"} · ${if (item.value >= 0.5f) "above" else "below"} 0.50 research cutoff", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                     Text("${"%.1f".format(item.value * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                                 }
@@ -741,7 +760,7 @@ private fun decodeSelectedImage(context: Context, uri: Uri): Bitmap? {
 }
 
 private object MobileResearchInference {
-    val diseaseIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo")
+    val diseaseIds = MobileDiseaseCatalog.diseaseIds
 
     fun availableDiseaseIds(context: Context): List<String> = diseaseIds.filter { id ->
         val version = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).getString("model-version:$id", null)
@@ -1221,16 +1240,18 @@ private fun DemoAnalysis() {
 private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit, onAnalyze: () -> Unit) {
     var selectedEye by remember { mutableStateOf(1) }
     val leftScores = listOf(
-        "Diabetic retinopathy" to .627f,
-        "Age-related macular degeneration" to .149f,
-        "Myopia" to .085f,
-        "Branch retinal vein occlusion" to .051f,
+        "rfmid_dr" to .627f, "rfmid_armd" to .149f, "rfmid_mya" to .085f, "rfmid_brvo" to .051f,
+        "rfmid_dn" to .093f, "rfmid_odc" to .184f, "rfmid_odp" to .061f, "rfmid_ode" to .032f,
+        "rfmid_tsln" to .214f, "rfmid_ls" to .044f, "rfmid_csr" to .072f, "rfmid_rs" to .038f,
+        "rfmid_crs" to .026f, "rfmid_crvo" to .019f, "rfmid_erm" to .058f, "rfmid_ms" to .029f,
+        "rfmid_rt" to .041f,
     )
     val rightScores = listOf(
-        "Diabetic retinopathy" to .124f,
-        "Age-related macular degeneration" to .087f,
-        "Myopia" to .231f,
-        "Branch retinal vein occlusion" to .042f,
+        "rfmid_dr" to .124f, "rfmid_armd" to .087f, "rfmid_mya" to .231f, "rfmid_brvo" to .042f,
+        "rfmid_dn" to .051f, "rfmid_odc" to .103f, "rfmid_odp" to .027f, "rfmid_ode" to .018f,
+        "rfmid_tsln" to .164f, "rfmid_ls" to .022f, "rfmid_csr" to .039f, "rfmid_rs" to .015f,
+        "rfmid_crs" to .011f, "rfmid_crvo" to .008f, "rfmid_erm" to .025f, "rfmid_ms" to .014f,
+        "rfmid_rt" to .020f,
     )
     val scores = if (selectedEye == 1) leftScores else rightScores
     val eyeName = if (selectedEye == 1) "Left" else "Right"
@@ -1256,34 +1277,36 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit, onAnalyze: () 
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
-        Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
-            Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column(Modifier.weight(1f)) {
-                        Text("Retina and macula", fontWeight = FontWeight.SemiBold)
-                        Text("Highest sample score", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Text("${"%.1f".format(scores.maxOf { it.second } * 100)}%", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                }
-                HorizontalDivider()
-                scores.forEach { (condition, score) ->
-                    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(condition, Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                            Text("${"%.1f".format(score * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+        MobileDiseaseCatalog.groups.forEach { group ->
+            val groupScores = scores.filter { (id, _) -> id in group.ids }
+            var expanded by remember(group.name, selectedEye) { mutableStateOf(group.name == "Diabetic retinopathy") }
+            Card(onClick = { expanded = !expanded }, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(group.name, fontWeight = FontWeight.SemiBold)
+                            Text("Highest sample score", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
-                        LinearProgressIndicator(progress = { score }, modifier = Modifier.fillMaxWidth().height(5.dp))
-                        Text(
-                            if (score >= .5f) "Positive at research cutoff" else "Negative at research cutoff",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                        Text("${"%.1f".format(groupScores.maxOf { it.second } * 100)}%", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    }
+                    if (expanded) {
+                        HorizontalDivider()
+                        groupScores.forEach { (id, score) ->
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(modelDisplayName(id), Modifier.weight(1f), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                    Text("${"%.1f".format(score * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                                }
+                                LinearProgressIndicator(progress = { score }, modifier = Modifier.fillMaxWidth().height(5.dp))
+                                Text("${if (id in MobileDiseaseCatalog.coreIds) "Core shortlist" else "Exploratory head"} · fixed sample value", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                        }
                     }
                 }
             }
         }
         Text(
-            "Sample scores use a 0.50 research cutoff. They are raw model-score examples, not calibrated disease risks or a diagnosis. The real analysis screen runs installed models on an image you select.",
+            "All displayed percentages are fixed sample values for demonstrating the layout; no images or models produced them. They are not predictions, disease risks, or a diagnosis. Additional exploratory outputs include low-support image findings. The real analysis screen runs installed models on an image you select.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

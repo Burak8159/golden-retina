@@ -453,6 +453,24 @@ private struct DiseaseScoreGroup: Identifiable {
     let modelIDs: [String]
 }
 
+private enum MobileDiseaseCatalog {
+    static let coreIDs = ["rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"]
+    static let researchIDs = coreIDs + [
+        "rfmid_dn", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls",
+        "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt"
+    ]
+    static let groups = [
+        DiseaseScoreGroup(id: "Diabetic retinopathy", modelIDs: ["rfmid_dr"]),
+        DiseaseScoreGroup(id: "Retinal vein occlusions", modelIDs: ["rfmid_brvo", "rfmid_crvo"]),
+        DiseaseScoreGroup(id: "Macula and central retina", modelIDs: ["rfmid_armd", "rfmid_dn", "rfmid_csr", "rfmid_erm", "rfmid_ms"]),
+        DiseaseScoreGroup(id: "Optic-disc findings", modelIDs: ["rfmid_odc", "rfmid_odp", "rfmid_ode"]),
+        DiseaseScoreGroup(id: "Myopia and fundus patterns", modelIDs: ["rfmid_mya", "rfmid_tsln"]),
+        DiseaseScoreGroup(id: "Chorioretinal inflammation", modelIDs: ["rfmid_crs"]),
+        DiseaseScoreGroup(id: "Scarring and treatment findings", modelIDs: ["rfmid_ls", "rfmid_rs"]),
+        DiseaseScoreGroup(id: "Retinal structural findings", modelIDs: ["rfmid_rt"])
+    ]
+}
+
 private struct EyeLocalization {
     let pupilCount: Int
     let centerX: Double?
@@ -461,9 +479,7 @@ private struct EyeLocalization {
 }
 
 private enum BundledResearchInference {
-    static let diseaseIDs = [
-        "rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"
-    ]
+    static let diseaseIDs = MobileDiseaseCatalog.researchIDs
 
     static var installedDiseaseIDs: [String] { diseaseIDs.filter { modelURL(id: $0) != nil } }
 
@@ -575,9 +591,7 @@ private enum BundledResearchInference {
 }
 
 private struct OnDeviceInferenceView: View {
-    private let scoreGroups = [
-        DiseaseScoreGroup(id: "Retina and macula", modelIDs: ["rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"])
-    ]
+    private let scoreGroups = MobileDiseaseCatalog.groups
     private enum EyeSide: String { case right = "Right", left = "Left" }
     @State private var selectedEye: EyeSide = .right
     @State private var selectedItem: PhotosPickerItem?
@@ -600,6 +614,8 @@ private struct OnDeviceInferenceView: View {
                 Text("On-device model lab").font(.largeTitle.bold())
                 Text("Inference runs locally on this iPhone. Images are not uploaded or saved by this screen.")
                     .foregroundStyle(.secondary)
+                Text("17 optional RFMiD research heads in 8 groups. Four are the post-hoc core shortlist; the rest are exploratory and include image findings, not only diseases. Install only the models you need in Settings.")
+                    .font(.footnote).foregroundStyle(.secondary)
                 Picker("Eye", selection: $selectedEye) {
                     Text("Left · \(leftDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.left)
                     Text("Right · \(rightDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.right)
@@ -654,7 +670,7 @@ private struct OnDeviceInferenceView: View {
                                 HStack(alignment: .center, spacing: 10) {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(modelDisplayName(result.id)).font(.subheadline.weight(.semibold))
-                                        Text(result.score >= 0.5 ? "Positive at research cutoff" : "Negative at research cutoff")
+                                        Text("\(MobileDiseaseCatalog.coreIDs.contains(result.id) ? "Core shortlist" : "Exploratory head") · \(result.score >= 0.5 ? "above" : "below") 0.50 research cutoff")
                                             .font(.caption).foregroundStyle(.secondary)
                                     }
                                     Spacer(minLength: 8)
@@ -691,7 +707,7 @@ private struct OnDeviceInferenceView: View {
                     }
                 }
                 Text(status).font(.footnote).foregroundStyle(.secondary)
-                Text("Glaucoma is not classified here. The RFMiD optic-disc cupping label is a finding, not a glaucoma diagnosis. These RFMiD heads use image-level research splits with patient independence unverified. Scores are not calibrated diagnoses. Eye localization was trained/evaluated on synthetic renders only, not real people, IR frames, or goggles. Do not use for patient care or motor control.")
+                Text("Glaucoma is not classified here. Optic-disc cupping is a finding, not a glaucoma diagnosis. Several additional RFMiD labels have very small test support and poor sensitivity; they are shown as exploratory research outputs, not reliable screening. These image-split results do not establish patient independence. Scores are not calibrated diagnoses. Eye localization was trained/evaluated on synthetic renders only, not real people, IR frames, or goggles. Do not use for patient care or motor control.")
                     .font(.footnote.weight(.medium)).foregroundStyle(.secondary)
             }
             .padding(20)
@@ -1385,16 +1401,18 @@ struct DemoResultsView: View {
     @State private var selectedEye: String = "Left"
 
     private let leftScores: [(String, Double)] = [
-        ("Diabetic retinopathy", 0.627),
-        ("Age-related macular degeneration", 0.149),
-        ("Myopia", 0.085),
-        ("Branch retinal vein occlusion", 0.051)
+        ("rfmid_dr", 0.627), ("rfmid_armd", 0.149), ("rfmid_mya", 0.085), ("rfmid_brvo", 0.051),
+        ("rfmid_dn", 0.093), ("rfmid_odc", 0.184), ("rfmid_odp", 0.061), ("rfmid_ode", 0.032),
+        ("rfmid_tsln", 0.214), ("rfmid_ls", 0.044), ("rfmid_csr", 0.072), ("rfmid_rs", 0.038),
+        ("rfmid_crs", 0.026), ("rfmid_crvo", 0.019), ("rfmid_erm", 0.058), ("rfmid_ms", 0.029),
+        ("rfmid_rt", 0.041)
     ]
     private let rightScores: [(String, Double)] = [
-        ("Diabetic retinopathy", 0.124),
-        ("Age-related macular degeneration", 0.087),
-        ("Myopia", 0.231),
-        ("Branch retinal vein occlusion", 0.042)
+        ("rfmid_dr", 0.124), ("rfmid_armd", 0.087), ("rfmid_mya", 0.231), ("rfmid_brvo", 0.042),
+        ("rfmid_dn", 0.051), ("rfmid_odc", 0.103), ("rfmid_odp", 0.027), ("rfmid_ode", 0.018),
+        ("rfmid_tsln", 0.164), ("rfmid_ls", 0.022), ("rfmid_csr", 0.039), ("rfmid_rs", 0.015),
+        ("rfmid_crs", 0.011), ("rfmid_crvo", 0.008), ("rfmid_erm", 0.025), ("rfmid_ms", 0.014),
+        ("rfmid_rt", 0.020)
     ]
 
     private var scores: [(String, Double)] { selectedEye == "Left" ? leftScores : rightScores }
@@ -1415,39 +1433,42 @@ struct DemoResultsView: View {
                 }
                 .pickerStyle(.segmented)
 
-                VStack(alignment: .leading, spacing: 14) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("\(selectedEye) eye")
-                                .font(.headline)
-                            Text("Retina and macula")
-                                .font(.subheadline).foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Text(String(format: "%.1f%%", (scores.map(\.1).max() ?? 0) * 100))
-                            .font(.title3.bold()).monospacedDigit()
-                    }
-                    Divider()
-                    ForEach(scores.indices, id: \.self) { index in
-                        let name = scores[index].0
-                        let score = scores[index].1
-                        VStack(alignment: .leading, spacing: 7) {
-                            HStack(alignment: .firstTextBaseline) {
-                                Text(name).font(.subheadline.weight(.semibold))
-                                Spacer(minLength: 8)
-                                Text(String(format: "%.1f%%", score * 100))
-                                    .font(.subheadline.bold()).monospacedDigit()
+                ForEach(MobileDiseaseCatalog.groups) { group in
+                    let groupScores = scores.filter { group.modelIDs.contains($0.0) }
+                    DisclosureGroup {
+                        VStack(alignment: .leading, spacing: 14) {
+                            ForEach(groupScores.indices, id: \.self) { index in
+                                let id = groupScores[index].0
+                                let score = groupScores[index].1
+                                VStack(alignment: .leading, spacing: 7) {
+                                    HStack(alignment: .firstTextBaseline) {
+                                        Text(modelDisplayName(id)).font(.subheadline.weight(.semibold))
+                                        Spacer(minLength: 8)
+                                        Text(String(format: "%.1f%%", score * 100)).font(.subheadline.bold()).monospacedDigit()
+                                    }
+                                    ProgressView(value: score).tint(BrandColor.green)
+                                    Text("\(MobileDiseaseCatalog.coreIDs.contains(id) ? "Core shortlist" : "Exploratory head") · fixed sample value")
+                                        .font(.caption).foregroundStyle(.secondary)
+                                }
                             }
-                            ProgressView(value: score).tint(BrandColor.green)
-                            Text(score >= 0.5 ? "Positive at research cutoff" : "Negative at research cutoff")
-                                .font(.caption).foregroundStyle(.secondary)
+                        }
+                        .padding(.top, 10)
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(group.id).font(.headline)
+                                Text("Highest sample score").font(.subheadline).foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Text(String(format: "%.1f%%", (groupScores.map(\.1).max() ?? 0) * 100))
+                                .font(.title3.bold()).monospacedDigit()
                         }
                     }
+                    .padding(16)
+                    .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 18))
                 }
-                .padding(16)
-                .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 18))
 
-                Text("Sample scores use a 0.50 research cutoff. They are raw model-score examples, not calibrated disease risks or a diagnosis. The real analysis screen runs installed models on an image you select.")
+                Text("All displayed percentages are fixed sample values for demonstrating the layout; no images or models produced them. They are not predictions, disease risks, or a diagnosis. Additional exploratory outputs include low-support image findings. The real analysis screen runs installed models on an image you select.")
                     .font(.footnote).foregroundStyle(.secondary)
                 Button(action: onAnalyze) {
                     Label("Analyze your own fundus image", systemImage: "waveform.path.ecg")

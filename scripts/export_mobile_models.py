@@ -22,8 +22,31 @@ sys.path.insert(0, str(ROOT))
 EYE_CHECKPOINT = ROOT / "models/eye_finding/charmorph_shared_eye_v2b.pt"
 EXPERT_DIR = ROOT / "results/expert_sweep/checkpoints"
 EXPERT_REGISTRY = ROOT / "results/expert_sweep/research_model_registry.json"
-VERSION = "20261114-r4"
+VERSION = "20261118-r5"
 CONSUMER_INFERENCE_IDS = ["rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo"]
+RESEARCH_INFERENCE_IDS = CONSUMER_INFERENCE_IDS + [
+    "rfmid_dn", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls",
+    "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt",
+]
+INFERENCE_GROUPS = [
+    {"name": "Diabetic retinopathy", "ids": ["rfmid_dr"]},
+    {"name": "Retinal vein occlusions", "ids": ["rfmid_brvo", "rfmid_crvo"]},
+    {"name": "Macula and central retina", "ids": ["rfmid_armd", "rfmid_dn", "rfmid_csr", "rfmid_erm", "rfmid_ms"]},
+    {"name": "Optic-disc findings", "ids": ["rfmid_odc", "rfmid_odp", "rfmid_ode"]},
+    {"name": "Myopia and fundus patterns", "ids": ["rfmid_mya", "rfmid_tsln"]},
+    {"name": "Chorioretinal inflammation", "ids": ["rfmid_crs"]},
+    {"name": "Scarring and treatment findings", "ids": ["rfmid_ls", "rfmid_rs"]},
+    {"name": "Retinal structural findings", "ids": ["rfmid_rt"]},
+]
+MODEL_GROUPS = {
+    model_id: group["name"]
+    for group in INFERENCE_GROUPS
+    for model_id in group["ids"]
+}
+FINDING_IDS = {
+    "rfmid_dn", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls",
+    "rfmid_rs", "rfmid_erm", "rfmid_ms", "rfmid_rt",
+}
 CONSUMER_INFERENCE_RULE = (
     "Post hoc research shortlist from the RFMiD image-split summary; 0.50 is a model cutoff, "
     "not a calibrated disease probability or clinical decision threshold. Results are exploratory."
@@ -223,6 +246,9 @@ def main() -> None:
             "architecture": architecture,
             "weights_precision": "float16; Gelu and input/output float32",
             "evidence_tier": tier,
+            "app_role": "core_shortlist" if model_id in CONSUMER_INFERENCE_IDS else "exploratory",
+            "app_group": MODEL_GROUPS[model_id],
+            "output_kind": "retinal_image_finding" if model_id in FINDING_IDS else "dataset_condition_label",
             "positive_images_train_validation_test": support,
             "export_parity_max_abs_error": max_abs_error,
             "development_test_accuracy_at_0_5": test.get("metrics", {}).get("accuracy_at_0_5"),
@@ -236,6 +262,13 @@ def main() -> None:
         "models": entries,
         "consumer_inference_ids": CONSUMER_INFERENCE_IDS,
         "consumer_inference_rule": CONSUMER_INFERENCE_RULE,
+        "research_inference_ids": RESEARCH_INFERENCE_IDS,
+        "inference_groups": INFERENCE_GROUPS,
+        "research_inference_rule": (
+            "Optional on-device research heads. The four consumer shortlist outputs were selected post hoc; "
+            "other heads are exploratory and may have very small support or poor sensitivity. Some outputs "
+            "are image findings rather than disease diagnoses. Scores are uncalibrated and not clinical risks."
+        ),
         "not_supported": {
             "glaucoma": "No glaucoma checkpoint is included in this mobile bundle. RFMiD optic-disc cupping is a finding and must not be presented as glaucoma."
         },

@@ -1,11 +1,11 @@
 {
   "schema_version": 1,
   "project": "Golden Retina",
-  "bundle_version": "20261114-r4",
+  "bundle_version": "20261118-r5",
   "inference": "on-device only; the app does not upload selected images",
   "models": {
     "ir_eye_tracker": {
-      "display_name": "Eye localization \u00b7 synthetic research model",
+      "display_name": "Eye localization · synthetic research model",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "ir_eye_tracker.onnx",
@@ -43,7 +43,7 @@
       "bytes": 1959735
     },
     "rfmid_dr": {
-      "display_name": "Diabetic retinopathy \u00b7 RFMiD",
+      "display_name": "Diabetic retinopathy · RFMiD",
       "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_dr.onnx",
@@ -94,10 +94,13 @@
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_dr.onnx",
       "bytes": 55766875,
-      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold",
+      "app_group": "Diabetic retinopathy",
+      "app_role": "core_shortlist",
+      "output_kind": "dataset_condition_label"
     },
     "rfmid_armd": {
-      "display_name": "Age-related macular degeneration \u00b7 RFMiD",
+      "display_name": "Age-related macular degeneration · RFMiD",
       "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_armd.onnx",
@@ -148,10 +151,13 @@
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_armd.onnx",
       "bytes": 55766875,
-      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold",
+      "app_group": "Macula and central retina",
+      "app_role": "core_shortlist",
+      "output_kind": "dataset_condition_label"
     },
     "rfmid_dn": {
-      "display_name": "Drusen \u00b7 RFMiD",
+      "display_name": "Drusen · RFMiD",
       "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_dn.onnx",
@@ -201,10 +207,13 @@
       "source_checkpoint_sha256": "699ba90968b6902a4bb10ee70a91bad869d4feb9a7b7b2a5231ba53555ce0484",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_dn.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Macula and central retina",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_mya": {
-      "display_name": "Myopia \u00b7 RFMiD",
+      "display_name": "Myopia · RFMiD",
       "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_mya.onnx",
@@ -255,10 +264,13 @@
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_mya.onnx",
       "bytes": 55766875,
-      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold",
+      "app_group": "Myopia and fundus patterns",
+      "app_role": "core_shortlist",
+      "output_kind": "dataset_condition_label"
     },
     "rfmid_brvo": {
-      "display_name": "Branch retinal vein occlusion \u00b7 RFMiD",
+      "display_name": "Branch retinal vein occlusion · RFMiD",
       "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_brvo.onnx",
@@ -309,10 +321,13 @@
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_brvo.onnx",
       "bytes": 55766875,
-      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold"
+      "classification": "research-positive when sigmoid score >= 0.50; not a clinical threshold",
+      "app_group": "Retinal vein occlusions",
+      "app_role": "core_shortlist",
+      "output_kind": "dataset_condition_label"
     },
     "rfmid_odc": {
-      "display_name": "Optic-disc cupping finding \u00b7 RFMiD",
+      "display_name": "Optic-disc cupping finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_odc.onnx",
@@ -362,10 +377,13 @@
       "source_checkpoint_sha256": "23f7f25d05164e03716b3e3edd46c39d7559e3fcb2d1b1fd417c41ad4f578b74",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_odc.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Optic-disc findings",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_odp": {
-      "display_name": "Optic-disc pallor finding \u00b7 RFMiD",
+      "display_name": "Optic-disc pallor finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_odp.onnx",
@@ -415,10 +433,13 @@
       "source_checkpoint_sha256": "fbbddeeb61d2af3403641cc8a66a73f02ada7a2acfc63190f3c9992caa9beebf",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_odp.onnx",
-      "bytes": 47002663
+      "bytes": 47002663,
+      "app_group": "Optic-disc findings",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_ode": {
-      "display_name": "Optic-disc edema finding \u00b7 RFMiD",
+      "display_name": "Optic-disc edema finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_ode.onnx",
@@ -468,10 +489,13 @@
       "source_checkpoint_sha256": "a36b81f6a55710f095428e0311e53fdd055164c2fe505b66cddf52e263c728ea",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_ode.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Optic-disc findings",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_tsln": {
-      "display_name": "Tessellation finding \u00b7 RFMiD",
+      "display_name": "Tessellation finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_tsln.onnx",
@@ -521,10 +545,13 @@
       "source_checkpoint_sha256": "8b5c367cfbb63de33199b598647b3c68f9aa53ad7b22b1d0b9fc1bde33eb99e6",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_tsln.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Myopia and fundus patterns",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_ls": {
-      "display_name": "Laser-scar finding \u00b7 RFMiD",
+      "display_name": "Laser-scar finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_ls.onnx",
@@ -574,10 +601,13 @@
       "source_checkpoint_sha256": "df7cac8e3cdb633453b9e2522a6d76b24861a6dfbfb45a69cd66e94d8d23897f",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_ls.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Scarring and treatment findings",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_csr": {
-      "display_name": "Central serous retinopathy \u00b7 RFMiD",
+      "display_name": "Central serous retinopathy · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_csr.onnx",
@@ -627,10 +657,13 @@
       "source_checkpoint_sha256": "c6ca25ac50ddb5f8de057100ef1256b7d6037679d827c086c70e9cc47abd539d",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_csr.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Macula and central retina",
+      "app_role": "exploratory",
+      "output_kind": "dataset_condition_label"
     },
     "rfmid_rs": {
-      "display_name": "Retinitis finding \u00b7 RFMiD",
+      "display_name": "Retinitis finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_rs.onnx",
@@ -680,10 +713,13 @@
       "source_checkpoint_sha256": "bc92cbb9db4021998a036b45c7b4543c8c50dfb98405b00e24a6cfe14f3359d1",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_rs.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Scarring and treatment findings",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_crs": {
-      "display_name": "Chorioretinitis \u00b7 RFMiD",
+      "display_name": "Chorioretinitis · RFMiD",
       "version": "20261114-r4",
       "format": "onnx",
       "file": "rfmid_crs.onnx",
@@ -733,10 +769,13 @@
       "source_checkpoint_sha256": "03fcfb3f1174371927b40adadd83117b7c9857de58a911ff744b6c1d59f1b41b",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_crs.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Chorioretinal inflammation",
+      "app_role": "exploratory",
+      "output_kind": "dataset_condition_label"
     },
     "rfmid_crvo": {
-      "display_name": "Central retinal vein occlusion \u00b7 RFMiD",
+      "display_name": "Central retinal vein occlusion · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_crvo.onnx",
@@ -786,10 +825,13 @@
       "source_checkpoint_sha256": "1751ad4dac34a6618fc0b2662b5ee89537b98e6b305122e6540e84283fa0049b",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_crvo.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Retinal vein occlusions",
+      "app_role": "exploratory",
+      "output_kind": "dataset_condition_label"
     },
     "rfmid_erm": {
-      "display_name": "Epiretinal membrane \u00b7 RFMiD",
+      "display_name": "Epiretinal membrane · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_erm.onnx",
@@ -839,10 +881,13 @@
       "source_checkpoint_sha256": "66a3c233aa903bb9e721ebe7164b7d268837c181025ee9140c7377813e277a80",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_erm.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Macula and central retina",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_ms": {
-      "display_name": "Macular-scar finding \u00b7 RFMiD",
+      "display_name": "Macular-scar finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_ms.onnx",
@@ -892,10 +937,13 @@
       "source_checkpoint_sha256": "984cea977d7e4bbfb3c7885499a7d3e0c44d59aed0f22b7a36908589d8a8900a",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_ms.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Macula and central retina",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     },
     "rfmid_rt": {
-      "display_name": "Retinal-traction finding \u00b7 RFMiD",
+      "display_name": "Retinal-traction finding · RFMiD",
       "version": "20261114-r3",
       "format": "onnx",
       "file": "rfmid_rt.onnx",
@@ -945,7 +993,10 @@
       "source_checkpoint_sha256": "d4ae8a8f8233ddc282ae7e7030894be04c85d16018bbcdb9fe02e185ff7820a7",
       "status": "ready",
       "artifact_url": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/onnx/rfmid_rt.onnx",
-      "bytes": 55766875
+      "bytes": 55766875,
+      "app_group": "Retinal structural findings",
+      "app_role": "exploratory",
+      "output_kind": "retinal_image_finding"
     }
   },
   "consumer_inference_ids": [
@@ -991,5 +1042,84 @@
   ],
   "not_supported": {
     "glaucoma": "No glaucoma classifier is included in this mobile bundle. The RFMiD optic-disc cupping head is not a glaucoma diagnosis; the historical HYGD checkpoint is not present in this checkout as a distributable mobile artifact."
-  }
+  },
+  "research_inference_ids": [
+    "rfmid_dr",
+    "rfmid_armd",
+    "rfmid_mya",
+    "rfmid_brvo",
+    "rfmid_dn",
+    "rfmid_odc",
+    "rfmid_odp",
+    "rfmid_ode",
+    "rfmid_tsln",
+    "rfmid_ls",
+    "rfmid_csr",
+    "rfmid_rs",
+    "rfmid_crs",
+    "rfmid_crvo",
+    "rfmid_erm",
+    "rfmid_ms",
+    "rfmid_rt"
+  ],
+  "inference_groups": [
+    {
+      "name": "Diabetic retinopathy",
+      "ids": [
+        "rfmid_dr"
+      ]
+    },
+    {
+      "name": "Retinal vein occlusions",
+      "ids": [
+        "rfmid_brvo",
+        "rfmid_crvo"
+      ]
+    },
+    {
+      "name": "Macula and central retina",
+      "ids": [
+        "rfmid_armd",
+        "rfmid_dn",
+        "rfmid_csr",
+        "rfmid_erm",
+        "rfmid_ms"
+      ]
+    },
+    {
+      "name": "Optic-disc findings",
+      "ids": [
+        "rfmid_odc",
+        "rfmid_odp",
+        "rfmid_ode"
+      ]
+    },
+    {
+      "name": "Myopia and fundus patterns",
+      "ids": [
+        "rfmid_mya",
+        "rfmid_tsln"
+      ]
+    },
+    {
+      "name": "Chorioretinal inflammation",
+      "ids": [
+        "rfmid_crs"
+      ]
+    },
+    {
+      "name": "Scarring and treatment findings",
+      "ids": [
+        "rfmid_ls",
+        "rfmid_rs"
+      ]
+    },
+    {
+      "name": "Retinal structural findings",
+      "ids": [
+        "rfmid_rt"
+      ]
+    }
+  ],
+  "research_inference_rule": "Optional on-device research heads. The four core shortlist outputs were selected post hoc; other heads are exploratory and may have very small support or poor sensitivity. Some outputs are retinal image findings rather than disease diagnoses. Scores are uncalibrated and are not clinical risks."
 }
