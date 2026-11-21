@@ -96,6 +96,14 @@ is a standalone repository document, separate from the progress-tracker website.
 It covers modality fit, dataset support, candidate results, failures, and
 development decisions. The latest [Zhejiang one-vs-all regularization sweep](reports/zhejiang_one_vs_rest_regularization_sweep_aggregate_20261121.md)
 reports validation-only candidate results and their selection limits.
+Aggregate-only summaries of the baseline and disease-vs-all comparisons are
+available in the [ConvNeXt baseline report](reports/zhejiang_convnext_linear_probe_20261121_aggregate.md)
+and [encoder comparison report](reports/zhejiang_one_vs_rest_validation_aggregate_20261121.md).
+The corresponding VM-ready source is in `scripts/cloud/`; it requires the
+authorized source images and private manifests, which are not published here.
+The public tree contains no row-level predictions, dataset images, or trained
+private checkpoints. These reports are exposed single-source development
+evidence, not independent clinical validation.
 
 The [per-disease metrics ledger](results/expert_sweep/per_disease_metrics.csv)
 and [research-model registry](results/expert_sweep/research_model_registry.json)
