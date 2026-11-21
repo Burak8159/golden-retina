@@ -24,9 +24,9 @@ enum BrandColor {
 
 enum AppTab: Hashable {
     case home
-    case demo
-    case research
-    case guide
+    case screening
+    case history
+    case device
     case settings
 }
 
@@ -41,30 +41,142 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $selection) {
             NavigationStack {
-                HomeView(onOpenResearch: { selection = .research })
+                HomeView(onOpenResearch: { selection = .screening })
             }
             .tabItem { Label("Home", systemImage: "house.fill") }
             .tag(AppTab.home)
 
             NavigationStack {
-                DemoFlowView(onExit: { selection = .home }, onOpenResearch: { selection = .research })
+                ScreeningHubView()
             }
-            .tabItem { Label("Demo", systemImage: "eye") }
-            .tag(AppTab.demo)
+            .tabItem { Label("Screening", systemImage: "eye") }
+            .tag(AppTab.screening)
 
-            NavigationStack { OnDeviceInferenceView() }
-                .tabItem { Label("Analyze", systemImage: "waveform.path.ecg") }
-                .tag(AppTab.research)
+            NavigationStack { ScreeningHistoryView() }
+                .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }
+                .tag(AppTab.history)
 
-            NavigationStack { HowToUseView() }
-                .tabItem { Label("How to use", systemImage: "questionmark.circle") }
-                .tag(AppTab.guide)
+            NavigationStack { DeviceStatusView() }
+                .tabItem { Label("Device", systemImage: "eyeglasses") }
+                .tag(AppTab.device)
 
             NavigationStack { SettingsView() }
                 .tabItem { Label("Settings", systemImage: "gearshape") }
                 .tag(AppTab.settings)
         }
         .preferredColorScheme(preferredScheme)
+    }
+}
+
+private struct ScreeningHubView: View {
+    @State private var showDemo = false
+    @State private var showResearch = false
+
+    var body: some View {
+        List {
+            Section {
+                Label("Research / demonstration", systemImage: "info.circle")
+                    .font(.headline)
+                Text("The headset is not connected. Choose a simulation or analyze an image with an installed on-device research model.")
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Section("Explore") {
+                Button { showDemo = true } label: {
+                    Label("Start guided demo", systemImage: "play.circle")
+                }
+                .accessibilityHint("Runs a simulated flow with illustrative sample values. It does not capture your eyes.")
+                Button { showResearch = true } label: {
+                    Label("Analyze a fundus image", systemImage: "cpu")
+                }
+                Text("Research output is a raw model score. It is not a calibrated disease risk or diagnosis.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+            Section("Future capabilities") {
+                NavigationLink { UnavailableCapabilityView(title: "Headset retinal examination", reason: "Requires finished hardware, a versioned device and capture interface, safe exam-state handling, and validated screening capabilities.") } label: {
+                    Label("Headset retinal examination", systemImage: "lock.circle")
+                }
+                NavigationLink { UnavailableCapabilityView(title: "Functional vision tests", reason: "These tests require calibrated headset displays, a documented response method, and validation for each test. The phone screen is not a substitute.") } label: {
+                    Label("Functional vision tests", systemImage: "scope")
+                }
+                NavigationLink { UnavailableCapabilityView(title: "Retinal image review and reports", reason: "This build has no headset-captured retinal images or real examination records to review or export.") } label: {
+                    Label("Image review and reports", systemImage: "doc.text.magnifyingglass")
+                }
+            }
+        }
+        .navigationTitle("Screening")
+        .fullScreenCover(isPresented: $showDemo) {
+            DemoFlowView(onExit: { showDemo = false }, onOpenResearch: { showDemo = false; showResearch = true })
+        }
+        .sheet(isPresented: $showResearch) {
+            NavigationStack { OnDeviceInferenceView() }
+        }
+    }
+}
+
+private struct UnavailableCapabilityView: View {
+    let title: String
+    let reason: String
+
+    var body: some View {
+        ContentUnavailableView {
+            Label(title, systemImage: "lock.circle")
+        } description: {
+            Text(reason)
+        } actions: {
+            Text("This feature will remain unavailable until its product and evidence requirements are met.")
+                .font(.footnote)
+        }
+        .navigationTitle(title)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+private struct ScreeningHistoryView: View {
+    var body: some View {
+        ContentUnavailableView {
+            Label("No examination history", systemImage: "clock.arrow.circlepath")
+        } description: {
+            Text("Real headset examinations are not available yet. Demo sessions are not saved as health records.")
+        } actions: {
+            Text("You can try a simulation from the Screening tab.")
+                .font(.footnote)
+        }
+        .navigationTitle("History")
+    }
+}
+
+private struct DeviceStatusView: View {
+    @State private var showUnavailable = false
+
+    var body: some View {
+        List {
+            Section {
+                Label("Headset unavailable", systemImage: "eyeglasses")
+                    .font(.headline)
+                Text("This build cannot discover or connect to a headset. No device scan or permission request is started.")
+                    .foregroundStyle(.secondary)
+            }
+            Section("Device setup") {
+                Button { showUnavailable = true } label: {
+                    Label("Connect a headset", systemImage: "lock")
+                }
+                .accessibilityHint("Explains the hardware and interface dependency.")
+                NavigationLink { HowToUseView() } label: {
+                    Label("Read the setup guide", systemImage: "questionmark.circle")
+                }
+            }
+            Section("Not available in this build") {
+                Label("Battery and connection telemetry", systemImage: "battery.0")
+                Label("Firmware, calibration, and hardware diagnostics", systemImage: "wrench.and.screwdriver")
+            }
+        }
+        .navigationTitle("Device")
+        .alert("Headset connection unavailable", isPresented: $showUnavailable) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Compatible headset hardware and its versioned connection protocol are not available in this app build.")
+        }
     }
 }
 
@@ -245,7 +357,7 @@ struct GogglesUnavailableSheet: View {
                 .foregroundStyle(BrandColor.green)
             Text("Goggles are still in development")
                 .font(.title2.bold())
-            Text("There is no finished goggle hardware or Bluetooth connection to pair with yet. This option will become available after the device and its connection protocol are ready.")
+            Text("There is no finished headset hardware or documented connection method yet. Device setup will become available after the hardware interface is defined.")
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -269,7 +381,7 @@ struct HowToUseView: View {
                     .foregroundStyle(.secondary)
             }
             Section("How a real session is intended to work") {
-                manualStep("1", title: "Prepare the goggles", body: "Turn on the goggles and pair them from Settings once compatible hardware and its Bluetooth protocol are available.")
+                manualStep("1", title: "Prepare the goggles", body: "Turn on the goggles and connect them from Device after compatible hardware and its connection method are documented.")
                 manualStep("2", title: "Start with the goggles button", body: "In the intended product flow, pressing the physical goggles button begins acquisition. The demo uses an on-screen button to represent that action.")
                 manualStep("3", title: "Hold still and look toward the guide", body: "The planned interface guides positioning and image capture. The current eye graphic is illustrative only; it does not track the user.")
                 manualStep("4", title: "Capture both eyes", body: "The flow scans the right eye and then switches automatically to the left eye.")
@@ -290,7 +402,7 @@ struct HowToUseView: View {
             }
             Section("Safety and current limitations") {
                 Label("No real scans or clinical results are produced", systemImage: "cross.case")
-                Label("Bluetooth goggles pairing is not implemented", systemImage: "eyeglasses")
+                Label("Headset connection is not implemented", systemImage: "eyeglasses")
             }
         }
         .navigationTitle("How to use")
@@ -314,7 +426,7 @@ struct SettingsView: View {
     @StateObject private var registry = OnDeviceModelRegistry()
     @State private var registryURL = UserDefaults.standard.string(forKey: "goldenRetinaModelRegistryURL") ?? MobileModelRegistryURL.manifest
     @AppStorage("goldenRetinaColorScheme") private var colorChoice = "system"
-    @State private var showBluetoothInfo = false
+    @State private var showDeviceInfo = false
 
     var body: some View {
         List {
@@ -327,13 +439,24 @@ struct SettingsView: View {
                 .pickerStyle(.segmented)
                 .accessibilityLabel("App color appearance")
             }
-            Section("Goggles") {
-                Button { showBluetoothInfo = true } label: {
-                    Label("Connect goggles via Bluetooth", systemImage: "eyeglasses")
+            Section("Privacy and accessibility") {
+                Label("Research image analysis runs on this iPhone", systemImage: "iphone")
+                Text("This build has no account, cloud health-record service, report-sharing service, or real examination history. The app does not claim remote deletion or backup controls.")
+                    .font(.footnote).foregroundStyle(.secondary)
+                Label("Use system text size and VoiceOver", systemImage: "accessibility")
+                Text("English interface. Turkish localization and clinical terminology need human review before release.")
+                    .font(.footnote).foregroundStyle(.secondary)
+            }
+            Section("Device") {
+                Button { showDeviceInfo = true } label: {
+                    Label("Connect goggles", systemImage: "eyeglasses")
                 }
                 .foregroundStyle(.primary)
-                Label("Unavailable · hardware and Bluetooth protocol are not ready", systemImage: "lock.fill")
+                Label("Unavailable · hardware and connection method are not ready", systemImage: "lock.fill")
                     .font(.footnote).foregroundStyle(.secondary)
+                NavigationLink { HowToUseView() } label: {
+                    Label("How to use Golden Retina", systemImage: "questionmark.circle")
+                }
             }
             Section {
                 Label("Golden Retina", systemImage: "eye.circle.fill")
@@ -345,7 +468,7 @@ struct SettingsView: View {
             Section("About this demo") {
                 Label("Every scan and result is simulated", systemImage: "play.rectangle")
                 Label("No camera images are collected", systemImage: "camera.fill")
-                Label("No goggles or Bluetooth connection are active", systemImage: "eyeglasses")
+                Label("No headset connection is active", systemImage: "eyeglasses")
                 Label("Not a medical device or diagnosis", systemImage: "cross.case")
             }
             Section("On-device models") {
@@ -392,10 +515,10 @@ struct SettingsView: View {
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
-        .alert("Goggles connection unavailable", isPresented: $showBluetoothInfo) {
+        .alert("Headset connection unavailable", isPresented: $showDeviceInfo) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("Bluetooth pairing is not active because compatible goggles hardware and its connection protocol are not available yet.")
+            Text("Device connection is not active because compatible goggles hardware and its connection method are not available yet.")
         }
     }
 
@@ -432,6 +555,7 @@ private func formatModelSize(_ bytes: Int?) -> String {
 private struct DiseaseScore: Identifiable {
     let id: String
     let score: Float
+    let version: String
 }
 
 private func prepareModelImage(_ data: Data) -> UIImage? {
@@ -451,6 +575,7 @@ private func prepareModelImage(_ data: Data) -> UIImage? {
 private struct DiseaseScoreGroup: Identifiable {
     let id: String
     let modelIDs: [String]
+    var isFinding: Bool = false
 }
 
 private enum MobileDiseaseCatalog {
@@ -461,13 +586,18 @@ private enum MobileDiseaseCatalog {
     ]
     static let groups = [
         DiseaseScoreGroup(id: "Diabetic retinopathy", modelIDs: ["rfmid_dr"]),
-        DiseaseScoreGroup(id: "Retinal vein occlusions", modelIDs: ["rfmid_brvo", "rfmid_crvo"]),
-        DiseaseScoreGroup(id: "Macula and central retina", modelIDs: ["rfmid_armd", "rfmid_dn", "rfmid_csr", "rfmid_erm", "rfmid_ms"]),
-        DiseaseScoreGroup(id: "Optic-disc findings", modelIDs: ["rfmid_odc", "rfmid_odp", "rfmid_ode"]),
-        DiseaseScoreGroup(id: "Myopia and fundus patterns", modelIDs: ["rfmid_mya", "rfmid_tsln"]),
-        DiseaseScoreGroup(id: "Chorioretinal inflammation", modelIDs: ["rfmid_crs"]),
-        DiseaseScoreGroup(id: "Scarring and treatment findings", modelIDs: ["rfmid_ls", "rfmid_rs"]),
-        DiseaseScoreGroup(id: "Retinal structural findings", modelIDs: ["rfmid_rt"])
+        DiseaseScoreGroup(id: "Age-related macular degeneration", modelIDs: ["rfmid_armd"]),
+        DiseaseScoreGroup(id: "Myopia", modelIDs: ["rfmid_mya"]),
+        DiseaseScoreGroup(id: "Branch retinal vein occlusion", modelIDs: ["rfmid_brvo"]),
+        DiseaseScoreGroup(id: "Central retinal vein occlusion", modelIDs: ["rfmid_crvo"]),
+        DiseaseScoreGroup(id: "Central serous retinopathy", modelIDs: ["rfmid_csr"]),
+        DiseaseScoreGroup(id: "Chorioretinitis", modelIDs: ["rfmid_crs"]),
+        DiseaseScoreGroup(id: "Drusen", modelIDs: ["rfmid_dn"], isFinding: true),
+        DiseaseScoreGroup(id: "Optic-disc findings", modelIDs: ["rfmid_odc", "rfmid_odp", "rfmid_ode"], isFinding: true),
+        DiseaseScoreGroup(id: "Tessellation", modelIDs: ["rfmid_tsln"], isFinding: true),
+        DiseaseScoreGroup(id: "Treatment and scar findings", modelIDs: ["rfmid_ls", "rfmid_rs", "rfmid_ms"], isFinding: true),
+        DiseaseScoreGroup(id: "Epiretinal membrane finding", modelIDs: ["rfmid_erm"], isFinding: true),
+        DiseaseScoreGroup(id: "Retinal traction", modelIDs: ["rfmid_rt"], isFinding: true)
     ]
 }
 
@@ -490,8 +620,8 @@ private enum BundledResearchInference {
         for (index, id) in available.enumerated() {
             let values = try run(image: image, id: id, size: 320, imagenetNormalize: true)
             guard values.count == 1, let rawScore = values.first, rawScore.isFinite,
-                  (0...1).contains(rawScore) else { throw RegistryFailure.badResponse }
-            scores.append(DiseaseScore(id: id, score: min(max(rawScore, 0), 1)))
+                  (0...1).contains(rawScore), let version = installedVersion(id: id) else { throw RegistryFailure.badResponse }
+            scores.append(DiseaseScore(id: id, score: rawScore, version: version))
             onProgress(index + 1, id)
         }
         return scores
@@ -573,6 +703,10 @@ private enum BundledResearchInference {
         return Bundle.main.url(forResource: id, withExtension: "onnx")
     }
 
+    private static func installedVersion(id: String) -> String? {
+        (UserDefaults.standard.dictionary(forKey: "goldenRetinaInstalledModelVersions") as? [String: String])?[id]
+    }
+
     private static func resizedRGB(_ image: UIImage, size: Int) -> [UInt8]? {
         guard let cgImage = image.cgImage else { return nil }
         var bytes = [UInt8](repeating: 0, count: size * size * 4)
@@ -614,7 +748,7 @@ private struct OnDeviceInferenceView: View {
                 Text("On-device model lab").font(.largeTitle.bold())
                 Text("Inference runs locally on this iPhone. Images are not uploaded or saved by this screen.")
                     .foregroundStyle(.secondary)
-                Text("17 optional RFMiD research heads in 8 groups. Four are the post-hoc core shortlist; the rest are exploratory and include image findings, not only diseases. Install only the models you need in Settings.")
+                Text("17 optional RFMiD research heads: 7 dataset condition labels and 10 retinal image findings. Four condition heads are the post-hoc core shortlist; other outputs are exploratory. Install only the models you need in Settings.")
                     .font(.footnote).foregroundStyle(.secondary)
                 Picker("Eye", selection: $selectedEye) {
                     Text("Left · \(leftDiseaseResults.map(\.score).max().map { String(format: "%.1f%%", $0 * 100) } ?? "—")").tag(EyeSide.left)
@@ -638,7 +772,7 @@ private struct OnDeviceInferenceView: View {
                 Button {
                     runDiseaseModels()
                 } label: {
-                    Label(isRunning ? "Running locally…" : "Run disease classifiers", systemImage: "cross.case")
+                    Label(isRunning ? "Running locally…" : "Run installed research models", systemImage: "cross.case")
                         .frame(maxWidth: .infinity, minHeight: 48)
                 }
                 .buttonStyle(.bordered)
@@ -650,7 +784,7 @@ private struct OnDeviceInferenceView: View {
                 if !diseaseResults.isEmpty {
                     Text("\(selectedEye.rawValue) eye · per-disease model scores")
                         .font(.headline)
-                    Text("Research classification uses the model’s 0.50 cutoff. The percentages are raw scores, not calibrated probabilities, patient-risk estimates, or diagnoses.")
+                    Text("Only installed models are scored; a missing model is not assessed, not 0%. The 0.50 cutoff is for research only. Percentages are raw scores, not calibrated probabilities, patient-risk estimates, or diagnoses.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
@@ -662,7 +796,8 @@ private struct OnDeviceInferenceView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                ForEach(scoreGroups) { group in
+                Text("Dataset condition labels").font(.headline)
+                ForEach(scoreGroups.filter { !$0.isFinding }) { group in
                     let rows = diseaseResults.filter { group.modelIDs.contains($0.id) }
                     if let highest = rows.map(\.score).max() {
                         DisclosureGroup {
@@ -670,7 +805,7 @@ private struct OnDeviceInferenceView: View {
                                 HStack(alignment: .center, spacing: 10) {
                                     VStack(alignment: .leading, spacing: 4) {
                                         Text(modelDisplayName(result.id)).font(.subheadline.weight(.semibold))
-                                        Text("\(MobileDiseaseCatalog.coreIDs.contains(result.id) ? "Core shortlist" : "Exploratory head") · \(result.score >= 0.5 ? "above" : "below") 0.50 research cutoff")
+                                        Text("RFMiD · v\(result.version) · \(MobileDiseaseCatalog.coreIDs.contains(result.id) ? "core shortlist" : "exploratory") · \(result.score >= 0.5 ? "above" : "below") research cutoff")
                                             .font(.caption).foregroundStyle(.secondary)
                                     }
                                     Spacer(minLength: 8)
@@ -683,8 +818,36 @@ private struct OnDeviceInferenceView: View {
                             HStack {
                                 VStack(alignment: .leading, spacing: 3) {
                                     Text(group.id).font(.subheadline.weight(.semibold))
-                                    Text("Highest model score (%)").font(.caption).foregroundStyle(.secondary)
+                                    Text("Highest raw score").font(.caption).foregroundStyle(.secondary)
                                 }
+                                Spacer()
+                                Text(String(format: "%.1f%%", highest * 100)).monospacedDigit().fontWeight(.bold)
+                            }
+                        }
+                    }
+                }
+                if scoreGroups.contains(where: { group in
+                    group.isFinding && diseaseResults.contains(where: { result in group.modelIDs.contains(result.id) })
+                }) {
+                    Text("Retinal image findings").font(.headline)
+                }
+                ForEach(scoreGroups.filter { $0.isFinding }) { group in
+                    let rows = diseaseResults.filter { group.modelIDs.contains($0.id) }
+                    if let highest = rows.map(\.score).max() {
+                        DisclosureGroup {
+                            ForEach(rows) { result in
+                                HStack {
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(modelDisplayName(result.id)).font(.subheadline.weight(.semibold))
+                                        Text("RFMiD · model v\(result.version)").font(.caption).foregroundStyle(.secondary)
+                                    }
+                                    Spacer()
+                                    Text(String(format: "%.1f%%", result.score * 100)).monospacedDigit().fontWeight(.semibold)
+                                }.padding(12)
+                            }
+                        } label: {
+                            HStack {
+                                Text(group.id).font(.subheadline.weight(.semibold))
                                 Spacer()
                                 Text(String(format: "%.1f%%", highest * 100)).monospacedDigit().fontWeight(.bold)
                             }
@@ -803,7 +966,7 @@ private func modelDisplayName(_ id: String) -> String {
     case "rfmid_rs": return "Retinal scar finding · RFMiD"
     case "rfmid_crs": return "Chorioretinitis · RFMiD"
     case "rfmid_crvo": return "Central retinal vein occlusion · RFMiD · low support"
-    case "rfmid_erm": return "Epiretinal membrane · RFMiD · low support"
+    case "rfmid_erm": return "Epiretinal membrane finding · RFMiD · exploratory"
     case "rfmid_ms": return "Macular scar · RFMiD · low support"
     case "rfmid_rt": return "Retinal traction · RFMiD · low support"
     default: return id.replacingOccurrences(of: "_", with: " ")
@@ -1179,6 +1342,7 @@ struct DemoWelcomeView: View {
 }
 
 struct DeviceSearchView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var animate = false
     var body: some View {
         VStack(spacing: 24) {
@@ -1192,13 +1356,14 @@ struct DeviceSearchView: View {
             }
             .accessibilityHidden(true)
             .task {
+                guard !reduceMotion else { return }
                 withAnimation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true)) { animate = true }
             }
             VStack(spacing: 8) {
                 Text("Looking for the demo device…")
                     .font(.title2.bold())
                     .multilineTextAlignment(.center)
-                Text("Simulated search · no Bluetooth scan is running")
+                Text("Simulated search · no device discovery is running")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -1207,7 +1372,7 @@ struct DeviceSearchView: View {
         }
         .padding(24)
         .accessibilityElement(children: .combine)
-        .accessibilityLabel("Demo simulation. Looking for a sample goggles device. No Bluetooth scan is running.")
+        .accessibilityLabel("Demo simulation. Looking for a sample goggles device. No real device discovery is running.")
     }
 }
 
@@ -1301,7 +1466,7 @@ struct EyeScanView: View {
     }
 
     private var scanStatus: String {
-        if progress >= 1 { return "\(eye) eye sample captured" }
+        if progress >= 1 { return "\(eye) eye demo step complete · no image captured" }
         if progress < 0.34 { return "Finding the \(eye.lowercased()) eye…" }
         if progress < 0.68 { return "Adjusting position and focus…" }
         return "Capturing the \(eye.lowercased()) eye…"
@@ -1318,9 +1483,9 @@ struct CapturedView: View {
                 .font(.system(size: 60))
                 .foregroundStyle(BrandColor.green)
             VStack(spacing: 8) {
-                Text("\(eye) eye scan complete")
+                Text("\(eye) eye demo step complete")
                     .font(.title2.bold())
-                Text("Sample image captured in the demo")
+                Text("No eye image was captured")
                     .font(.body)
                     .foregroundStyle(.secondary)
             }
@@ -1337,6 +1502,7 @@ struct CapturedView: View {
 }
 
 struct AnalysisView: View {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var turn = false
     var body: some View {
         VStack(spacing: 22) {
@@ -1352,6 +1518,7 @@ struct AnalysisView: View {
             }
             .accessibilityHidden(true)
             .task {
+                guard !reduceMotion else { return }
                 withAnimation(.linear(duration: 2).repeatForever(autoreverses: false)) { turn = true }
             }
             VStack(spacing: 8) {
@@ -1428,12 +1595,13 @@ struct DemoResultsView: View {
                     .font(.subheadline).foregroundStyle(.secondary)
 
                 Picker("Eye", selection: $selectedEye) {
-                    Text("Left").tag("Left")
-                    Text("Right").tag("Right")
+                    Text("Left · \(String(format: "%.1f%%", (leftScores.map(\.1).max() ?? 0) * 100))").tag("Left")
+                    Text("Right · \(String(format: "%.1f%%", (rightScores.map(\.1).max() ?? 0) * 100))").tag("Right")
                 }
                 .pickerStyle(.segmented)
 
-                ForEach(MobileDiseaseCatalog.groups) { group in
+                Text("Dataset condition labels").font(.headline)
+                ForEach(MobileDiseaseCatalog.groups.filter { !$0.isFinding }) { group in
                     let groupScores = scores.filter { group.modelIDs.contains($0.0) }
                     DisclosureGroup {
                         VStack(alignment: .leading, spacing: 14) {
@@ -1467,8 +1635,30 @@ struct DemoResultsView: View {
                     .padding(16)
                     .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 18))
                 }
+                Text("Retinal image findings").font(.headline)
+                ForEach(MobileDiseaseCatalog.groups.filter { $0.isFinding }) { group in
+                    let groupScores = scores.filter { group.modelIDs.contains($0.0) }
+                    DisclosureGroup {
+                        ForEach(groupScores.indices, id: \.self) { index in
+                            let (id, score) = groupScores[index]
+                            HStack {
+                                Text(modelDisplayName(id)).font(.subheadline)
+                                Spacer()
+                                Text(String(format: "%.1f%%", score * 100)).monospacedDigit()
+                            }.padding(.vertical, 5)
+                        }
+                    } label: {
+                        HStack {
+                            Text(group.id).font(.subheadline.weight(.semibold))
+                            Spacer()
+                            Text(String(format: "%.1f%%", (groupScores.map(\.1).max() ?? 0) * 100)).monospacedDigit().fontWeight(.bold)
+                        }
+                    }
+                    .padding(16)
+                    .background(.quaternary.opacity(0.45), in: RoundedRectangle(cornerRadius: 18))
+                }
 
-                Text("All displayed percentages are fixed sample values for demonstrating the layout; no images or models produced them. They are not predictions, disease risks, or a diagnosis. Additional exploratory outputs include low-support image findings. The real analysis screen runs installed models on an image you select.")
+                Text("Sample values only · no images were captured and no model produced these values. They are not your predictions, disease risks, or a diagnosis. Select Analyze your own image to run the installed models locally.")
                     .font(.footnote).foregroundStyle(.secondary)
                 Button(action: onAnalyze) {
                     Label("Analyze your own fundus image", systemImage: "waveform.path.ecg")

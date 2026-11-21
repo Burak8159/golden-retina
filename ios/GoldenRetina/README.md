@@ -1,14 +1,29 @@
 # Golden Retina iOS concept app
 
-Native SwiftUI app for the consumer-facing concept. The only working route is a
-guided **simulation**: simulated device discovery and goggles connection, an
-on-screen control that represents pressing the goggles' physical start button,
-automatic right-eye then left-eye scan animations, timed analysis, and example
-results. Every phase labels itself as a demo. It does not use a camera, Bluetooth,
-patient images, a model, or the research API.
+Native SwiftUI app for the consumer-facing concept. Top-level navigation is Home,
+Screening, History, Device, and Settings. Screening offers a guided **simulation**
+and a separate local research image-analysis route. The simulated flow has an
+on-screen action representing the headset's physical start button, then an
+illustrative right-eye followed by left-eye sequence and fixed sample results.
+It does not capture eyes or connect to hardware. The image-analysis route can
+run installed on-device research models; their raw scores are not clinical risks
+or diagnoses.
 
-The goggles route is intentionally locked because the hardware and Bluetooth
-protocol do not exist yet. No Bluetooth permission is requested.
+The headset route is intentionally unavailable because the hardware and
+connection protocol do not exist yet. No discovery permission is requested.
+
+## Product design and handoff
+
+See [`../../docs/mobile_product_foundation.md`](../../docs/mobile_product_foundation.md),
+[`../../docs/mobile_product_architecture_20261121.md`](../../docs/mobile_product_architecture_20261121.md),
+[`../../docs/mobile_design_system.md`](../../docs/mobile_design_system.md),
+[`../../docs/mobile_result_content_contract_20261121.md`](../../docs/mobile_result_content_contract_20261121.md),
+[`../../docs/mobile_screen_inventory.md`](../../docs/mobile_screen_inventory.md),
+[`../../docs/mobile_handoff.md`](../../docs/mobile_handoff.md), and
+[`../../docs/mobile_accessibility_privacy_audit_20261121.md`](../../docs/mobile_accessibility_privacy_audit_20261121.md).
+These define
+the cross-platform information architecture, status language, screen coverage,
+future device contract boundary, and release dependencies.
 
 ## Build and run in Xcode
 
@@ -37,12 +52,17 @@ xcrun simctl launch "$SIMULATOR_UDID" org.goldenhorn8159.goldenretina
 Exact simulator device names depend on the installed Xcode and runtimes. The
 iPhone Duo profile uses two displays; its app UI appears on the inner display.
 
-## Integration boundary
+## Inference and integration boundary
 
-The repository's current inference services are research prototypes bound to
-loopback and require research-only handling. They are not a production phone
-backend and must not be presented as clinical diagnosis. Before enabling a live
-route, define an authenticated, network-reachable service contract, approved
-data handling/retention, device pairing protocol, image-quality behavior, model
-versioning, and user-facing clinical scope. Keep demo results isolated from any
-future live inference path.
+The phone runs installed ONNX models locally. The public HTTPS model registry
+distributes manifest metadata and model files only; the app does not send images
+to an inference server. File size and SHA-256 are checked against the fetched
+manifest, but the manifest itself is not signed yet, so authenticated registry
+updates remain a release gate. Demo values are fixed samples and never enter the
+local image-analysis path.
+
+Headset connection and capture remain unavailable until the hardware team
+supplies a versioned pairing, capture, eye-side, error and safe-stop contract.
+Research scores are not clinical diagnoses. Xcode is not installed in the
+current workstation environment; only Swift syntax parsing has been verified
+here, not an iOS build or simulator launch.

@@ -164,7 +164,7 @@ private fun GoldenRetinaTheme(colorChoice: String, content: @Composable () -> Un
     MaterialTheme(colorScheme = scheme, content = content)
 }
 
-private enum class Destination { HOME, DEMO, ANALYZE, GUIDE, SETTINGS }
+private enum class Destination { HOME, SCREENING, DEMO, ANALYZE, HISTORY, DEVICE, GUIDE, SETTINGS }
 private enum class DemoPhase { WELCOME, SEARCHING, CONNECTED, RIGHT_SCAN, RIGHT_DONE, LEFT_SCAN, LEFT_DONE, ANALYZING, RESULTS }
 private data class ConditionItem(val name: String, val rightScore: Int, val leftScore: Int)
 private data class ConditionGroup(val name: String, val conditions: List<ConditionItem>) {
@@ -177,14 +177,21 @@ private const val BUNDLED_MODEL_VERSION = "20261114-r3"
 @Composable
 private fun GoldenRetinaApp(colorChoice: String, onColorChoice: (String) -> Unit) {
     var destination by rememberSaveable { mutableStateOf(Destination.HOME.name) }
-    BackHandler(enabled = destination == Destination.DEMO.name) { destination = Destination.HOME.name }
+    BackHandler(enabled = destination == Destination.DEMO.name || destination == Destination.GUIDE.name || destination == Destination.ANALYZE.name) {
+        destination = when (destination) {
+            Destination.GUIDE.name -> Destination.SETTINGS.name
+            Destination.ANALYZE.name, Destination.DEMO.name -> Destination.SCREENING.name
+            else -> Destination.HOME.name
+        }
+    }
 
     when (Destination.valueOf(destination)) {
-        Destination.HOME, Destination.DEMO, Destination.ANALYZE, Destination.GUIDE, Destination.SETTINGS -> MainTabs(
+        Destination.HOME, Destination.SCREENING, Destination.DEMO, Destination.ANALYZE, Destination.HISTORY, Destination.DEVICE, Destination.GUIDE, Destination.SETTINGS -> MainTabs(
             selected = Destination.valueOf(destination),
             onSelect = { destination = it.name },
             onStartDemo = { destination = Destination.DEMO.name },
             onOpenResearch = { destination = Destination.ANALYZE.name },
+            onOpenGuide = { destination = Destination.GUIDE.name },
             colorChoice = colorChoice,
             onColorChoice = onColorChoice,
         )
@@ -192,7 +199,7 @@ private fun GoldenRetinaApp(colorChoice: String, onColorChoice: (String) -> Unit
 }
 
 @Composable
-private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onStartDemo: () -> Unit, onOpenResearch: () -> Unit, colorChoice: String, onColorChoice: (String) -> Unit) {
+private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onStartDemo: () -> Unit, onOpenResearch: () -> Unit, onOpenGuide: () -> Unit, colorChoice: String, onColorChoice: (String) -> Unit) {
     Scaffold(
         bottomBar = {
             NavigationBar {
@@ -203,25 +210,25 @@ private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onS
                     label = { Text("Home") },
                 )
                 NavigationBarItem(
-                    selected = selected == Destination.DEMO,
-                    onClick = { onSelect(Destination.DEMO) },
+                    selected = selected in setOf(Destination.SCREENING, Destination.DEMO, Destination.ANALYZE),
+                    onClick = { onSelect(Destination.SCREENING) },
                     icon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                    label = { Text("Demo") },
+                    label = { Text("Screening") },
                 )
                 NavigationBarItem(
-                    selected = selected == Destination.ANALYZE,
-                    onClick = onOpenResearch,
-                    icon = { Icon(Icons.Filled.Search, contentDescription = null) },
-                    label = { Text("Analyze") },
+                    selected = selected == Destination.HISTORY,
+                    onClick = { onSelect(Destination.HISTORY) },
+                    icon = { Icon(Icons.Filled.Refresh, contentDescription = null) },
+                    label = { Text("History") },
                 )
                 NavigationBarItem(
-                    selected = selected == Destination.GUIDE,
-                    onClick = { onSelect(Destination.GUIDE) },
-                    icon = { Icon(Icons.Filled.Info, contentDescription = null) },
-                    label = { Text("How to use") },
+                    selected = selected == Destination.DEVICE,
+                    onClick = { onSelect(Destination.DEVICE) },
+                    icon = { Icon(Icons.Filled.Lock, contentDescription = null) },
+                    label = { Text("Device") },
                 )
                 NavigationBarItem(
-                    selected = selected == Destination.SETTINGS,
+                    selected = selected == Destination.SETTINGS || selected == Destination.GUIDE,
                     onClick = { onSelect(Destination.SETTINGS) },
                     icon = { Icon(Icons.Filled.Settings, contentDescription = null) },
                     label = { Text("Settings") },
@@ -231,10 +238,85 @@ private fun MainTabs(selected: Destination, onSelect: (Destination) -> Unit, onS
     ) { insets ->
         when (selected) {
             Destination.HOME -> HomeScreen(Modifier.padding(insets), onStartDemo)
-            Destination.DEMO -> DemoExperience(modifier = Modifier.padding(insets), onExit = { onSelect(Destination.HOME) }, onOpenResearch = onOpenResearch)
-            Destination.ANALYZE -> OnDeviceInferenceScreen(onBack = { onSelect(Destination.HOME) })
+            Destination.SCREENING -> ScreeningHubScreen(Modifier.padding(insets), onStartDemo, onOpenResearch)
+            Destination.DEMO -> DemoExperience(modifier = Modifier.padding(insets), onExit = { onSelect(Destination.SCREENING) }, onOpenResearch = onOpenResearch)
+            Destination.ANALYZE -> OnDeviceInferenceScreen(onBack = { onSelect(Destination.SCREENING) })
             Destination.GUIDE -> HowToUseScreen(Modifier.padding(insets))
-            Destination.SETTINGS -> SettingsScreen(Modifier.padding(insets), colorChoice, onColorChoice)
+            Destination.HISTORY -> ScreeningHistoryScreen(Modifier.padding(insets), onStartDemo)
+            Destination.DEVICE -> DeviceStatusScreen(Modifier.padding(insets), onOpenGuide)
+            Destination.SETTINGS -> SettingsScreen(Modifier.padding(insets), colorChoice, onColorChoice, onOpenGuide)
+        }
+    }
+}
+
+@Composable
+private fun ScreeningHubScreen(modifier: Modifier, onStartDemo: () -> Unit, onOpenResearch: () -> Unit) {
+    Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).widthIn(max = 680.dp).padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text("Screening", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
+        Text("Choose a clearly labeled software demonstration or analyze a selected image with an installed on-device research model.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Research / demonstration", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text("The headset is unavailable. Demo sample values are illustrative; research model scores are not calibrated disease risks or diagnoses.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSecondaryContainer)
+            }
+        }
+        Button(onClick = onStartDemo, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+            Icon(Icons.Filled.PlayArrow, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Start guided demo")
+        }
+        androidx.compose.material3.OutlinedButton(onClick = onOpenResearch, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+            Icon(Icons.Filled.Search, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Analyze a fundus image")
+        }
+        Text("Future headset screening requires compatible hardware, its documented interface, and validated task-specific capabilities.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Unavailable future capabilities", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
+        FutureCapabilityCard("Functional vision tests", "Requires calibrated headset displays, a documented response method, and validation for each test.")
+        FutureCapabilityCard("Retinal image review", "This build has no headset-captured retinal images or image metadata to review.")
+        FutureCapabilityCard("Reports and sharing", "There are no real examination records or report provenance to export from this build.")
+    }
+}
+
+@Composable
+private fun FutureCapabilityCard(title: String, requirement: String) {
+    Card(shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+        Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            }
+            Text("Unavailable · $requirement", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        }
+    }
+}
+
+@Composable
+private fun ScreeningHistoryScreen(modifier: Modifier, onStartDemo: () -> Unit) {
+    Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).widthIn(max = 680.dp).padding(horizontal = 24.dp, vertical = 28.dp), verticalArrangement = Arrangement.spacedBy(14.dp), horizontalAlignment = Alignment.Start) {
+        Icon(Icons.Filled.Refresh, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(40.dp))
+        Text("No examination history", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
+        Text("Real headset examinations are not available yet. Demo sessions are not saved as health records.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        TextButton(onClick = onStartDemo) { Text("Explore a demo") }
+    }
+}
+
+@Composable
+private fun DeviceStatusScreen(modifier: Modifier, onOpenGuide: () -> Unit) {
+    Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).widthIn(max = 680.dp).padding(horizontal = 20.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Text("Device", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
+        Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+            Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("Headset unavailable", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text("This build cannot discover or connect to a headset. No discovery scan or permission request is started.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        Text("Unavailable in this build", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        Text("Battery and signal telemetry, firmware, calibration, imaging, and device diagnostics need a versioned hardware interface before they can be shown.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Button(onClick = onOpenGuide, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+            Icon(Icons.Filled.Info, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Open setup guide")
         }
     }
 }
@@ -318,7 +400,7 @@ private fun HomeScreen(modifier: Modifier = Modifier, onStartDemo: () -> Unit) {
             onDismissRequest = { showHardwareInfo = false },
             icon = { Icon(Icons.Filled.Lock, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
             title = { Text("Goggles are still in development") },
-            text = { Text("There is no finished goggles hardware or Bluetooth protocol to pair with yet. The real connection will be added after the device and its communication method are ready.") },
+            text = { Text("There is no finished headset hardware or documented connection method yet. Device setup will be added after the hardware interface is defined.") },
             confirmButton = { TextButton(onClick = { showHardwareInfo = false }) { Text("Got it") } },
         )
     }
@@ -355,7 +437,7 @@ private fun HowToUseScreen(modifier: Modifier = Modifier) {
             Text("A quick guide to the intended Golden Retina flow. This app currently provides a simulation only.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                    GuideStep("1", "Prepare goggles", "Pair compatible goggles in Settings after the hardware and Bluetooth protocol are available.")
+                    GuideStep("1", "Prepare goggles", "Connect them from Device after compatible hardware and its connection method are documented.")
                     GuideStep("2", "Press the goggles button", "In the intended product, the physical button starts acquisition. In the demo, tap the on-screen control to simulate it.")
                     GuideStep("3", "Position and hold still", "The planned flow guides positioning. The animated eye is an illustration; it does not track your gaze.")
                     GuideStep("4", "Scan both eyes", "The demo proceeds from the right eye to the left eye automatically.")
@@ -370,7 +452,7 @@ private fun HowToUseScreen(modifier: Modifier = Modifier) {
                     Text("Video placeholder · no playback available", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            Text("No Bluetooth scan, camera capture, eye tracking, or disease inference is active in this version.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("No device discovery, camera capture, eye tracking, or disease inference is active in this simulated flow.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -389,7 +471,7 @@ private fun GuideStep(number: String, title: String, description: String) {
 }
 
 @Composable
-private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, onColorChoice: (String) -> Unit) {
+private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, onColorChoice: (String) -> Unit, onOpenGuide: () -> Unit = {}) {
     val context = LocalContext.current
     val prefs = remember { context.getSharedPreferences("model_registry", Context.MODE_PRIVATE) }
     var registryUrl by rememberSaveable { mutableStateOf(prefs.getString("url", MODEL_MANIFEST_URL) ?: MODEL_MANIFEST_URL) }
@@ -407,7 +489,7 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
         }
     }
     var modelStates by remember { mutableStateOf(initialModelStates) }
-    var showBluetoothInfo by rememberSaveable { mutableStateOf(false) }
+    var showDeviceInfo by rememberSaveable { mutableStateOf(false) }
     var showModelLab by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     if (showModelLab) {
@@ -433,32 +515,44 @@ private fun SettingsScreen(modifier: Modifier = Modifier, colorChoice: String, o
             }
             Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    Text("Goggles", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Button(onClick = { showBluetoothInfo = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
-                        Icon(Icons.Filled.Lock, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text("Connect goggles via Bluetooth")
-                    }
-                    Text("Unavailable · goggles hardware and Bluetooth protocol are not ready", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Privacy and accessibility", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text("Research image analysis runs on this phone. This build has no account, cloud health-record service, report-sharing service, or real examination history.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Use Android font scaling and TalkBack. English interface; Turkish medical terminology requires human review before release.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
-            if (showBluetoothInfo) {
+            Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Text("Goggles", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Button(onClick = { showDeviceInfo = true }, modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)) {
+                        Icon(Icons.Filled.Lock, contentDescription = null)
+                        Spacer(Modifier.width(8.dp))
+                    Text("Connect goggles")
+                    }
+                    Text("Unavailable · hardware and connection method are not ready", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            if (showDeviceInfo) {
                 Card(shape = RoundedCornerShape(18.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text("Bluetooth pairing unavailable", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer)
-                        Text("No real Bluetooth discovery or pairing is implemented because compatible goggles and their connection protocol are not available.", color = MaterialTheme.colorScheme.onErrorContainer)
-                        TextButton(onClick = { showBluetoothInfo = false }) { Text("Got it") }
+                        Text("Device connection unavailable", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onErrorContainer)
+                        Text("No device discovery or pairing is implemented because compatible goggles and their connection method are not documented.", color = MaterialTheme.colorScheme.onErrorContainer)
+                        TextButton(onClick = { showDeviceInfo = false }) { Text("Got it") }
                     }
                 }
             }
             Text("About Golden Retina", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, modifier = Modifier.semantics { heading() })
             Text("An early software concept from Golden Horn 8159.", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            androidx.compose.material3.OutlinedButton(onClick = onOpenGuide, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) {
+                Icon(Icons.Filled.Info, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("How to use and safety guide")
+            }
             Card(shape = RoundedCornerShape(24.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
                 Column(Modifier.padding(18.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text("About this demo", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     AboutFact("Every scan and result is simulated", Icons.Filled.PlayArrow)
                     AboutFact("No camera images are collected", Icons.Filled.Lock)
-                    AboutFact("No goggles or Bluetooth are active", Icons.Filled.Lock)
+                    AboutFact("No headset connection is active", Icons.Filled.Lock)
                     AboutFact("Not a medical device or diagnosis", Icons.Filled.Info)
                 }
             }
@@ -545,10 +639,10 @@ private fun modelDisplayName(id: String): String = when (id) {
     "rfmid_csr" -> "Central serous retinopathy · RFMiD"
     "rfmid_rs" -> "Retinal scar finding · RFMiD"
     "rfmid_crs" -> "Chorioretinitis · RFMiD"
-    "rfmid_crvo" -> "Central retinal vein occlusion · low support"
-    "rfmid_erm" -> "Epiretinal membrane · low support"
-    "rfmid_ms" -> "Macular scar · low support"
-    "rfmid_rt" -> "Retinal traction · low support"
+        "rfmid_crvo" -> "Central retinal vein occlusion · RFMiD label"
+        "rfmid_erm" -> "Epiretinal membrane finding · RFMiD"
+        "rfmid_ms" -> "Macular scar finding · RFMiD"
+        "rfmid_rt" -> "Retinal traction finding · RFMiD"
     else -> id.replace('_', ' ')
 }
 
@@ -558,26 +652,30 @@ private fun formatModelSize(bytes: Long): String = when {
     else -> "${"%.0f".format(bytes / 1_024.0)} KB"
 }
 
-private data class MobileDiseaseScore(val id: String, val value: Float)
+private data class MobileDiseaseScore(val id: String, val value: Float, val version: String)
 private data class MobileEyeResult(val pupilPixels: Int, val centerX: Double?, val centerY: Double?, val score: Float?)
 
-private data class MobileDiseaseGroup(val name: String, val ids: List<String>)
+private data class MobileDiseaseGroup(val name: String, val ids: List<String>, val isFinding: Boolean = false)
 
 private object MobileDiseaseCatalog {
     val coreIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo")
-    val diseaseIds = coreIds + listOf(
-        "rfmid_dn", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls",
-        "rfmid_csr", "rfmid_rs", "rfmid_crs", "rfmid_crvo", "rfmid_erm", "rfmid_ms", "rfmid_rt",
-    )
+    val diseaseIds = listOf("rfmid_dr", "rfmid_armd", "rfmid_mya", "rfmid_brvo", "rfmid_csr", "rfmid_crs", "rfmid_crvo")
+    val findingIds = listOf("rfmid_dn", "rfmid_odc", "rfmid_odp", "rfmid_ode", "rfmid_tsln", "rfmid_ls", "rfmid_rs", "rfmid_ms", "rfmid_rt", "rfmid_erm")
+    val allIds = diseaseIds + findingIds
     val groups = listOf(
         MobileDiseaseGroup("Diabetic retinopathy", listOf("rfmid_dr")),
-        MobileDiseaseGroup("Retinal vein occlusions", listOf("rfmid_brvo", "rfmid_crvo")),
-        MobileDiseaseGroup("Macula and central retina", listOf("rfmid_armd", "rfmid_dn", "rfmid_csr", "rfmid_erm", "rfmid_ms")),
-        MobileDiseaseGroup("Optic-disc findings", listOf("rfmid_odc", "rfmid_odp", "rfmid_ode")),
-        MobileDiseaseGroup("Myopia and fundus patterns", listOf("rfmid_mya", "rfmid_tsln")),
-        MobileDiseaseGroup("Chorioretinal inflammation", listOf("rfmid_crs")),
-        MobileDiseaseGroup("Scarring and treatment findings", listOf("rfmid_ls", "rfmid_rs")),
-        MobileDiseaseGroup("Retinal structural findings", listOf("rfmid_rt")),
+        MobileDiseaseGroup("Age-related macular degeneration", listOf("rfmid_armd")),
+        MobileDiseaseGroup("Myopia", listOf("rfmid_mya")),
+        MobileDiseaseGroup("Branch retinal vein occlusion", listOf("rfmid_brvo")),
+        MobileDiseaseGroup("Central retinal vein occlusion", listOf("rfmid_crvo")),
+        MobileDiseaseGroup("Central serous retinopathy", listOf("rfmid_csr")),
+        MobileDiseaseGroup("Chorioretinitis", listOf("rfmid_crs")),
+        MobileDiseaseGroup("Drusen", listOf("rfmid_dn"), isFinding = true),
+        MobileDiseaseGroup("Optic-disc findings", listOf("rfmid_odc", "rfmid_odp", "rfmid_ode"), isFinding = true),
+        MobileDiseaseGroup("Tessellation", listOf("rfmid_tsln"), isFinding = true),
+        MobileDiseaseGroup("Treatment and scar findings", listOf("rfmid_ls", "rfmid_rs", "rfmid_ms"), isFinding = true),
+        MobileDiseaseGroup("Epiretinal membrane finding", listOf("rfmid_erm"), isFinding = true),
+        MobileDiseaseGroup("Retinal traction", listOf("rfmid_rt"), isFinding = true),
     )
 }
 
@@ -621,7 +719,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
             IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") }
             Text("On-device model lab", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         }
-        Text("17 optional RFMiD research heads in 8 groups. Four are the post-hoc core shortlist; the rest are exploratory and include image findings, not only diseases. Install only the models you need. No glaucoma classifier is installed.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("17 optional RFMiD research heads: 7 dataset condition labels and 10 retinal image findings. Four condition heads are the post-hoc core shortlist; other outputs are exploratory. Install only the models you need. No glaucoma classifier is installed.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text("Images stay on this phone. Add one color fundus photo for each eye; each eye is analyzed separately.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         PrimaryTabRow(selectedTabIndex = if (selectedEye == 0) 1 else 0) {
             Tab(selected = selectedEye == 1, enabled = !running && !loadingImage, onClick = { selectedEye = 1 }, text = { Text("Left · ${leftDiseaseResults.maxOfOrNull { it.value }?.let { "%.1f%%".format(it * 100) } ?: "—"}") })
@@ -649,7 +747,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                         MobileResearchInference.classify(context, bitmap) { completed, id ->
                             scope.launch {
                                 diseaseModelsCompleted = completed
-                                status = "Completed $completed/${MobileResearchInference.diseaseIds.size}: ${modelDisplayName(id)}"
+                                status = "Completed $completed/${installedDiseaseIds.size}: ${modelDisplayName(id)}"
                             }
                         }
                     }
@@ -659,15 +757,17 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                 running = false
                 runningDiseaseModels = false
             }
-        }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text("Run disease classifiers") }
+        }, modifier = Modifier.fillMaxWidth().heightIn(min = 50.dp)) { Text("Run installed research models") }
         if (installedDiseaseIds.isEmpty()) {
             Text("No disease models are installed yet. Open Settings, check for updates, and download only the condition models you need.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         if (diseaseResults.isNotEmpty()) {
             Text("${if (selectedEye == 0) "Right" else "Left"} eye · per-disease model scores", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text("Research classification uses the model's 0.50 cutoff. Percentages are raw model scores, not calibrated probabilities, patient-risk estimates, or diagnoses. Group values show the highest score for this eye.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("Only installed models are scored; a missing model is not assessed, not 0%. The 0.50 cutoff is for research only. Percentages are raw model scores, not calibrated probabilities, patient-risk estimates, or diagnoses. Group values show the highest score for this eye.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        MobileDiseaseCatalog.groups.forEach { group ->
+        MobileDiseaseCatalog.groups.filterNot { it.isFinding }.takeIf { groups -> groups.any { group -> diseaseResults.any { it.id in group.ids } } }?.let { diseaseGroups ->
+            Text("Dataset condition labels", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            diseaseGroups.forEach { group ->
             val groupName = group.name
             val rows = diseaseResults.filter { it.id in group.ids }
             val highest = rows.maxOfOrNull { it.value }
@@ -680,7 +780,7 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Column(Modifier.weight(1f)) {
                                 Text(groupName, fontWeight = FontWeight.Bold)
-                                Text("Highest model score (%)", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text("Highest raw score", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Text("${"%.1f".format(highest * 100)}%", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         }
@@ -690,7 +790,42 @@ private fun OnDeviceInferenceScreen(onBack: () -> Unit) {
                                 Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
                                         Text(modelDisplayName(item.id), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
-                                        Text("${if (item.id in MobileDiseaseCatalog.coreIds) "Core shortlist" else "Exploratory head"} · ${if (item.value >= 0.5f) "above" else "below"} 0.50 research cutoff", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                        Text("RFMiD · v${item.version} · ${if (item.id in MobileDiseaseCatalog.coreIds) "core shortlist" else "exploratory"} · ${if (item.value >= 0.5f) "above" else "below"} research cutoff", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                    }
+                                    Text("${"%.1f".format(item.value * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            }
+        }
+        MobileDiseaseCatalog.groups.filter { it.isFinding }.takeIf { groups -> groups.any { group -> diseaseResults.any { it.id in group.ids } } }?.let { findingGroups ->
+            Text("Retinal image findings", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            findingGroups.forEach { group ->
+                val groupName = group.name
+                val rows = diseaseResults.filter { it.id in group.ids }
+                val highest = rows.maxOfOrNull { it.value }
+                if (highest != null) Card(
+                    onClick = { expandedScoreGroups = if (groupName in expandedScoreGroups) expandedScoreGroups - groupName else expandedScoreGroups + groupName },
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow),
+                ) {
+                    Column(Modifier.fillMaxWidth().padding(14.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Column(Modifier.weight(1f)) {
+                                Text(groupName, fontWeight = FontWeight.Bold)
+                                Text("Highest raw score", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
+                            Text("${"%.1f".format(highest * 100)}%", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                        }
+                        if (groupName in expandedScoreGroups) {
+                            HorizontalDivider()
+                            rows.forEach { item ->
+                                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(modelDisplayName(item.id), style = MaterialTheme.typography.bodyMedium)
+                                        Text("RFMiD · model v${item.version}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                     }
                                     Text("${"%.1f".format(item.value * 100)}%", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                                 }
@@ -760,7 +895,7 @@ private fun decodeSelectedImage(context: Context, uri: Uri): Bitmap? {
 }
 
 private object MobileResearchInference {
-    val diseaseIds = MobileDiseaseCatalog.diseaseIds
+    val diseaseIds = MobileDiseaseCatalog.allIds
 
     fun availableDiseaseIds(context: Context): List<String> = diseaseIds.filter { id ->
         val version = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE).getString("model-version:$id", null)
@@ -781,9 +916,16 @@ private object MobileResearchInference {
                     try {
                         session.run(mapOf(inputName to input)).use { result ->
                             val output = result.get(outputName).orElseThrow { IllegalStateException("Missing model output: $outputName") } as OnnxTensor
-                            val rawScore = output.floatBuffer.get()
-                            require(rawScore.isFinite()) { "Non-finite output from $id." }
-                            MobileDiseaseScore(id, rawScore.coerceIn(0f, 1f))
+                            val tensorInfo = output.info
+                            require(tensorInfo.shape.contentEquals(longArrayOf(1L, 1L))) { "Unexpected output shape from $id." }
+                            val values = output.floatBuffer.duplicate()
+                            require(values.remaining() == 1) { "Expected one scalar output from $id." }
+                            val rawScore = values.get()
+                            require(rawScore.isFinite() && rawScore in 0f..1f) { "Invalid score range from $id." }
+                            val version = context.getSharedPreferences("model_registry", Context.MODE_PRIVATE)
+                                .getString("model-version:$id", null)
+                                ?: throw IllegalStateException("Missing installed version metadata for $id.")
+                            MobileDiseaseScore(id, rawScore, version)
                         }
                     } finally { input.close() }
                 } finally { session.close() }
@@ -1116,7 +1258,7 @@ private fun DeviceSearch() {
         Spacer(Modifier.height(24.dp))
         Text("Looking for the demo device…", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
-        Text("Simulated search · no Bluetooth scan is running", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Simulated search · no device discovery is running", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -1157,7 +1299,7 @@ private fun EyeScan(eye: String, progress: Float) {
         }
         Text(
             when {
-                progress >= 1f -> "$eye eye sample captured"
+                progress >= 1f -> "$eye eye demo step complete · no image captured"
                 progress < .34f -> "Finding the ${eye.lowercase()} eye…"
                 progress < .68f -> "Adjusting position and focus…"
                 else -> "Capturing the ${eye.lowercase()} eye…"
@@ -1207,8 +1349,8 @@ private fun EyeCaptured(eye: String, nextStep: String) {
         Spacer(Modifier.height(12.dp))
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(14.dp)) {
             Icon(Icons.Filled.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(68.dp))
-            Text("$eye eye scan complete", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
-            Text("Sample image captured in the demo", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("$eye eye demo step complete", style = MaterialTheme.typography.headlineSmall, textAlign = TextAlign.Center, fontWeight = FontWeight.Bold)
+            Text("No eye image was captured", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Row(Modifier.fillMaxWidth().heightIn(min = 54.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
@@ -1269,15 +1411,16 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit, onAnalyze: () 
         )
 
         PrimaryTabRow(selectedTabIndex = if (selectedEye == 1) 0 else 1) {
-            Tab(selected = selectedEye == 1, onClick = { selectedEye = 1 }, text = { Text("Left") })
-            Tab(selected = selectedEye == 0, onClick = { selectedEye = 0 }, text = { Text("Right") })
+            Tab(selected = selectedEye == 1, onClick = { selectedEye = 1 }, text = { Text("Left · ${"%.1f".format(leftScores.maxOf { it.second } * 100)}%") })
+            Tab(selected = selectedEye == 0, onClick = { selectedEye = 0 }, text = { Text("Right · ${"%.1f".format(rightScores.maxOf { it.second } * 100)}%") })
         }
         Text(
             "$eyeName eye · sample model scores",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
-        MobileDiseaseCatalog.groups.forEach { group ->
+        Text("Dataset condition labels", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        MobileDiseaseCatalog.groups.filterNot { it.isFinding }.forEach { group ->
             val groupScores = scores.filter { (id, _) -> id in group.ids }
             var expanded by remember(group.name, selectedEye) { mutableStateOf(group.name == "Diabetic retinopathy") }
             Card(onClick = { expanded = !expanded }, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
@@ -1305,8 +1448,30 @@ private fun DemoResults(onReplay: () -> Unit, onDone: () -> Unit, onAnalyze: () 
                 }
             }
         }
+        Text("Retinal image findings", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        MobileDiseaseCatalog.groups.filter { it.isFinding }.forEach { group ->
+            val groupScores = scores.filter { (id, _) -> id in group.ids }
+            var expanded by remember(group.name, selectedEye) { mutableStateOf(false) }
+            Card(onClick = { expanded = !expanded }, colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerLow)) {
+                Column(Modifier.fillMaxWidth().padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(Modifier.weight(1f)) {
+                            Text(group.name, fontWeight = FontWeight.SemiBold)
+                            Text("Highest sample score", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                        Text("${"%.1f".format(groupScores.maxOf { it.second } * 100)}%", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    }
+                    if (expanded) {
+                        HorizontalDivider()
+                        groupScores.forEach { (id, score) ->
+                            Text("${modelDisplayName(id)} · ${"%.1f".format(score * 100)}%", style = MaterialTheme.typography.bodyMedium)
+                        }
+                    }
+                }
+            }
+        }
         Text(
-            "All displayed percentages are fixed sample values for demonstrating the layout; no images or models produced them. They are not predictions, disease risks, or a diagnosis. Additional exploratory outputs include low-support image findings. The real analysis screen runs installed models on an image you select.",
+            "Sample values only · no images were captured and no model produced these values. They are not your predictions, disease risks, or a diagnosis. Select Analyze your own image to run installed models locally.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )

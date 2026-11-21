@@ -1,8 +1,10 @@
 # Golden Retina Android concept app
 
 Jetpack Compose counterpart to `../ios/GoldenRetina`. The Android experience
-uses native Material 3 navigation, cards, chips, dialog, progress, system Back,
-and responsive content widths.
+uses native Material 3 navigation, cards, dialogs, progress, system Back, and
+responsive content widths. Top-level destinations are Home, Screening, History,
+Device, and Settings. Screening separates the guided simulation from local
+research image analysis.
 
 ## Run
 
@@ -24,28 +26,42 @@ instead of silently substituting a different profile.
 The demo simulates finding a sample device and connecting. The user then taps an
 on-screen control that represents pressing the goggles' physical start button;
 the right-eye scan is followed automatically by the left-eye scan, analysis, and
-example results. It does not use the camera, Bluetooth, patient images, the
-screening model, or a network API. The goggles route is locked because the
-hardware and Bluetooth protocol are not ready. No camera or Bluetooth
-permissions are declared.
+example results. It does not use the camera, patient images, the screening
+model, or a network API. The headset route is unavailable because the hardware
+and connection protocol are not ready. No camera or discovery permissions are
+declared.
 
-The current Golden Retina inference services are loopback-bound research
-prototypes, not a consumer mobile backend. A real connection needs an approved
-authenticated network service and a defined hardware pairing/image-transfer
-protocol. Demo output remains separate from any future live results.
+The mobile research-model lab runs installed ONNX models on-device and is
+separate from the demo. The app downloads model metadata and files from the
+public HTTPS registry; image inference stays on the phone. No inference server
+is used. The models produce research scores, not clinically validated
+diagnoses. Real headset operation needs a versioned hardware protocol and
+supported capture/state contract.
 
-The About screen and every simulated stage disclose that this is not a medical
-device or diagnosis. Do not use example values for health decisions.
+The app and every simulated stage disclose that this is not a medical diagnosis.
+Do not use sample values or research-model scores for health decisions.
 
 ## Design and accessibility choices
 
-- Material 3 navigation bar has two real top-level destinations: Home and About.
-- The demo is a child task with an explicit Up/close action and system Back exits
-  to Home. The locked goggles card remains inspectable so the unavailable state
-  has an explanation.
+- Material 3 navigation has five destinations. The demo and research inference
+  are child screening flows; History remains empty until real examinations can
+  be stored. Device explains the missing hardware/protocol and never starts a
+  device scan.
 - System light/dark appearance is respected; Android 12+ uses wallpaper dynamic
   color, with Golden Retina green fallbacks on older Android versions.
 - Text uses Material typography in scalable sp units; layouts scroll and cap
   content width, and primary touch controls remain at least 48 dp high.
 - No notification or launcher widget is included: the demo is short, user-driven,
   and has no background task or glanceable status to surface outside the app.
+
+## Product design and handoff
+
+See [`../docs/mobile_product_foundation.md`](../docs/mobile_product_foundation.md),
+[`../docs/mobile_product_architecture_20261121.md`](../docs/mobile_product_architecture_20261121.md),
+[`../docs/mobile_design_system.md`](../docs/mobile_design_system.md),
+[`../docs/mobile_result_content_contract_20261121.md`](../docs/mobile_result_content_contract_20261121.md),
+[`../docs/mobile_screen_inventory.md`](../docs/mobile_screen_inventory.md),
+[`../docs/mobile_handoff.md`](../docs/mobile_handoff.md), and
+[`../docs/mobile_accessibility_privacy_audit_20261121.md`](../docs/mobile_accessibility_privacy_audit_20261121.md)
+for shared product architecture, platform implementation boundaries, and
+recorded accessibility/privacy review limits.

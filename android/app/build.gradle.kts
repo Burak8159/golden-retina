@@ -15,6 +15,11 @@ android {
         versionName = "0.1.0"
     }
 
+    // Keep local development builds side-by-side with any previously signed install.
+    buildTypes {
+        getByName("debug") { applicationIdSuffix = ".dev" }
+    }
+
     buildFeatures { compose = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
