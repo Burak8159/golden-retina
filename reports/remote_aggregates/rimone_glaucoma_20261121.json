@@ -1,0 +1,92 @@
+{
+  "source": "RIM-ONE DL official repository, hospital-partition variant",
+  "source_terms": "Research and education use; copying/redistribution prohibited. Aggregate-only reporting; private data, row-level files and checkpoints omitted.",
+  "archive_sha256": "85aed5f95c794f52d11b6ed953032108a66576ffcff4b587365df467491b603d",
+  "data_audit": {
+    "status": "RIM_ONE_DL_HOSPITAL_PARTITION_AUDITED",
+    "source": "miag-ull/rim-one-dl official repository; hospital partition variant",
+    "archive_name": "RIM-ONE_DL_images.zip",
+    "archive_bytes": 222561134,
+    "archive_sha256": "85aed5f95c794f52d11b6ed953032108a66576ffcff4b587365df467491b603d",
+    "extracted_partition": "partitioned_by_hospital only",
+    "image_count": 485,
+    "counts": {
+      "test_set/glaucoma": 56,
+      "test_set/normal": 118,
+      "training_set/glaucoma": 116,
+      "training_set/normal": 195
+    },
+    "invalid_images": 0,
+    "exact_duplicate_groups": 0,
+    "cross_partition_exact_duplicate_groups": 0,
+    "patient_ids_available_in_release": false,
+    "patient_disjointness_verified": false,
+    "hospital_partition_means": "training hospital(s) versus held-out hospital(s), following source description; not patient-level confirmation",
+    "terms": "Research and education use only; redistribution prohibited per source README. Dataset/images/checkpoint and row-level manifest remain private.",
+    "near_duplicate_cross_partition_candidates_dhash_le4": 1,
+    "near_duplicate_review": {
+      "candidate_count": 1,
+      "exact_match": false,
+      "dhash_distance": 4,
+      "resized_pixel_mae_0_255": 27.203,
+      "correlation": 0.9578,
+      "decision": "retained; no exact duplicate"
+    }
+  },
+  "validation_protocol": "Seed 8159, stratified image-level 80/20 split within official training hospitals; threshold chosen for >=90% validation sensitivity while maximizing specificity.",
+  "source_only_scratch_model": {
+    "architecture": "ResNet-18, random initialization, trained only on RIM-ONE DL hospital training images",
+    "best_epoch": 15,
+    "validation": {
+      "n": 63,
+      "positive": 23,
+      "negative": 40,
+      "auroc": 0.9293478260869565,
+      "average_precision": 0.8950341672074782,
+      "sensitivity": 0.9130434782608695,
+      "specificity": 0.75,
+      "threshold": 0.2440025411640579
+    },
+    "hospital_test_exploratory_only": {
+      "n": 174,
+      "positive": 56,
+      "negative": 118,
+      "accuracy": 0.6264367816091954,
+      "sensitivity": 0.875,
+      "specificity": 0.5084745762711864,
+      "auroc": 0.7740617433414044,
+      "average_precision": 0.6167477792234137,
+      "threshold": 0.2440025411640579,
+      "false_negative": 7,
+      "false_positive": 58
+    }
+  },
+  "pretrained_protocol_deviation": {
+    "architecture": "ConvNeXt-Tiny fine-tuned from ImageNet1K_V1",
+    "status": "exploratory; not the source-only benchmark result",
+    "reason": "Source repository requests training/tuning with only RIM-ONE images; this run used external ImageNet pretraining.",
+    "hospital_test_exploratory_only": {
+      "n": 174,
+      "positive": 56,
+      "negative": 118,
+      "accuracy": 0.7816091954022989,
+      "sensitivity": 0.8392857142857143,
+      "specificity": 0.7542372881355932,
+      "auroc": 0.8994400726392251,
+      "average_precision": 0.787976930306308,
+      "threshold": 0.012920473039078978,
+      "image_level_bootstrap_95ci_auroc": [
+        0.8494331872578728,
+        0.9418887501259288
+      ]
+    }
+  },
+  "test_exposure": "The official hospital test was examined in the first run before the source-only rerun. Neither result is an untouched confirmatory evaluation.",
+  "interpretation": "Neither run met the validation-selected 90% sensitivity target on the hospital partition; each misses glaucoma-positive images. No autonomous, clinical, or deployment claim.",
+  "limitations": [
+    "Patient identifiers absent; patient-level split and patient-cluster uncertainty are unverified.",
+    "Small retrospective single-source benchmark.",
+    "Data, per-image predictions, manifests and checkpoints remain private under source terms."
+  ],
+  "cloud": "Temporary Cloud NAT and router removed after archive and pretrained weights were retrieved."
+}

@@ -1,0 +1,42 @@
+{
+  "run_id": "rfmid1_expanded10_v2_20261121",
+  "status": "running_on_google_cloud_l4",
+  "dataset": "RFMiD 1.0",
+  "dataset_mirror": "ctmedtech/RFMID",
+  "dataset_revision": "16ee0cf528e9cb6ec38a6d7b1f3e4580172bc1da",
+  "dataset_license_declared_by_mirror": "CC BY 4.0",
+  "split_counts_images": {
+    "train": 1920,
+    "validation": 640,
+    "test": 640
+  },
+  "split_patient_independence": "not_verifiable_from_staged_RFMiD_label_tables",
+  "architecture": "torchvision.convnext_tiny",
+  "input_size": 320,
+  "initialization": "continue_from_best_epoch14_RFMiD_shared_ConvNeXt_Tiny_checkpoint",
+  "initialization_checkpoint_sha256": "f98c7dcaf67409805a4564057a205bef8d65b884effd750d569597bcb70a35f8",
+  "seed": 20261021,
+  "optimizer": "AdamW",
+  "learning_rate": 2e-05,
+  "weight_decay": 0.0002,
+  "batch_size": 32,
+  "workers": 2,
+  "epoch_limit": 30,
+  "maximum_training_seconds": 10800,
+  "early_stopping": "validation BCE, patience 5, min_delta 1e-5",
+  "minimum_train_positive_and_negative_support": 10,
+  "positive_weight": "sqrt(negative/positive), clipped to [1,10]",
+  "validation_threshold_policy": {
+    "target_specificity": 0.9,
+    "minimum_validation_positives_and_negatives": 10,
+    "default_below_support": 0.5,
+    "test_used_for_selection": false
+  },
+  "source_label_count_excluding_Disease_Risk": 45,
+  "labels_meeting_10_positive_10_negative_training_floor": 24,
+  "disease_risk_head": "excluded",
+  "previous_test_exposure": "yes; exploratory descriptive results only",
+  "dataset_files_or_row_level_outputs_in_public_repo": false,
+  "training_script_sha256": "ac8234d8c1007713048389b87a576edf42eee9c27c9c8b20191e724b50be6277",
+  "guard": "original campaign runtime/spend guard; output saved on VM only"
+}

@@ -1,0 +1,35 @@
+{
+  "experiment": "RIM-ONE DL official hospital partition glaucoma versus normal",
+  "dataset_source": "https://github.com/miag-ull/rim-one-dl",
+  "archive_filename": "RIM-ONE_DL_images.zip",
+  "archive_sha256": "85aed5f95c794f52d11b6ed953032108a66576ffcff4b587365df467491b603d",
+  "partition": "partitioned_by_hospital only",
+  "counts": {
+    "training_hospitals_normal": 195,
+    "training_hospitals_glaucoma": 116,
+    "held_out_hospitals_normal": 118,
+    "held_out_hospitals_glaucoma": 56
+  },
+  "internal_validation": {
+    "method": "stratified image-level split within official training hospitals",
+    "fraction": 0.2,
+    "seed": 8159,
+    "patient_ids_available": false
+  },
+  "candidates": [
+    "frozen ConvNeXt-Tiny ImageNet1K_V1 features with logistic regression C=0.1 and class_weight=balanced",
+    "fine-tuned ConvNeXt-Tiny ImageNet1K_V1; AdamW backbone_lr=1e-5 head_lr=3e-4 weight_decay=0.02; early stop after four stale validation AUROC epochs"
+  ],
+  "selection": "Validation AUROC then average precision; threshold maximizing specificity subject to validation sensitivity >=0.90; if infeasible use validation maximum-sensitivity point and report infeasibility.",
+  "test": "One pass on official held-out hospital partition after candidate and threshold freeze.",
+  "weights": {
+    "name": "ConvNeXt-Tiny ImageNet1K_V1",
+    "sha256": "983f1562536e84ff750a1576fb08e54de751dbf2e17c0d8a4a13704341fdcd3d"
+  },
+  "terms": "Research/education use only; redistribution prohibited per source repository. Dataset, row-level manifests, predictions and checkpoint remain private.",
+  "limitations": [
+    "No patient identifiers in release; patient-level disjointness is unverified.",
+    "Hospital-held-out benchmark is not independent prospective clinical validation.",
+    "Single small source cohort; performance is not generalized glaucoma diagnosis."
+  ]
+}

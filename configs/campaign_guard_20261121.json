@@ -1,0 +1,13 @@
+{
+  "campaign": "Golden Retina retinal disease development",
+  "start_utc": "2026-11-21T07:31:22.612Z",
+  "gpu_runtime_cap_hours": 12.7917,
+  "planned_spend_ceiling_try": 1900.0,
+  "hard_spend_ceiling_try": 1980.0,
+  "full_campaign_list_price_estimate_with_stress_try": 1274.0,
+  "billing_through_date": "2026-11-20",
+  "same_day_actual_billing_verified": false,
+  "gce_max_runtime_seconds": 27000,
+  "gce_termination_action": "STOP",
+  "notes": "2026-11-21 update: the user authorized 10 additional hours from 10:18:52 UTC, through mobile work, while keeping the same ₺1,900 planned ceiling and ₺1,980 hard ceiling. This is ~12.7917 cumulative hours from the original 07:31:22.612 UTC start. Estimate adds 10 hours at the conservative ₺45.8/hour rate to the prior ₺816 stress estimate. Actual billing remains unverified. The running Spot VM retains its current per-instance STOP cap; change scheduling only after a safe stop/checkpoint."
+}

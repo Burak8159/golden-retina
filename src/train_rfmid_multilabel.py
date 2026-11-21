@@ -87,7 +87,8 @@ class RFMiDImages(Dataset):
 
 def multilabel_metrics(y_true: np.ndarray, scores: np.ndarray, names: list[str],
                        train_positive_counts: np.ndarray | None = None,
-                       trainable_mask: np.ndarray | None = None) -> dict:
+                       trainable_mask: np.ndarray | None = None,
+                       thresholds: np.ndarray | None = None) -> dict:
     def rank_auc(y: np.ndarray, score: np.ndarray) -> float | None:
         positives = int(y.sum()); negatives = len(y) - positives
         if not positives or not negatives:
@@ -122,7 +123,10 @@ def multilabel_metrics(y_true: np.ndarray, scores: np.ndarray, names: list[str],
 
     per_label = {}
     auc_values, ap_values, supported_accuracy = [], [], []
-    prediction = scores >= 0.5
+    thresholds = np.full(len(names), 0.5) if thresholds is None else np.asarray(thresholds)
+    if thresholds.shape != (len(names),):
+        raise ValueError("One decision threshold is required for every label")
+    prediction = scores >= thresholds[None, :]
     for j, name in enumerate(names):
         y = y_true[:, j].astype(int)
         p = prediction[:, j]
@@ -141,8 +145,10 @@ def multilabel_metrics(y_true: np.ndarray, scores: np.ndarray, names: list[str],
         per_label[name] = {
             "n": int(len(y)), "positive": positives, "negative": negatives,
             "train_positive": train_positives,
-            "accuracy_at_0_5": float(np.mean(y == p)), "sensitivity_at_0_5": tp / positives if positives else None,
-            "specificity_at_0_5": tn / negatives if negatives else None,
+            "threshold": float(thresholds[j]),
+            "accuracy_at_threshold": float(np.mean(y == p)),
+            "sensitivity_at_threshold": tp / positives if positives else None,
+            "specificity_at_threshold": tn / negatives if negatives else None,
             "auroc": auc, "average_precision": ap,
             "confusion": {"tp": tp, "tn": tn, "fp": fp, "fn": fn},
         }
@@ -153,11 +159,37 @@ def multilabel_metrics(y_true: np.ndarray, scores: np.ndarray, names: list[str],
         "n_images": int(len(y_true)),
         "macro_auroc_over_train_supported_labels_with_both_eval_classes": float(np.mean(auc_values)) if auc_values else None,
         "macro_average_precision_over_train_supported_labels_with_eval_positives": float(np.mean(ap_values)) if ap_values else None,
-        "mean_label_accuracy_at_0_5": float(np.mean(y_true == prediction)),
+        "mean_label_accuracy_at_threshold": float(np.mean(y_true == prediction)),
         "mean_accuracy_over_train_supported_labels": float(np.mean(supported_accuracy)) if supported_accuracy else None,
-        "subset_accuracy_at_0_5": float(np.mean(np.all(y_true == prediction, axis=1))),
+        "subset_accuracy_at_threshold": float(np.mean(np.all(y_true == prediction, axis=1))),
         "per_label": per_label,
     }
+
+
+def select_specificity_thresholds(y_true: np.ndarray, scores: np.ndarray,
+                                  trainable_mask: np.ndarray,
+                                  target_specificity: float,
+                                  min_validation_positives: int = 10) -> tuple[np.ndarray, np.ndarray]:
+    """Select max-sensitivity thresholds on validation rows only."""
+    thresholds = np.full(y_true.shape[1], 0.5, dtype=np.float64)
+    selected = np.zeros(y_true.shape[1], dtype=bool)
+    for j in range(y_true.shape[1]):
+        y = y_true[:, j].astype(bool)
+        if (not trainable_mask[j] or int(y.sum()) < min_validation_positives
+                or int((~y).sum()) < min_validation_positives):
+            continue
+        candidates = np.r_[np.unique(scores[:, j]), np.nextafter(scores[:, j].max(), np.inf)]
+        feasible = []
+        for threshold in candidates:
+            pred = scores[:, j] >= threshold
+            specificity = float(np.mean(~pred[~y]))
+            sensitivity = float(np.mean(pred[y]))
+            if specificity >= target_specificity - 1e-12:
+                feasible.append((sensitivity, specificity, float(threshold)))
+        if feasible:
+            thresholds[j] = max(feasible)[2]
+            selected[j] = True
+    return thresholds, selected
 
 
 def collect(model: nn.Module, loader: DataLoader, device: torch.device):
@@ -190,6 +222,12 @@ def main():
                         help="Exclude labels below this training-negative count from loss and supported macro metrics.")
     parser.add_argument("--include-dataset-risk", action="store_true",
                         help="Add RFMiD Disease_Risk as a separate dataset-defined output (not a disease label).")
+    parser.add_argument("--validation-specificity-target", type=float, default=None,
+                        help="Optional per-label validation-only threshold selection target; test labels are never used.")
+    parser.add_argument("--min-validation-positives-for-threshold", type=int, default=10,
+                        help="Leave the threshold at 0.5 unless validation has this many positives and negatives.")
+    parser.add_argument("--init-checkpoint", type=Path, default=None,
+                        help="Optional compatible ConvNeXt-Tiny checkpoint for a continuation/adaptation run.")
     parser.add_argument("--no-pretrained", action="store_true")
     args = parser.parse_args()
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed); torch.cuda.manual_seed_all(args.seed)
@@ -210,11 +248,18 @@ def main():
 
     args.outdir.mkdir(parents=True, exist_ok=True); args.artifact.parent.mkdir(parents=True, exist_ok=True)
     device = torch.device("cuda")
-    weights = None if args.no_pretrained else models.ConvNeXt_Tiny_Weights.DEFAULT
+    weights = None if (args.no_pretrained or args.init_checkpoint is not None) else models.ConvNeXt_Tiny_Weights.DEFAULT
     encoder = models.convnext_tiny(weights=weights)
     width = encoder.classifier[-1].in_features
     encoder.classifier[-1] = nn.Linear(width, len(names))
     model = encoder.to(device)
+    init_checkpoint_sha256 = None
+    if args.init_checkpoint is not None:
+        init_checkpoint = torch.load(args.init_checkpoint, map_location=device, weights_only=False)
+        if init_checkpoint.get("labels") != names:
+            raise ValueError("Initialization checkpoint label order does not match the RFMiD source labels")
+        model.load_state_dict(init_checkpoint["state_dict"], strict=True)
+        init_checkpoint_sha256 = hashlib.sha256(args.init_checkpoint.read_bytes()).hexdigest()
 
     train_y = np.asarray([r["targets"] for r in splits["train"]], dtype=np.float32)
     pos = train_y.sum(axis=0); neg = len(train_y) - pos
@@ -271,11 +316,41 @@ def main():
 
     checkpoint = torch.load(args.artifact, map_location=device, weights_only=False)
     model.load_state_dict(checkpoint["state_dict"])
+    valid_y, valid_scores, _ = collect(model, loaders["valid"], device)
+    thresholds = None
+    threshold_report = None
+    if args.validation_specificity_target is not None:
+        if not 0.5 <= args.validation_specificity_target < 1.0:
+            raise ValueError("validation-specificity-target must be in [0.5, 1.0)")
+        if args.min_validation_positives_for_threshold < 1:
+            raise ValueError("min-validation-positives-for-threshold must be positive")
+        thresholds, thresholds_selected = select_specificity_thresholds(
+            valid_y, valid_scores, trainable, args.validation_specificity_target,
+            args.min_validation_positives_for_threshold)
+        threshold_report = {
+            name: {"threshold": float(thresholds[j]),
+                   "selected_on_validation": bool(thresholds_selected[j]),
+                   "selection_status": ("selected_subject_to_target_specificity"
+                                        if thresholds_selected[j]
+                                        else "fixed_0.5_validation_support_below_minimum"),
+                   "validation_metrics": multilabel_metrics(
+                       valid_y[:, [j]], valid_scores[:, [j]], [name], pos[[j]],
+                       trainable[[j]], thresholds[[j]])["per_label"][name]}
+            for j, name in enumerate(names)
+        }
     test_y, test_scores, test_ids = collect(model, loaders["test"], device)
     report = {
         "status": "RFMID_OFFICIAL_SPLIT_DEVELOPMENT_ONLY_NOT_CLINICAL_VALIDATION",
-        "dataset": "RFMiD public multi-label fundus mirror; verify the exact mirror and source terms before redistribution",
-        "architecture": checkpoint["architecture"], "pretrained_imagenet": not args.no_pretrained,
+        "dataset": "RFMiD 1.0 images and labels from ctmedtech/RFMID; the dataset card declares CC BY 4.0 and links the upstream RFMiD source.",
+        "dataset_mirror": "ctmedtech/RFMID",
+        "dataset_revision": "16ee0cf528e9cb6ec38a6d7b1f3e4580172bc1da",
+        "dataset_terms": {"declared_license": "CC BY 4.0",
+                           "dataset_card": "https://huggingface.co/datasets/ctmedtech/RFMID",
+                           "upstream_data_descriptor": "https://doi.org/10.3390/data6020014"},
+        "architecture": checkpoint["architecture"],
+        "pretrained_imagenet": not args.no_pretrained,
+        "initialization_mode": "continued_from_checkpoint" if args.init_checkpoint is not None else "imagenet_pretrained",
+        "initialization_checkpoint_sha256": init_checkpoint_sha256,
         "input_size": args.size, "seed": args.seed, "best_epoch_by_validation_bce": best_epoch,
         "split_image_counts": {split: len(rows) for split, rows in splits.items()},
         "training_config": {"optimizer": "AdamW", "learning_rate": 2e-5,
@@ -291,6 +366,13 @@ def main():
         "split_caveat": "Official image-level train/validation/test partitions were used; patient-level separation could not be verified from the supplied label tables.",
         "target_semantics": {"Disease_Risk": "excluded from disease heads by default; optional dataset-defined output only",
                              "other_columns": "source-provided multi-label condition/finding indicators"},
+        "threshold_policy": ({"method": "per-label maximum sensitivity subject to the prespecified validation specificity target",
+                              "validation_specificity_target": args.validation_specificity_target,
+                              "minimum_validation_positives_and_negatives": args.min_validation_positives_for_threshold,
+                              "test_used_for_threshold_selection": False,
+                              "thresholds_and_validation_metrics": threshold_report}
+                             if thresholds is not None else
+                             {"method": "fixed 0.5 for every label"}),
         "history": history,
         "training_label_support": {name: {"positive": int(pos[j]), "negative": int(neg[j]),
                                            "minimum_positive_required": args.min_train_positives,
@@ -298,14 +380,14 @@ def main():
                                            "included_in_loss": bool(trainable[j])}
                                    for j, name in enumerate(names)},
         "checkpoint_sha256": hashlib.sha256(args.artifact.read_bytes()).hexdigest(),
-        "test_metrics": multilabel_metrics(test_y, test_scores, names, pos, trainable),
+        "test_metrics": multilabel_metrics(test_y, test_scores, names, pos, trainable, thresholds),
     }
     report_path = args.outdir / "run_summary.json"
     report_path.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({"summary": str(report_path), "best_epoch": best_epoch,
                       "test_macro_auroc": report["test_metrics"]["macro_auroc_over_train_supported_labels_with_both_eval_classes"],
                       "test_macro_ap": report["test_metrics"]["macro_average_precision_over_train_supported_labels_with_eval_positives"],
-                      "test_mean_label_accuracy": report["test_metrics"]["mean_label_accuracy_at_0_5"]}), flush=True)
+                      "test_mean_label_accuracy": report["test_metrics"]["mean_label_accuracy_at_threshold"]}), flush=True)
 
 
 if __name__ == "__main__":

@@ -22,9 +22,10 @@ def read_status():
             if start.tzinfo is None:
                 start = start.replace(tzinfo=timezone.utc)
             elapsed_hours = max(0.0, (datetime.now(timezone.utc) - start.astimezone(timezone.utc)).total_seconds() / 3600)
-            budget["gpu_hours_used"] = round(elapsed_hours, 2)
-            budget["gpu_hours_remaining"] = round(max(0.0, float(budget.get("gpu_hours_total", 8)) - elapsed_hours), 2)
-            budget["estimated_spent_try"] = round(elapsed_hours * float(rate), 2)
+            used_hours = float(budget.get("gpu_hours_base", budget.get("gpu_hours_used", 0))) + elapsed_hours
+            budget["gpu_hours_used"] = round(used_hours, 2)
+            budget["gpu_hours_remaining"] = round(max(0.0, float(budget.get("gpu_hours_total", 8)) - used_hours), 2)
+            budget["estimated_spent_try"] = round(used_hours * float(rate), 2)
         except (TypeError, ValueError):
             pass
     return status
