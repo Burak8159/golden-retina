@@ -1,0 +1,224 @@
+{
+  "status": "VALIDATION_ONLY_PATIENT_CLUSTER_BOOTSTRAP",
+  "unit": "eye; max score pooled across images within eye",
+  "validation_eyes": 137,
+  "patient_count": 121,
+  "bootstrap_replicates": 2000,
+  "threshold_policy": "selected on this validation cohort to maximize sensitivity at specificity >=0.90",
+  "interval_policy": "patient-stratified cluster bootstrap; intervals are conditional on the selected threshold and do not correct model/threshold selection optimism",
+  "checkpoint_epoch": 30,
+  "best_validation_loss": 0.17971056699752808,
+  "checkpoint_sha256": "af95b8bfb9de42b41a20357f44f7a5545f610a9f22bfbd0431fe10bb64d7caef",
+  "diseases": {
+    "AMD": {
+      "accuracy": 0.9416058394160584,
+      "sensitivity": 0.9375,
+      "specificity": 0.9421487603305785,
+      "auroc": 0.9514462809917356,
+      "auprc": 0.7663691190345603,
+      "positive_eyes": 16,
+      "misses": 1,
+      "false_positives": 7,
+      "threshold_validation_only": 0.2381591796875,
+      "positive_patients": 10,
+      "negative_patients": 111,
+      "patient_cluster_95pct_ci": {
+        "accuracy": [
+          0.8978102189781022,
+          0.9844991055456171
+        ],
+        "sensitivity": [
+          0.8125,
+          1.0
+        ],
+        "specificity": [
+          0.8943089430894309,
+          0.9831932773109243
+        ],
+        "auroc": [
+          0.8870683959067499,
+          0.994874308697838
+        ],
+        "auprc": [
+          0.5805818549256327,
+          0.9623255655163548
+        ]
+      }
+    },
+    "DR": {
+      "accuracy": 0.948905109489051,
+      "sensitivity": 0.9047619047619048,
+      "specificity": 0.9568965517241379,
+      "auroc": 0.9655172413793103,
+      "auprc": 0.8329078427265071,
+      "positive_eyes": 21,
+      "misses": 2,
+      "false_positives": 5,
+      "threshold_validation_only": 0.1468505859375,
+      "positive_patients": 11,
+      "negative_patients": 110,
+      "patient_cluster_95pct_ci": {
+        "accuracy": [
+          0.9057971014492754,
+          0.9850773908236594
+        ],
+        "sensitivity": [
+          0.7142857142857143,
+          1.0
+        ],
+        "specificity": [
+          0.9173553719008265,
+          0.9910714285714286
+        ],
+        "auroc": [
+          0.913363025863026,
+          0.9991228070175437
+        ],
+        "auprc": [
+          0.655758367556981,
+          0.9954545454545455
+        ]
+      }
+    },
+    "PM": {
+      "accuracy": 0.8978102189781022,
+      "sensitivity": 0.85,
+      "specificity": 0.905982905982906,
+      "auroc": 0.9487179487179487,
+      "auprc": 0.8616374472300925,
+      "positive_eyes": 20,
+      "misses": 3,
+      "false_positives": 11,
+      "threshold_validation_only": 0.1259765625,
+      "positive_patients": 20,
+      "negative_patients": 101,
+      "patient_cluster_95pct_ci": {
+        "accuracy": [
+          0.8394096779133275,
+          0.9485294117647058
+        ],
+        "sensitivity": [
+          0.7,
+          1.0
+        ],
+        "specificity": [
+          0.844022736338253,
+          0.9576271186440678
+        ],
+        "auroc": [
+          0.8815310583692937,
+          0.9915966386554621
+        ],
+        "auprc": [
+          0.7315984375504917,
+          0.9612055711062075
+        ]
+      }
+    },
+    "RD": {
+      "accuracy": 0.9343065693430657,
+      "sensitivity": 0.9,
+      "specificity": 0.9401709401709402,
+      "auroc": 0.9626068376068376,
+      "auprc": 0.90796162227122,
+      "positive_eyes": 20,
+      "misses": 2,
+      "false_positives": 7,
+      "threshold_validation_only": 0.11126708984375,
+      "positive_patients": 20,
+      "negative_patients": 101,
+      "patient_cluster_95pct_ci": {
+        "accuracy": [
+          0.8888681592039801,
+          0.9716362001798021
+        ],
+        "sensitivity": [
+          0.75,
+          1.0
+        ],
+        "specificity": [
+          0.8907563025210085,
+          0.9821428571428571
+        ],
+        "auroc": [
+          0.9067651281692114,
+          0.9976227678571429
+        ],
+        "auprc": [
+          0.8053989535162032,
+          0.9870436507936509
+        ]
+      }
+    },
+    "RVO": {
+      "accuracy": 0.9197080291970803,
+      "sensitivity": 1.0,
+      "specificity": 0.905982905982906,
+      "auroc": 0.9914529914529914,
+      "auprc": 0.960358077976891,
+      "positive_eyes": 20,
+      "misses": 0,
+      "false_positives": 11,
+      "threshold_validation_only": 0.10015869140625,
+      "positive_patients": 20,
+      "negative_patients": 101,
+      "patient_cluster_95pct_ci": {
+        "accuracy": [
+          0.8721616541353383,
+          0.9629629629629629
+        ],
+        "sensitivity": [
+          1.0,
+          1.0
+        ],
+        "specificity": [
+          0.8499889380530973,
+          0.9565217391304348
+        ],
+        "auroc": [
+          0.9767197512969179,
+          0.9995870267928553
+        ],
+        "auprc": [
+          0.9036386012062482,
+          0.9976190476190477
+        ]
+      }
+    },
+    "Uveitis": {
+      "accuracy": 0.8540145985401459,
+      "sensitivity": 0.4,
+      "specificity": 0.9316239316239316,
+      "auroc": 0.838034188034188,
+      "auprc": 0.49797632551205595,
+      "positive_eyes": 20,
+      "misses": 12,
+      "false_positives": 8,
+      "threshold_validation_only": 0.415771484375,
+      "positive_patients": 20,
+      "negative_patients": 101,
+      "patient_cluster_95pct_ci": {
+        "accuracy": [
+          0.8015253143242029,
+          0.9021018455228981
+        ],
+        "sensitivity": [
+          0.2,
+          0.6
+        ],
+        "specificity": [
+          0.8818181818181818,
+          0.9752066115702479
+        ],
+        "auroc": [
+          0.7526277729447586,
+          0.9080395628078819
+        ],
+        "auprc": [
+          0.33641556477307855,
+          0.6904297153433488
+        ]
+      }
+    }
+  }
+}

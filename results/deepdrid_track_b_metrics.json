@@ -1,26 +1,36 @@
 {
   "dataset": "DeepDRiD",
-  "reason": "Track B second-view value and stopping analysis require out-of-fold/cross-fitted predictions. No empirical metrics were fabricated because the required prediction file is not present.",
-  "required_prediction_columns": [
-    "eye_id",
-    "fold_id",
-    "grade",
-    "patient_id",
-    "prediction_scope",
-    "referable_dr",
-    "referable_score",
-    "view_set"
-  ],
-  "required_prediction_file": "results/deepdrid_crossfit_predictions.csv",
-  "required_view_sets": [
-    "macula",
-    "macula+optic_disc"
-  ],
-  "status": "BLOCKED_CROSSFIT_PREDICTIONS_MISSING",
+  "status": "CROSSFIT_FILES_PRESENT_PAIRED_VIEW_POLICY_DEVELOPMENT_NO_GO",
   "track": "B_deepdrid_pipeline_derisking",
-  "view_mapping": {
-    "suffix_1": "optic_disc",
-    "suffix_2": "macula"
+  "reason": "The required visual and swapped mapping prediction files were present; prior BLOCKED_CROSSFIT_PREDICTIONS_MISSING status was stale. A split-separated aggregate audit and calibration-only two-view threshold policy are now recorded.",
+  "aggregate_report": "reports/deepdrid_paired_view_policy_audit_20261121.md",
+  "aggregate_json": "reports/deepdrid_paired_view_crossfit_aggregate_20261121.json",
+  "policy_summary": {
+    "inferred_mapping": {
+      "validation_positive_patients": 18,
+      "missed_positive_patients": 0,
+      "specificity": 0.3261,
+      "specificity_patient_bootstrap_95_ci": [
+        0.1667,
+        0.5
+      ],
+      "second_view_acquisition_rate": 0.8333,
+      "binary_action_coverage": 1.0,
+      "one_sided_95pct_exact_upper_patient_miss_risk": 0.1533
+    },
+    "swapped_mapping": {
+      "validation_positive_patients": 18,
+      "missed_positive_patients": 0,
+      "specificity": 0.2609,
+      "specificity_patient_bootstrap_95_ci": [
+        0.125,
+        0.4091
+      ],
+      "second_view_acquisition_rate": 0.9487,
+      "binary_action_coverage": 1.0,
+      "one_sided_95pct_exact_upper_patient_miss_risk": 0.1533
+    }
   },
-  "view_mapping_status": "INFERRED_NOT_OFFICIAL_VISUAL_AUDIT"
+  "view_mapping_status": "INFERRED_NOT_OFFICIAL_VISUAL_AUDIT; swapped branch is sensitivity only. Mapping choice changes first-view conclusions.",
+  "boundary": "Development-only two-view analysis; not a risk-certified stop/acquire/defer policy, not clinical validation, and not multi-step planning. The historical test partition is exposed at project level and is excluded from this decision."
 }

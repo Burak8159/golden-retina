@@ -1,0 +1,612 @@
+{
+  "status": "SPLIT_SEPARATED_PAIRED_VIEW_AGGREGATE_AUDIT",
+  "dataset": "DeepDRiD",
+  "task": "referable DR, paired macula-only vs macula+optic-disc score",
+  "analysis_unit": "eye; uncertainty resampled by patient cluster",
+  "bootstrap_replicates": 2000,
+  "policy_boundary": "This compares score quality and a label-aware retrospective oracle; it does not learn or certify STOP/ACQUIRE/DEFER, and no rows are used to tune an operating threshold.",
+  "branches": [
+    {
+      "prediction_file": "deepdrid_crossfit_predictions.csv",
+      "prediction_sha256": "1d3e192d06968a7f193d533a87e0715451499414313db338ec36b1663cb7b92e",
+      "mapping_branch": "inferred_suffix_1_disc",
+      "mapping_boundary": "Filename suffix-to-anatomical-field mapping is not officially confirmed; branch comparison is a sensitivity analysis, not an averaged estimate.",
+      "row_counts_by_split": {
+        "calibration": 240,
+        "sealed_test": 240,
+        "train": 1665,
+        "validation": 236
+      },
+      "partitions": {
+        "calibration": {
+          "scope": "cross-fitted development; not a final test",
+          "n_paired_eyes": 80,
+          "n_patients": 40,
+          "positive_eyes": 39,
+          "incomplete_eyes_excluded": 0,
+          "macula_only": {
+            "n_eyes": 80,
+            "positive_eyes": 39,
+            "auroc": 0.7761100687929956,
+            "auprc": 0.6677869317104266,
+            "brier": 0.17961609814142224
+          },
+          "macula_plus_disc": {
+            "n_eyes": 80,
+            "positive_eyes": 39,
+            "auroc": 0.7986241400875547,
+            "auprc": 0.7118676973060901,
+            "brier": 0.16990917722745436
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 80,
+            "positive_eyes": 39,
+            "auroc": 0.8348968105065666,
+            "auprc": 0.7531395022434167,
+            "brier": 0.1477245965412512
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": 0.022514071294559068,
+            "auprc_two_view_minus_first": 0.04408076559566354,
+            "brier_two_view_minus_first": -0.009706920913967881,
+            "oracle_brier_minus_first": -0.03189150160017104
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                -0.02336874253794985,
+                0.07954616655274553
+              ],
+              "auprc_delta_two_view_minus_first": [
+                -0.01233416648455182,
+                0.0988671742860955
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.03496812957174994,
+                0.012537708558942604
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.054233323432432416,
+                -0.016301837760204
+              ]
+            }
+          }
+        },
+        "sealed_test": {
+          "scope": "previously designated held-out partition; descriptive only, not used for current selection",
+          "n_paired_eyes": 80,
+          "n_patients": 40,
+          "positive_eyes": 32,
+          "incomplete_eyes_excluded": 0,
+          "macula_only": {
+            "n_eyes": 80,
+            "positive_eyes": 32,
+            "auroc": 0.8463541666666666,
+            "auprc": 0.8215605511638898,
+            "brier": 0.1543815605487499
+          },
+          "macula_plus_disc": {
+            "n_eyes": 80,
+            "positive_eyes": 32,
+            "auroc": 0.8496093749999999,
+            "auprc": 0.831518727299932,
+            "brier": 0.15221858810630357
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 80,
+            "positive_eyes": 32,
+            "auroc": 0.89453125,
+            "auprc": 0.8915183668104072,
+            "brier": 0.12601229395059502
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": 0.0032552083333332593,
+            "auprc_two_view_minus_first": 0.009958176136042218,
+            "brier_two_view_minus_first": -0.0021629724424463426,
+            "oracle_brier_minus_first": -0.02836926659815489
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                -0.033529934161583105,
+                0.04081893627016027
+              ],
+              "auprc_delta_two_view_minus_first": [
+                -0.04024120858448758,
+                0.061000085525657645
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.019734077036684988,
+                0.01743881141248703
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.03963875094557355,
+                -0.018093625596453347
+              ]
+            }
+          }
+        },
+        "train": {
+          "scope": "cross-fitted development; not a final test",
+          "n_paired_eyes": 554,
+          "n_patients": 277,
+          "positive_eyes": 245,
+          "incomplete_eyes_excluded": 3,
+          "macula_only": {
+            "n_eyes": 554,
+            "positive_eyes": 245,
+            "auroc": 0.7915725513506372,
+            "auprc": 0.7236776621757359,
+            "brier": 0.18746191377158491
+          },
+          "macula_plus_disc": {
+            "n_eyes": 554,
+            "positive_eyes": 245,
+            "auroc": 0.7991942408031173,
+            "auprc": 0.7150641975552579,
+            "brier": 0.1836511690092539
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 554,
+            "positive_eyes": 245,
+            "auroc": 0.8538273561851926,
+            "auprc": 0.8100372827502609,
+            "brier": 0.15572716052711885
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": 0.007621689452480096,
+            "auprc_two_view_minus_first": -0.008613464620478073,
+            "brier_two_view_minus_first": -0.0038107447623310087,
+            "oracle_brier_minus_first": -0.03173475324446606
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                -0.009325887158564253,
+                0.024484852269857353
+              ],
+              "auprc_delta_two_view_minus_first": [
+                -0.03981795171161319,
+                0.02425163624924142
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.01243768349972742,
+                0.004886705608362452
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.038440670054489076,
+                -0.025215060132339574
+              ]
+            }
+          }
+        },
+        "validation": {
+          "scope": "cross-fitted development; not a final test",
+          "n_paired_eyes": 78,
+          "n_patients": 39,
+          "positive_eyes": 32,
+          "incomplete_eyes_excluded": 2,
+          "macula_only": {
+            "n_eyes": 78,
+            "positive_eyes": 32,
+            "auroc": 0.8485054347826086,
+            "auprc": 0.7807329686237159,
+            "brier": 0.16650065166841171
+          },
+          "macula_plus_disc": {
+            "n_eyes": 78,
+            "positive_eyes": 32,
+            "auroc": 0.8342391304347826,
+            "auprc": 0.7715421072372889,
+            "brier": 0.17082678909960175
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 78,
+            "positive_eyes": 32,
+            "auroc": 0.9001358695652174,
+            "auprc": 0.8506097878391399,
+            "brier": 0.1319345485148578
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": -0.014266304347826053,
+            "auprc_two_view_minus_first": -0.009190861386426996,
+            "brier_two_view_minus_first": 0.004326137431190036,
+            "oracle_brier_minus_first": -0.034566103153553907
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                -0.06801767676767684,
+                0.03838512094174416
+              ],
+              "auprc_delta_two_view_minus_first": [
+                -0.07014136305907218,
+                0.051462805859283166
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.02459810520680863,
+                0.034368891213816075
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.05312388805528551,
+                -0.017906860978088787
+              ]
+            }
+          }
+        }
+      },
+      "risk_gated_second_view_policy": {
+        "status": "DEVELOPMENT_ONLY_CALIBRATED_ON_CALIBRATION_SPLIT",
+        "rule": "Acquire a second view unless the first-view score is below its minimum among calibration positives; after acquisition, mark positive when the two-view score is at least its minimum among calibration positives. Thresholds are frozen from calibration only.",
+        "thresholds": {
+          "first_view_clearance_upper_exclusive": 0.1031665,
+          "two_view_positive_lower_inclusive": 0.07570601
+        },
+        "calibration": {
+          "eyes": 80,
+          "patients": 40,
+          "positive_eyes": 39,
+          "negative_eyes": 41,
+          "true_positives": 39,
+          "false_negatives": 0,
+          "true_negatives": 12,
+          "false_positives": 29,
+          "sensitivity": 1.0,
+          "specificity": 0.2926829268292683,
+          "binary_action_coverage": 1.0,
+          "secondary_view_acquisition_rate": 0.8625,
+          "mean_views_per_eye": 1.8625,
+          "positive_patients": 21,
+          "missed_positive_patients": 0,
+          "one_sided_95pct_exact_upper_bound_patient_miss_risk": 0.13294591102652337
+        },
+        "validation": {
+          "eyes": 78,
+          "patients": 39,
+          "positive_eyes": 32,
+          "negative_eyes": 46,
+          "true_positives": 32,
+          "false_negatives": 0,
+          "true_negatives": 15,
+          "false_positives": 31,
+          "sensitivity": 1.0,
+          "specificity": 0.32608695652173914,
+          "binary_action_coverage": 1.0,
+          "secondary_view_acquisition_rate": 0.8333333333333334,
+          "mean_views_per_eye": 1.8333333333333335,
+          "positive_patients": 18,
+          "missed_positive_patients": 0,
+          "one_sided_95pct_exact_upper_bound_patient_miss_risk": 0.1533175539572782
+        },
+        "validation_patient_bootstrap": {
+          "method": "patient-cluster stratified bootstrap",
+          "replicates": 2000,
+          "interval_95": {
+            "sensitivity": [
+              1.0,
+              1.0
+            ],
+            "specificity": [
+              0.16666666666666666,
+              0.5
+            ],
+            "secondary_view_acquisition_rate": [
+              0.7432692307692308,
+              0.9230769230769231
+            ]
+          }
+        },
+        "boundary": "Empirical zero calibration misses are not a safety guarantee. Validation is small and same-source. Policy covers only a second view in DeepDRiD; it is not a clinical stop/acquire/defer system."
+      }
+    },
+    {
+      "prediction_file": "deepdrid_swapped_mapping_crossfit_predictions.csv",
+      "prediction_sha256": "179be171024ba06115e3b8c4c7c3397c74b67e6ecda9c1cad1e810d125e468fa",
+      "mapping_branch": "swapped_sensitivity",
+      "mapping_boundary": "Filename suffix-to-anatomical-field mapping is not officially confirmed; branch comparison is a sensitivity analysis, not an averaged estimate.",
+      "row_counts_by_split": {
+        "calibration": 240,
+        "sealed_test": 240,
+        "train": 1665,
+        "validation": 236
+      },
+      "partitions": {
+        "calibration": {
+          "scope": "cross-fitted development; not a final test",
+          "n_paired_eyes": 80,
+          "n_patients": 40,
+          "positive_eyes": 39,
+          "incomplete_eyes_excluded": 0,
+          "macula_only": {
+            "n_eyes": 80,
+            "positive_eyes": 39,
+            "auroc": 0.7510944340212634,
+            "auprc": 0.6788294317819437,
+            "brier": 0.20735499695109497
+          },
+          "macula_plus_disc": {
+            "n_eyes": 80,
+            "positive_eyes": 39,
+            "auroc": 0.7986241400875547,
+            "auprc": 0.7118676973060901,
+            "brier": 0.16990917722745436
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 80,
+            "positive_eyes": 39,
+            "auroc": 0.8617886178861789,
+            "auprc": 0.8372770130559317,
+            "brier": 0.14875150076334825
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": 0.047529706066291255,
+            "auprc_two_view_minus_first": 0.03303826552414646,
+            "brier_two_view_minus_first": -0.03744581972364061,
+            "oracle_brier_minus_first": -0.05860349618774671
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                -0.03940147625160462,
+                0.11967418546365916
+              ],
+              "auprc_delta_two_view_minus_first": [
+                -0.11346680562352454,
+                0.15450986736376468
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.06837825386156632,
+                -0.003312617576389686
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.08472059719466608,
+                -0.035209601397009314
+              ]
+            }
+          }
+        },
+        "sealed_test": {
+          "scope": "previously designated held-out partition; descriptive only, not used for current selection",
+          "n_paired_eyes": 80,
+          "n_patients": 40,
+          "positive_eyes": 32,
+          "incomplete_eyes_excluded": 0,
+          "macula_only": {
+            "n_eyes": 80,
+            "positive_eyes": 32,
+            "auroc": 0.8157552083333334,
+            "auprc": 0.6817258994248203,
+            "brier": 0.1707697175784174
+          },
+          "macula_plus_disc": {
+            "n_eyes": 80,
+            "positive_eyes": 32,
+            "auroc": 0.8496093749999999,
+            "auprc": 0.831518727299932,
+            "brier": 0.15221858810630357
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 80,
+            "positive_eyes": 32,
+            "auroc": 0.8899739583333334,
+            "auprc": 0.8840456937419643,
+            "brier": 0.13249995728131514
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": 0.03385416666666652,
+            "auprc_two_view_minus_first": 0.14979282787511172,
+            "brier_two_view_minus_first": -0.018551129472113848,
+            "oracle_brier_minus_first": -0.03826976029710227
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                -0.010003968253968262,
+                0.08105236235119036
+              ],
+              "auprc_delta_two_view_minus_first": [
+                0.003442657416391243,
+                0.25219222722721935
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.039051636368742246,
+                0.0016659088237628561
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.056320981747264645,
+                -0.02288205093852146
+              ]
+            }
+          }
+        },
+        "train": {
+          "scope": "cross-fitted development; not a final test",
+          "n_paired_eyes": 554,
+          "n_patients": 277,
+          "positive_eyes": 245,
+          "incomplete_eyes_excluded": 3,
+          "macula_only": {
+            "n_eyes": 554,
+            "positive_eyes": 245,
+            "auroc": 0.7694736146885939,
+            "auprc": 0.6837097008730163,
+            "brier": 0.197378845944907
+          },
+          "macula_plus_disc": {
+            "n_eyes": 554,
+            "positive_eyes": 245,
+            "auroc": 0.7991942408031173,
+            "auprc": 0.7150641975552579,
+            "brier": 0.1836511690092539
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 554,
+            "positive_eyes": 245,
+            "auroc": 0.8629813090284657,
+            "auprc": 0.8242916753631897,
+            "brier": 0.15198163946591156
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": 0.02972062611452342,
+            "auprc_two_view_minus_first": 0.03135449668224155,
+            "brier_two_view_minus_first": -0.013727676935653105,
+            "oracle_brier_minus_first": -0.04539720647899545
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                0.0056960533587359615,
+                0.05503848054983898
+              ],
+              "auprc_delta_two_view_minus_first": [
+                -0.01126097169570891,
+                0.07067114101899545
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.02652048472388007,
+                -0.0021258316070329325
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.05540516093969616,
+                -0.037243672356874716
+              ]
+            }
+          }
+        },
+        "validation": {
+          "scope": "cross-fitted development; not a final test",
+          "n_paired_eyes": 78,
+          "n_patients": 39,
+          "positive_eyes": 32,
+          "incomplete_eyes_excluded": 2,
+          "macula_only": {
+            "n_eyes": 78,
+            "positive_eyes": 32,
+            "auroc": 0.7656250000000001,
+            "auprc": 0.642161085498708,
+            "brier": 0.19479593878042617
+          },
+          "macula_plus_disc": {
+            "n_eyes": 78,
+            "positive_eyes": 32,
+            "auroc": 0.8342391304347826,
+            "auprc": 0.7715421072372889,
+            "brier": 0.17082678909960175
+          },
+          "label_aware_hindsight_oracle": {
+            "n_eyes": 78,
+            "positive_eyes": 32,
+            "auroc": 0.8865489130434783,
+            "auprc": 0.8630393558705989,
+            "brier": 0.1422793572914659
+          },
+          "paired_differences": {
+            "auroc_two_view_minus_first": 0.06861413043478248,
+            "auprc_two_view_minus_first": 0.1293810217385809,
+            "brier_two_view_minus_first": -0.02396914968082442,
+            "oracle_brier_minus_first": -0.05251658148896027
+          },
+          "patient_cluster_bootstrap": {
+            "method": "patient-stratified cluster bootstrap; both eyes/views kept with patient",
+            "replicates": 2000,
+            "interval_95": {
+              "auroc_delta_two_view_minus_first": [
+                0.015488215488215547,
+                0.1326767676767675
+              ],
+              "auprc_delta_two_view_minus_first": [
+                0.03401792653515507,
+                0.2107989544098849
+              ],
+              "brier_delta_two_view_minus_first": [
+                -0.05232897246279429,
+                0.0016671097755287922
+              ],
+              "oracle_brier_delta_vs_first": [
+                -0.07775427140687242,
+                -0.0301882876588247
+              ]
+            }
+          }
+        }
+      },
+      "risk_gated_second_view_policy": {
+        "status": "DEVELOPMENT_ONLY_CALIBRATED_ON_CALIBRATION_SPLIT",
+        "rule": "Acquire a second view unless the first-view score is below its minimum among calibration positives; after acquisition, mark positive when the two-view score is at least its minimum among calibration positives. Thresholds are frozen from calibration only.",
+        "thresholds": {
+          "first_view_clearance_upper_exclusive": 0.04715437,
+          "two_view_positive_lower_inclusive": 0.07570601
+        },
+        "calibration": {
+          "eyes": 80,
+          "patients": 40,
+          "positive_eyes": 39,
+          "negative_eyes": 41,
+          "true_positives": 39,
+          "false_negatives": 0,
+          "true_negatives": 11,
+          "false_positives": 30,
+          "sensitivity": 1.0,
+          "specificity": 0.2682926829268293,
+          "binary_action_coverage": 1.0,
+          "secondary_view_acquisition_rate": 0.95,
+          "mean_views_per_eye": 1.95,
+          "positive_patients": 21,
+          "missed_positive_patients": 0,
+          "one_sided_95pct_exact_upper_bound_patient_miss_risk": 0.13294591102652337
+        },
+        "validation": {
+          "eyes": 78,
+          "patients": 39,
+          "positive_eyes": 32,
+          "negative_eyes": 46,
+          "true_positives": 32,
+          "false_negatives": 0,
+          "true_negatives": 12,
+          "false_positives": 34,
+          "sensitivity": 1.0,
+          "specificity": 0.2608695652173913,
+          "binary_action_coverage": 1.0,
+          "secondary_view_acquisition_rate": 0.9487179487179487,
+          "mean_views_per_eye": 1.9487179487179487,
+          "positive_patients": 18,
+          "missed_positive_patients": 0,
+          "one_sided_95pct_exact_upper_bound_patient_miss_risk": 0.1533175539572782
+        },
+        "validation_patient_bootstrap": {
+          "method": "patient-cluster stratified bootstrap",
+          "replicates": 2000,
+          "interval_95": {
+            "sensitivity": [
+              1.0,
+              1.0
+            ],
+            "specificity": [
+              0.125,
+              0.4090909090909091
+            ],
+            "secondary_view_acquisition_rate": [
+              0.8846153846153846,
+              1.0
+            ]
+          }
+        },
+        "boundary": "Empirical zero calibration misses are not a safety guarantee. Validation is small and same-source. Policy covers only a second view in DeepDRiD; it is not a clinical stop/acquire/defer system."
+      }
+    }
+  ]
+}

@@ -90,6 +90,13 @@ Audience-specific project briefs are available: the [technical system note](docs
 documents the current per-disease specialist sweep and its evidence boundaries;
 the [customer and research-partner brief](docs/golden_retina_customer_partner_brief_20261114.md)
 describes the prototype's present capabilities and non-clinical status.
+
+The current campaign's full [disease-by-disease scope and evidence overview](docs/disease_by_disease_overview_20261121.md)
+is a standalone repository document, separate from the progress-tracker website.
+It covers modality fit, dataset support, candidate results, failures, and
+development decisions. The latest [Zhejiang one-vs-all regularization sweep](reports/zhejiang_one_vs_rest_regularization_sweep_aggregate_20261121.md)
+reports validation-only candidate results and their selection limits.
+
 The [per-disease metrics ledger](results/expert_sweep/per_disease_metrics.csv)
 and [research-model registry](results/expert_sweep/research_model_registry.json)
 are the current aggregate research snapshot. The specialist results are image-split development evidence, not patient-level validation.

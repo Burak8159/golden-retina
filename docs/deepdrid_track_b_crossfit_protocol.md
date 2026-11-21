@@ -2,7 +2,7 @@
 
 Date: 2026-10-03
 
-Status: `DATA_READY_METRICS_BLOCKED_ON_CROSSFIT_PREDICTIONS`
+Status: `CROSSFIT_AGGREGATES_PRESENT_POLICY_DEVELOPMENT_NO_GO` (updated 2026-11-21)
 
 DeepDRiD is now the primary available dataset for the upgraded Golden Retina-RC flagship. It supports paired same-eye two-view adaptive acquisition, calibrated stopping, and defer behavior. It does not support four-field field-selection or non-myopic multi-step planning claims.
 
@@ -105,13 +105,9 @@ Regular fundus local inventory:
 - manifest rows with existing local image files: 1589
 - missing labeled train/validation image files: 0
 
-## Current Blocker
+## Updated Evidence and Remaining Blockers
 
-Full DeepDRiD regular fundus images are locally available and schema/image integrity has been verified for labeled train/validation rows. The current metric outputs are expected to be:
-
-- `BLOCKED_CROSSFIT_PREDICTIONS_MISSING`
-
-This is a data-ready state, not empirical evidence. The next step is generating out-of-fold predictions for `macula`, `optic_disc`, and `macula+optic_disc` under both mapping assumptions.
+A later audit found the visual and swapped branch cross-fit prediction files already present; the earlier missing-predictions status was stale. A split-separated aggregate audit now reports train/calibration/validation independently and treats the previously accessed sealed-test partition as historical only. The calibration-only second-view rule had 0/18 missed positive patients on validation, but specificity was only 32.6% and 83.3% of eyes required another image under the inferred mapping. The swapped branch had 26.1% specificity and 94.9% second-view acquisition. Patient-level one-sided exact upper miss-risk bound was 15.3% for 0/18. These results do not support deployment. The mapping is still unconfirmed, and the first-view benefit changes direction across branches. See `reports/deepdrid_paired_view_policy_audit_20261121.md`.
 
 ## Commands
 

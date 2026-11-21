@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "audit_date": "2026-11-21",
+  "purpose": "Local source/protocol/aggregate artifact index; includes only shareable files, not the private VM recovery archive.",
+  "included": [
+    {
+      "path": "mobile_models/onnx/manifest.json",
+      "bytes": 34328,
+      "sha256": "7a6fc3e0d3cc009c7520256bf5739510ed2ff4f42add399a726848af96b05d68"
+    },
+    {
+      "path": "mobile_models/schemas/per_eye_result.schema.json",
+      "bytes": 3352,
+      "sha256": "d5e9ea147e6cd4be99c2f55b3e9dde60422a1d8f9ad78edce9cd3e55dd5e53b7"
+    },
+    {
+      "path": "docs/evaluation_protocol_20261121.md",
+      "bytes": 6086,
+      "sha256": "2a311027094283af4aeeef1819cab5e26eb8d97830dc6e30bf587a9fb98fc02a"
+    },
+    {
+      "path": "docs/disease_by_disease_overview_20261121.md",
+      "bytes": 20278,
+      "sha256": "7ff804585c9eef0c737669fd7f6190c34d4dbe3ad84d507e0c71bf21d5c1cb3c"
+    },
+    {
+      "path": "docs/disease_scope_and_progress_20261121.md",
+      "bytes": 5811,
+      "sha256": "1fa2615c9d08c224918d577a4ff2d20bf8f334c5de0e13edf622689cc475f10e"
+    },
+    {
+      "path": "docs/dataset_candidate_screen_20261121.md",
+      "bytes": 7399,
+      "sha256": "67443d71035684428f4e22e5d43ecc19abf2ff2c8e5b33c84df183a70ac99b71"
+    },
+    {
+      "path": "docs/functional_vision_task_contract_20261121.md",
+      "bytes": 3293,
+      "sha256": "efa7ffe69534bb52789ac120379bd4f2a04d178019b992a6df71a362bb0bfa68"
+    },
+    {
+      "path": "docs/integrated_screening_output_contract_20261121.md",
+      "bytes": 4611,
+      "sha256": "7c643aa587f64cc96a879ec00932c4dd31dcdc9424a0885dc1353543e7e72d53"
+    },
+    {
+      "path": "reports/additional_disease_model_decisions_20261121.md",
+      "bytes": 2817,
+      "sha256": "1cc5123ab39b54f4147a580c9e0328f333d30d3d579bc1cfd27b616b014740d7"
+    },
+    {
+      "path": "reports/amd_glaucoma_suspect_development_comparison_20261121.md",
+      "bytes": 3790,
+      "sha256": "f0d274fa7e5da8e482a97aa7b8f61f1b3866f83c954da3c96cc3d75d3d5fb0d4"
+    },
+    {
+      "path": "reports/abnormality_and_quality_gate_20261121.md",
+      "bytes": 2493,
+      "sha256": "9e019de6f37a8123312100ddff7836159d4322247b7bc4b7e201480813415506"
+    },
+    {
+      "path": "reports/deepdrid_paired_view_policy_audit_20261121.md",
+      "bytes": 4881,
+      "sha256": "6b560475c1323235b831dd1aca80047e4b2adc0e11b6d87e8e39d6c39cce6fac"
+    },
+    {
+      "path": "reports/deepdrid_paired_view_crossfit_aggregate_20261121.json",
+      "bytes": 22936,
+      "sha256": "56452f5387052244c676c92e7675c041a577339eda5218dc1931c72c2f5f3686"
+    },
+    {
+      "path": "reports/on_device_deployment_footprint_20261121.md",
+      "bytes": 3658,
+      "sha256": "95ff2972a7743d7b72b46b6aeb2c5bfd55975f3ddf764900fb59703aa8d6c3cf"
+    },
+    {
+      "path": "reports/zhejiang_convnext_end_to_end_validation_aggregate_20261121.md",
+      "bytes": 3732,
+      "sha256": "dec54ef599e5f2c504630d68c5b7044a114f0ab3806e079b5d9692193a95c1e7"
+    },
+    {
+      "path": "reports/remote_aggregates/zhejiang_convnext_finetune_aggregate_20261121.json",
+      "bytes": 7919,
+      "sha256": "375522dd538c885243dc93c2d4f64116961c8eb77a678795b414965339937833"
+    },
+    {
+      "path": "reports/remote_aggregates/zhejiang_convnext_finetune_bootstrap_aggregate_20261121.json",
+      "bytes": 5833,
+      "sha256": "049e9f1e66758d67753c038cdccd44a5160a978a7605b2f0b889b948a1edd75e"
+    },
+    {
+      "path": "reports/precloseout_evidence_ledger_20261121.md",
+      "bytes": 6996,
+      "sha256": "fbf56ff85523cb4eefc036b698fa0b5a5c04623d1432bdccec112f662f70208c"
+    },
+    {
+      "path": "reports/vm_artifact_pull_20261121.md",
+      "bytes": 1474,
+      "sha256": "f6dbe3ac717b1ee5aad05fa1861fc20ad59ac37ec8156659fb5f7f526268845c"
+    },
+    {
+      "path": "scripts/audit_deepdrid_paired_crossfit_aggregate.py",
+      "bytes": 14490,
+      "sha256": "9b4f0748e8400ab024073a0cad8b4fb76738822af9eac304a0f2aed7e301dd43"
+    },
+    {
+      "path": "scripts/cloud/train_zhejiang_convnext_end_to_end_ovr.py",
+      "bytes": 11891,
+      "sha256": "6d00b23da7a4c675776804c60f87b568337466109b76c219c42396f231b3b940"
+    },
+    {
+      "path": "scripts/cloud/bootstrap_zhejiang_convnext_finetune_validation.py",
+      "bytes": 7792,
+      "sha256": "d7ce0a3f65bc0e134214a0bd605ce338598a7f058da208f5ce3fb4247a1b991f"
+    }
+  ],
+  "missing_expected_paths": [],
+  "excluded": "Raw images, private manifests, row-level predictions, feature arrays, checkpoints, tokens and source model weights unless explicitly rights-cleared."
+}

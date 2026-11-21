@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Burak8159/golden-retina/main/mobile_models/schemas/per_eye_result.schema.json",
+  "title": "Golden Retina per-eye research inference result",
+  "description": "On-device research output contract. Scores are raw model scores, not calibrated disease probabilities, clinical risk estimates, or diagnoses.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "inference_id",
+    "eye_side",
+    "capture_status",
+    "quality_assessment",
+    "model_registry_version",
+    "overall_status",
+    "outputs",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "inference_id": { "type": "string", "minLength": 1 },
+    "eye_side": { "enum": ["left", "right", "unknown"] },
+    "captured_at": { "type": ["string", "null"], "format": "date-time" },
+    "capture_status": { "enum": ["image_selected", "captured", "not_captured", "capture_error"] },
+    "quality_assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "score", "model_id"],
+      "properties": {
+        "status": { "enum": ["not_assessed", "gradable", "ungradable", "assessment_error"] },
+        "score": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "model_id": { "type": ["string", "null"] }
+      }
+    },
+    "model_registry_version": { "type": "string", "minLength": 1 },
+    "overall_status": { "enum": ["complete", "partial", "unavailable", "invalid_image", "inference_error"] },
+    "outputs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label_id", "label", "output_kind", "status", "raw_score", "model"],
+        "properties": {
+          "label_id": { "type": "string", "pattern": "^[A-Za-z0-9_-]+$" },
+          "label": { "type": "string", "minLength": 1 },
+          "output_kind": { "enum": ["dataset_condition_label", "retinal_image_finding"] },
+          "status": { "enum": ["scored", "model_not_installed", "inference_error", "not_supported"] },
+          "raw_score": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "research_cutoff": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+          "research_flag": { "type": ["boolean", "null"] },
+          "model": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["id", "version", "sha256", "architecture", "source_dataset"],
+            "properties": {
+              "id": { "type": "string", "minLength": 1 },
+              "version": { "type": "string", "minLength": 1 },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "architecture": { "type": "string", "minLength": 1 },
+              "source_dataset": { "type": "string", "minLength": 1 }
+            }
+          },
+          "calibration_status": { "enum": ["uncalibrated", "calibrated_for_research", "not_applicable"] },
+          "evidence_scope": { "enum": ["development_only", "internal_patient_grouped", "independent_external", "not_evaluated"] }
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1
+    }
+  }
+}

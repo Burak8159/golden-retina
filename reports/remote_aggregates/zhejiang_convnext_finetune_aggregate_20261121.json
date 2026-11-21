@@ -1,0 +1,280 @@
+{
+  "status": "PARTIAL_CONVNEXT_FINE_TUNING_DISEASE_VS_ALL_VALIDATION_ONLY",
+  "encoder": "ImageNet ConvNeXt-Tiny; features blocks 6 and 7 partially unfrozen",
+  "task": "Six independent one-vs-all sigmoid outputs; seven mutually exclusive source labels used as training classes; co-occurrence not evaluated.",
+  "split": "Patient-grouped Zhejiang split; only train and validation image rows loaded; test rows filtered before paths are resolved.",
+  "checkpoint_epoch": 30,
+  "best_validation_loss": 0.17971056699752808,
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.44458466878643743,
+      "validation_loss": 0.38043972849845886,
+      "elapsed_seconds": 78
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.3656082655544634,
+      "validation_loss": 0.34830525517463684,
+      "elapsed_seconds": 143
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.33722740522137395,
+      "validation_loss": 0.31777819991111755,
+      "elapsed_seconds": 207
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.2989751873192964,
+      "validation_loss": 0.29404762387275696,
+      "elapsed_seconds": 266
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.2754374182334653,
+      "validation_loss": 0.27167776226997375,
+      "elapsed_seconds": 324
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.24903472954476322,
+      "validation_loss": 0.2567045986652374,
+      "elapsed_seconds": 379
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.23779836821335334,
+      "validation_loss": 0.24375565350055695,
+      "elapsed_seconds": 440
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.21962447367884494,
+      "validation_loss": 0.23241570591926575,
+      "elapsed_seconds": 496
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.2037947244114346,
+      "validation_loss": 0.22713838517665863,
+      "elapsed_seconds": 558
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.20638801516206176,
+      "validation_loss": 0.21701277792453766,
+      "elapsed_seconds": 619
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.18900144514110354,
+      "validation_loss": 0.2123538702726364,
+      "elapsed_seconds": 678
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.1760775794585546,
+      "validation_loss": 0.20924566686153412,
+      "elapsed_seconds": 736
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.15734323721241067,
+      "validation_loss": 0.20219632983207703,
+      "elapsed_seconds": 138
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.1599534771370667,
+      "validation_loss": 0.19883614778518677,
+      "elapsed_seconds": 208
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.15481763070932142,
+      "validation_loss": 0.19745415449142456,
+      "elapsed_seconds": 272
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.1367522816139239,
+      "validation_loss": 0.19377607107162476,
+      "elapsed_seconds": 332
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.13039656990656145,
+      "validation_loss": 0.19229796528816223,
+      "elapsed_seconds": 393
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.1277420180677264,
+      "validation_loss": 0.18987643718719482,
+      "elapsed_seconds": 449
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.12868208017338206,
+      "validation_loss": 0.18726222217082977,
+      "elapsed_seconds": 508
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.11185844725480786,
+      "validation_loss": 0.18647004663944244,
+      "elapsed_seconds": 564
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.11553297046985891,
+      "validation_loss": 0.1900404542684555,
+      "elapsed_seconds": 621
+    },
+    {
+      "epoch": 22,
+      "train_loss": 0.1109680602395976,
+      "validation_loss": 0.18539027869701385,
+      "elapsed_seconds": 676
+    },
+    {
+      "epoch": 23,
+      "train_loss": 0.10336484083974803,
+      "validation_loss": 0.18368861079216003,
+      "elapsed_seconds": 737
+    },
+    {
+      "epoch": 24,
+      "train_loss": 0.09611541143170109,
+      "validation_loss": 0.18489819765090942,
+      "elapsed_seconds": 795
+    },
+    {
+      "epoch": 25,
+      "train_loss": 0.10520349663716776,
+      "validation_loss": 0.18085607886314392,
+      "elapsed_seconds": 851
+    },
+    {
+      "epoch": 26,
+      "train_loss": 0.0990404171731185,
+      "validation_loss": 0.18007083237171173,
+      "elapsed_seconds": 907
+    },
+    {
+      "epoch": 27,
+      "train_loss": 0.09247200849845454,
+      "validation_loss": 0.18264009058475494,
+      "elapsed_seconds": 965
+    },
+    {
+      "epoch": 28,
+      "train_loss": 0.09364262847574772,
+      "validation_loss": 0.18443357944488525,
+      "elapsed_seconds": 1020
+    },
+    {
+      "epoch": 29,
+      "train_loss": 0.07988755594663045,
+      "validation_loss": 0.17990882694721222,
+      "elapsed_seconds": 1077
+    },
+    {
+      "epoch": 30,
+      "train_loss": 0.07754175873749235,
+      "validation_loss": 0.17971056699752808,
+      "elapsed_seconds": 1132
+    },
+    {
+      "epoch": 31,
+      "train_loss": 0.07435432649045079,
+      "validation_loss": 0.18042723834514618,
+      "elapsed_seconds": 1190
+    },
+    {
+      "epoch": 32,
+      "train_loss": 0.07091938907763472,
+      "validation_loss": 0.18194809556007385,
+      "elapsed_seconds": 1246
+    }
+  ],
+  "metrics": {
+    "AMD": {
+      "positive_eyes": 16,
+      "validation_eyes": 137,
+      "sensitivity": 0.9375,
+      "specificity": 0.9421487603305785,
+      "false_negatives": 1,
+      "false_positives": 7,
+      "accuracy": 0.9416058394160584,
+      "auroc": 0.9514462809917356,
+      "auprc": 0.7663691190345603,
+      "threshold_validation_only": 0.2381591796875
+    },
+    "DR": {
+      "positive_eyes": 21,
+      "validation_eyes": 137,
+      "sensitivity": 0.9047619047619048,
+      "specificity": 0.9568965517241379,
+      "false_negatives": 2,
+      "false_positives": 5,
+      "accuracy": 0.948905109489051,
+      "auroc": 0.9655172413793103,
+      "auprc": 0.8329078427265071,
+      "threshold_validation_only": 0.1468505859375
+    },
+    "PM": {
+      "positive_eyes": 20,
+      "validation_eyes": 137,
+      "sensitivity": 0.85,
+      "specificity": 0.905982905982906,
+      "false_negatives": 3,
+      "false_positives": 11,
+      "accuracy": 0.8978102189781022,
+      "auroc": 0.9487179487179487,
+      "auprc": 0.8616374472300925,
+      "threshold_validation_only": 0.1259765625
+    },
+    "RD": {
+      "positive_eyes": 20,
+      "validation_eyes": 137,
+      "sensitivity": 0.9,
+      "specificity": 0.9401709401709402,
+      "false_negatives": 2,
+      "false_positives": 7,
+      "accuracy": 0.9343065693430657,
+      "auroc": 0.9626068376068376,
+      "auprc": 0.90796162227122,
+      "threshold_validation_only": 0.11126708984375
+    },
+    "RVO": {
+      "positive_eyes": 20,
+      "validation_eyes": 137,
+      "sensitivity": 1.0,
+      "specificity": 0.905982905982906,
+      "false_negatives": 0,
+      "false_positives": 11,
+      "accuracy": 0.9197080291970803,
+      "auroc": 0.9914529914529914,
+      "auprc": 0.960358077976891,
+      "threshold_validation_only": 0.10015869140625
+    },
+    "Uveitis": {
+      "positive_eyes": 20,
+      "validation_eyes": 137,
+      "sensitivity": 0.4,
+      "specificity": 0.9316239316239316,
+      "false_negatives": 12,
+      "false_positives": 8,
+      "accuracy": 0.8540145985401459,
+      "auroc": 0.838034188034188,
+      "auprc": 0.49797632551205595,
+      "threshold_validation_only": 0.415771484375
+    }
+  },
+  "resume_mode": "Warm-started from the saved best model state; optimizer/scaler state was not saved and was reset.",
+  "boundary": "Small single-source validation, used for early stopping and threshold selection. Metrics are optimistic exploratory development values; no clinical or external validation.",
+  "checkpoint_sha256": "af95b8bfb9de42b41a20357f44f7a5545f610a9f22bfbd0431fe10bb64d7caef",
+  "checkpoint_path_private": "convnext_partial_finetune_best_private.pt"
+}

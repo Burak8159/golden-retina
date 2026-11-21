@@ -22,6 +22,7 @@ results/remote_closeout_20261114/
 results/expert_sweep/**/*.log
 results/expert_sweep/launcher.pid
 results/dr_dinov2_validation_recovery/
+tools/progress_tracker/status.json
 
 # Restricted or bulky datasets
 external/
@@ -55,3 +56,6 @@ paper/*.pdf
 .idea/
 .vscode/
 **/xcuserdata/
+
+# Private VM closeout archive (patient-level outputs, manifests and checkpoints)
+private_vm_artifacts/
