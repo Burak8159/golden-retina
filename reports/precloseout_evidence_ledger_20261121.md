@@ -16,6 +16,12 @@
 | Functional vision, quality and lesion detection | Acuity/contrast/color/field/fixation; image gradability; retinal lesions | No calibrated device test or verified quality/lesion validation join in this campaign. | Explicit unavailable states; no new supported model. MMRDR lesion archive is not staged. | Do not emit measurements, gradability, or lesion risk from the current disease heads. |
 | Eye localization | Synthetic rendered eye/face images | Synthetic-only training/evaluation; no real human, IR, goggle, or motor-loop validation. | Small ONNX segmentation model is packaged; outputs are an unvalidated synthetic-domain localization result. | Do not call a real eye tracker or use it to control motors. |
 
+## Frozen disease-head test follow-up (2026-11-21)
+
+A one-shot evaluation was run on the patient-grouped Zhejiang test partition using the existing 30-epoch partial ConvNeXt-Tiny checkpoint. Per-disease thresholds were copied unchanged from the saved validation-only report (validation specificity target ≥90%); no test-based tuning was performed. The test partition contained 136 eyes from 120 patients. Aggregate metrics and patient-cluster bootstrap intervals are in [`zhejiang_convnext_frozen_test_aggregate_20261121.md`](zhejiang_convnext_frozen_test_aggregate_20261121.md) and its JSON companion.
+
+The six logits are outputs of **one shared ConvNeXt-Tiny model**, not six independently trained end-to-end backbones. The source has mutually exclusive diagnosis labels, so this experiment does not establish multi-disease co-occurrence performance. The model missed 1 AMD, 1 DR, 3 pathological-myopia, 1 retinal-detachment, 1 RVO, and 13 uveitis-positive eyes. DR and retinal-detachment test specificity were below 90% despite thresholds chosen for at least 90% validation specificity. Uveitis and pathological myopia are especially unsuitable as reassuring-negative screens. Small positive counts and prior source exposure limit the result; it remains an internal single-source development/test estimate, not external or clinical validation.
+
 ## Selection, uncertainty, and exposure
 
 - Zhejiang validation data drove model family/comparator selection, threshold selection, and early stopping. Report its numbers as validation development results. The patient-grouped test partition was filtered from this campaign's image loading, but the DR task has earlier project exposure; no current run is a sealed project-level confirmatory test.

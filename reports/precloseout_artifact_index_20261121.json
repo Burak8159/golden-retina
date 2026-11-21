@@ -89,11 +89,6 @@
       "sha256": "049e9f1e66758d67753c038cdccd44a5160a978a7605b2f0b889b948a1edd75e"
     },
     {
-      "path": "reports/precloseout_evidence_ledger_20261121.md",
-      "bytes": 6996,
-      "sha256": "fbf56ff85523cb4eefc036b698fa0b5a5c04623d1432bdccec112f662f70208c"
-    },
-    {
       "path": "reports/vm_artifact_pull_20261121.md",
       "bytes": 1474,
       "sha256": "f6dbe3ac717b1ee5aad05fa1861fc20ad59ac37ec8156659fb5f7f526268845c"
@@ -112,6 +107,26 @@
       "path": "scripts/cloud/bootstrap_zhejiang_convnext_finetune_validation.py",
       "bytes": 7792,
       "sha256": "d7ce0a3f65bc0e134214a0bd605ce338598a7f058da208f5ce3fb4247a1b991f"
+    },
+    {
+      "path": "scripts/cloud/evaluate_zhejiang_frozen_convnext_test.py",
+      "bytes": 8907,
+      "sha256": "afba31a1576fa8e33f46293d4b625512f2e45e051a66b894ed0fc69f35c4ff21"
+    },
+    {
+      "path": "reports/zhejiang_convnext_frozen_test_aggregate_20261121.md",
+      "bytes": 2531,
+      "sha256": "27a8ce2a57a7ccd5cb45ee3443cdd578a23dcd5fbd187f03a31d25731787db26"
+    },
+    {
+      "path": "reports/zhejiang_convnext_frozen_test_aggregate_20261121.json",
+      "bytes": 6469,
+      "sha256": "480b698948b54ec81351545315da8afb6f853c97db085fa13284855029c97a31"
+    },
+    {
+      "path": "reports/precloseout_evidence_ledger_20261121.md",
+      "bytes": 8342,
+      "sha256": "ef2f3fab27eb0d1c5c2bd6131084272c99ee21bb3d6a2f3b83582a7bf7dc7431"
     }
   ],
   "missing_expected_paths": [],

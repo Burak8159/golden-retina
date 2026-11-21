@@ -1,0 +1,236 @@
+{
+  "status": "FROZEN_PATIENT_GROUPED_TEST_EVALUATION",
+  "task": "six one-vs-all logits trained against the source's mutually exclusive diagnosis classes and Healthy",
+  "analysis_unit": "eye; max probability over images within eye",
+  "threshold_provenance": "fixed from the previously saved validation-only aggregate report; never recomputed on test",
+  "checkpoint_sha256": "af95b8bfb9de42b41a20357f44f7a5545f610a9f22bfbd0431fe10bb64d7caef",
+  "validation_summary_sha256": "375522dd538c885243dc93c2d4f64116961c8eb77a678795b414965339937833",
+  "manifest_sha256": "a1ea32ef2ba70422e72bcff7caff81e99c130d74615771f5f4bb7acb69372659",
+  "test_eyes": 136,
+  "test_patients": 120,
+  "diseases": {
+    "AMD": {
+      "eyes": 136,
+      "positive_eyes": 17,
+      "negative_eyes": 119,
+      "accuracy": 0.9411764705882353,
+      "sensitivity": 0.9411764705882353,
+      "specificity": 0.9411764705882353,
+      "true_negative": 112,
+      "false_positive": 7,
+      "false_negative": 1,
+      "true_positive": 16,
+      "auroc": 0.9797330696984675,
+      "auprc": 0.8859146873078763,
+      "threshold_from_validation": 0.2381591796875,
+      "patient_cluster_bootstrap_95ci": {
+        "accuracy": [
+          0.8950956937799043,
+          0.9781061567756268
+        ],
+        "sensitivity": [
+          0.7857142857142857,
+          1.0
+        ],
+        "specificity": [
+          0.8925619834710744,
+          0.9829096045197739
+        ],
+        "auroc": [
+          0.9438797065337762,
+          0.9995409572626414
+        ],
+        "auprc": [
+          0.7166274627404203,
+          0.9970833333333334
+        ]
+      }
+    },
+    "DR": {
+      "eyes": 136,
+      "positive_eyes": 19,
+      "negative_eyes": 117,
+      "accuracy": 0.8970588235294118,
+      "sensitivity": 0.9473684210526315,
+      "specificity": 0.8888888888888888,
+      "true_negative": 104,
+      "false_positive": 13,
+      "false_negative": 1,
+      "true_positive": 18,
+      "auroc": 0.9723346828609987,
+      "auprc": 0.8621651590457748,
+      "threshold_from_validation": 0.1468505859375,
+      "patient_cluster_bootstrap_95ci": {
+        "accuracy": [
+          0.8333333333333334,
+          0.9552238805970149
+        ],
+        "sensitivity": [
+          0.8235294117647058,
+          1.0
+        ],
+        "specificity": [
+          0.8166666666666667,
+          0.9557522123893806
+        ],
+        "auroc": [
+          0.9367347143775543,
+          0.9943977490421456
+        ],
+        "auprc": [
+          0.7132052260355611,
+          0.9714918245132061
+        ]
+      }
+    },
+    "PM": {
+      "eyes": 136,
+      "positive_eyes": 20,
+      "negative_eyes": 116,
+      "accuracy": 0.9264705882352942,
+      "sensitivity": 0.85,
+      "specificity": 0.9396551724137931,
+      "true_negative": 109,
+      "false_positive": 7,
+      "false_negative": 3,
+      "true_positive": 17,
+      "auroc": 0.9655172413793103,
+      "auprc": 0.7498138256830208,
+      "threshold_from_validation": 0.1259765625,
+      "patient_cluster_bootstrap_95ci": {
+        "accuracy": [
+          0.8767891145668042,
+          0.9701492537313433
+        ],
+        "sensitivity": [
+          0.7,
+          1.0
+        ],
+        "specificity": [
+          0.8869565217391304,
+          0.9829059829059829
+        ],
+        "auroc": [
+          0.9233326271186441,
+          0.9939143553223388
+        ],
+        "auprc": [
+          0.5571292083152412,
+          0.9702819159335287
+        ]
+      }
+    },
+    "RD": {
+      "eyes": 136,
+      "positive_eyes": 20,
+      "negative_eyes": 116,
+      "accuracy": 0.8970588235294118,
+      "sensitivity": 0.95,
+      "specificity": 0.8879310344827587,
+      "true_negative": 103,
+      "false_positive": 13,
+      "false_negative": 1,
+      "true_positive": 19,
+      "auroc": 0.971551724137931,
+      "auprc": 0.9208479532163745,
+      "threshold_from_validation": 0.11126708984375,
+      "patient_cluster_bootstrap_95ci": {
+        "accuracy": [
+          0.8455882352941176,
+          0.9428672745694021
+        ],
+        "sensitivity": [
+          0.85,
+          1.0
+        ],
+        "specificity": [
+          0.8290598290598291,
+          0.9401709401709402
+        ],
+        "auroc": [
+          0.9278761061946903,
+          0.9982762304745063
+        ],
+        "auprc": [
+          0.8307677344263066,
+          0.9906926406926407
+        ]
+      }
+    },
+    "RVO": {
+      "eyes": 136,
+      "positive_eyes": 20,
+      "negative_eyes": 116,
+      "accuracy": 0.9338235294117647,
+      "sensitivity": 0.95,
+      "specificity": 0.9310344827586207,
+      "true_negative": 108,
+      "false_positive": 8,
+      "false_negative": 1,
+      "true_positive": 19,
+      "auroc": 0.9827586206896551,
+      "auprc": 0.9374620836511571,
+      "threshold_from_validation": 0.10015869140625,
+      "patient_cluster_bootstrap_95ci": {
+        "accuracy": [
+          0.8872180451127819,
+          0.9710144927536232
+        ],
+        "sensitivity": [
+          0.85,
+          1.0
+        ],
+        "specificity": [
+          0.8823280159521435,
+          0.9739186656671664
+        ],
+        "auroc": [
+          0.9535057983942907,
+          0.9990993001930502
+        ],
+        "auprc": [
+          0.8524176547137075,
+          0.9951190476190477
+        ]
+      }
+    },
+    "Uveitis": {
+      "eyes": 136,
+      "positive_eyes": 20,
+      "negative_eyes": 116,
+      "accuracy": 0.8235294117647058,
+      "sensitivity": 0.35,
+      "specificity": 0.9051724137931034,
+      "true_negative": 105,
+      "false_positive": 11,
+      "false_negative": 13,
+      "true_positive": 7,
+      "auroc": 0.8642241379310345,
+      "auprc": 0.4427727527605624,
+      "threshold_from_validation": 0.415771484375,
+      "patient_cluster_bootstrap_95ci": {
+        "accuracy": [
+          0.7651515151515151,
+          0.8794326241134752
+        ],
+        "sensitivity": [
+          0.15,
+          0.5512499999999932
+        ],
+        "specificity": [
+          0.8481953692493946,
+          0.9576271186440678
+        ],
+        "auroc": [
+          0.7931623931623932,
+          0.9241242450388266
+        ],
+        "auprc": [
+          0.33022710048429493,
+          0.6629870525039101
+        ]
+      }
+    }
+  },
+  "caveat": "Internal single-source patient-grouped test partition only. It does not establish external, clinical, prospective, or comorbidity performance; previous project exposure and same-source development limit independence."
+}
