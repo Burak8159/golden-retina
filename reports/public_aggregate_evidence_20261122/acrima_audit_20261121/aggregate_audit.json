@@ -1,0 +1,17 @@
+{
+  "dataset": "ACRIMA v1 · official Figshare article 7613135",
+  "files_seen": 705,
+  "decode_valid_images": 705,
+  "decode_failures": 0,
+  "within_dataset_exact_duplicate_groups": 0,
+  "within_dataset_exact_duplicate_rows": 0,
+  "overlap_rows_with_reference_sources": 0,
+  "reference_roots": [
+    {
+      "root_name": "Original Dataset",
+      "image_files_hashed": 5335
+    }
+  ],
+  "patient_ids_available": false,
+  "boundary": "Filename labels are source-provided. The collection has no usable patient IDs in this archive; downstream holdout is image/hash-grouped and exploratory. Exact duplicates against prior source roots are counted, but near-duplicate/subject overlap cannot be excluded."
+}

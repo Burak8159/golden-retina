@@ -1,0 +1,206 @@
+{
+  "status": "EXPLORATORY_RIMONE_HOSPITAL_RERUN_TEST_ALREADY_EXPOSED",
+  "task": "RIM-ONE DL glaucoma versus normal fundus image classification",
+  "training_data": "Only official RIM-ONE DL hospital training partition; random initialization; no non-RIM-ONE image pretraining.",
+  "counts": {
+    "official_train": 311,
+    "internal_train": 248,
+    "internal_validation": 63,
+    "hospital_test": 174,
+    "train_positive": 116,
+    "test_positive": 56
+  },
+  "split": "Stratified image-level 80/20 split in HUC training images, seed 8159; patient identifiers absent; patient independence unverified.",
+  "selection": {
+    "criterion": "highest internal-validation AUROC with early stopping; threshold maximizes specificity subject to validation sensitivity >=90%",
+    "best_epoch": 15,
+    "validation_auroc": 0.9293478260869565,
+    "validation_operating_point": {
+      "n": 63,
+      "positive": 23,
+      "negative": 40,
+      "threshold": 0.2440025411640579,
+      "accuracy": 0.8095238095238095,
+      "sensitivity": 0.9130434782608695,
+      "specificity": 0.75,
+      "false_negative": 2,
+      "false_positive": 10,
+      "true_positive": 21,
+      "true_negative": 30,
+      "auroc": 0.9293478260869565,
+      "average_precision": 0.8950341672074782
+    },
+    "target_sensitivity_feasible": true,
+    "threshold": 0.2440025411640579
+  },
+  "hospital_partition_metrics_exploratory_only": {
+    "n": 174,
+    "positive": 56,
+    "negative": 118,
+    "threshold": 0.2440025411640579,
+    "accuracy": 0.6264367816091954,
+    "sensitivity": 0.875,
+    "specificity": 0.5084745762711864,
+    "false_negative": 7,
+    "false_positive": 58,
+    "true_positive": 49,
+    "true_negative": 60,
+    "auroc": 0.7740617433414044,
+    "average_precision": 0.6167477792234137
+  },
+  "history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.8312601197150445,
+      "validation_auroc": 0.6793478260869565,
+      "validation_ap": 0.6242816252988742,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6896214600532286,
+      "validation_auroc": 0.7869565217391304,
+      "validation_ap": 0.7560164539806777,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.598824676006071,
+      "validation_auroc": 0.8119565217391305,
+      "validation_ap": 0.7354782354255535,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.630142984851714,
+      "validation_auroc": 0.7847826086956522,
+      "validation_ap": 0.7647413609587252,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.5042276517037423,
+      "validation_auroc": 0.808695652173913,
+      "validation_ap": 0.7836363192206186,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.5824367519347898,
+      "validation_auroc": 0.8516304347826087,
+      "validation_ap": 0.797877025116183,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.49899256229400635,
+      "validation_auroc": 0.8695652173913043,
+      "validation_ap": 0.8368548494849177,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.48392430909218326,
+      "validation_auroc": 0.8293478260869566,
+      "validation_ap": 0.7367838114509137,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.4207971855517357,
+      "validation_auroc": 0.8402173913043478,
+      "validation_ap": 0.838089557700901,
+      "lr": 0.0003
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.4310211161932638,
+      "validation_auroc": 0.8532608695652174,
+      "validation_ap": 0.8390127587985123,
+      "lr": 0.00015
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.37160238239072985,
+      "validation_auroc": 0.9010869565217391,
+      "validation_ap": 0.8759626910084575,
+      "lr": 0.00015
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.25227913693074255,
+      "validation_auroc": 0.8836956521739131,
+      "validation_ap": 0.8410826412760852,
+      "lr": 0.00015
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.26630340083952875,
+      "validation_auroc": 0.8934782608695652,
+      "validation_ap": 0.8491770027286922,
+      "lr": 0.00015
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.2506134517250522,
+      "validation_auroc": 0.8929347826086956,
+      "validation_ap": 0.8029376741922172,
+      "lr": 7.5e-05
+    },
+    {
+      "epoch": 15,
+      "train_loss": 0.15804660440452636,
+      "validation_auroc": 0.9293478260869565,
+      "validation_ap": 0.8950341672074782,
+      "lr": 7.5e-05
+    },
+    {
+      "epoch": 16,
+      "train_loss": 0.13094030416780902,
+      "validation_auroc": 0.9163043478260869,
+      "validation_ap": 0.8829937832309747,
+      "lr": 7.5e-05
+    },
+    {
+      "epoch": 17,
+      "train_loss": 0.15491130094855063,
+      "validation_auroc": 0.9282608695652174,
+      "validation_ap": 0.8957995870895783,
+      "lr": 7.5e-05
+    },
+    {
+      "epoch": 18,
+      "train_loss": 0.1036160017453855,
+      "validation_auroc": 0.9152173913043479,
+      "validation_ap": 0.8719556116710303,
+      "lr": 3.75e-05
+    },
+    {
+      "epoch": 19,
+      "train_loss": 0.11129044990746244,
+      "validation_auroc": 0.925,
+      "validation_ap": 0.889445755389523,
+      "lr": 3.75e-05
+    },
+    {
+      "epoch": 20,
+      "train_loss": 0.058651257546678666,
+      "validation_auroc": 0.917391304347826,
+      "validation_ap": 0.8671540363449033,
+      "lr": 3.75e-05
+    },
+    {
+      "epoch": 21,
+      "train_loss": 0.14551120023092917,
+      "validation_auroc": 0.9065217391304348,
+      "validation_ap": 0.8404773654045533,
+      "lr": 1.875e-05
+    }
+  ],
+  "limitations": [
+    "The official hospital test labels/scores were already examined in an earlier ImageNet-pretrained exploratory run; this rerun is not an untouched confirmatory test.",
+    "No patient IDs are supplied; image-level intervals do not quantify patient-level uncertainty.",
+    "Small single-dataset retrospective result; not clinical validation or autonomous diagnostic evidence.",
+    "Dataset, row-level files, and checkpoint are private under source terms."
+  ]
+}

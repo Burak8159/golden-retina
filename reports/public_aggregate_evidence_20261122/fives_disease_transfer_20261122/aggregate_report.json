@@ -1,0 +1,144 @@
+{
+  "status": "complete",
+  "dataset": "FIVES v1",
+  "selected_architecture": "resnet50",
+  "selected_epoch": 8,
+  "selection": "Lowest validation cross-entropy; official test not used for model/epoch selection.",
+  "candidate_summaries": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 5,
+      "best_validation_loss": 0.6497589945793152
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 8,
+      "best_validation_loss": 0.5521745681762695
+    }
+  ],
+  "test_metrics": {
+    "n_images": 199,
+    "accuracy": 0.6582914572864321,
+    "confusion_matrix_rows_true_A_D_G_N_cols_pred_A_D_G_N": [
+      [
+        46,
+        2,
+        0,
+        1
+      ],
+      [
+        4,
+        37,
+        2,
+        7
+      ],
+      [
+        1,
+        1,
+        40,
+        8
+      ],
+      [
+        3,
+        11,
+        28,
+        8
+      ]
+    ],
+    "class_order": [
+      "AMD",
+      "Diabetic Retinopathy",
+      "Glaucoma",
+      "Healthy"
+    ],
+    "per_disease": {
+      "AMD": {
+        "support": 49,
+        "sensitivity": 0.9387755102040817,
+        "specificity": 0.9466666666666667,
+        "false_negatives": 3,
+        "false_positives": 8,
+        "one_vs_rest_auroc": 0.9870748299319728,
+        "one_vs_rest_average_precision": 0.9592844173211902
+      },
+      "Glaucoma": {
+        "support": 50,
+        "sensitivity": 0.8,
+        "specificity": 0.7986577181208053,
+        "false_negatives": 10,
+        "false_positives": 30,
+        "one_vs_rest_auroc": 0.9135570469798657,
+        "one_vs_rest_average_precision": 0.8367581428153071
+      },
+      "Healthy": {
+        "support": 50,
+        "sensitivity": 0.16,
+        "specificity": 0.8926174496644296,
+        "false_negatives": 42,
+        "false_positives": 16,
+        "one_vs_rest_auroc": 0.8353020134228187,
+        "one_vs_rest_average_precision": 0.49417829408483627
+      }
+    }
+  },
+  "split_audit": {
+    "dataset": "FIVES v1",
+    "class_codes": {
+      "A": "AMD",
+      "D": "Diabetic Retinopathy",
+      "G": "Glaucoma",
+      "N": "Healthy"
+    },
+    "patient_ids_available": false,
+    "official_source_partition": {
+      "train": {
+        "files_seen": 600,
+        "decode_failures": 1,
+        "within_split_duplicate_rows_excluded": 5,
+        "class_counts": {
+          "A": 145,
+          "D": 150,
+          "G": 149,
+          "N": 150
+        }
+      },
+      "test": {
+        "files_seen": 200,
+        "decode_failures": 0,
+        "within_split_duplicate_rows_excluded": 1,
+        "class_counts": {
+          "D": 50,
+          "G": 50,
+          "A": 49,
+          "N": 50
+        }
+      }
+    },
+    "model_train_counts": {
+      "A": 124,
+      "D": 117,
+      "G": 113,
+      "N": 121
+    },
+    "validation_counts": {
+      "A": 21,
+      "D": 33,
+      "G": 36,
+      "N": 29
+    },
+    "test_counts_after_exclusions": {
+      "D": 50,
+      "G": 50,
+      "A": 49,
+      "N": 50
+    },
+    "fives_train_exact_overlap_test_rows_excluded": 0,
+    "known_source_exact_overlap_test_rows_excluded": 0,
+    "official_train_rows_used": 594,
+    "derived_train_rows": 475,
+    "derived_validation_rows": 119,
+    "test_rows_used": 199,
+    "split_boundary": "Validation is exact-hash-grouped within the official training partition. The official test remains image-level; patient IDs are unavailable. Exact duplicates crossing official train/test or matching any provided known source-training root are removed from test. Near-duplicates and same-patient leakage cannot be ruled out."
+  },
+  "boundary": "Exploratory same-source image-level holdout, not patient-independent. Exact duplicates were excluded, but patient and near-duplicate leakage are unresolved. Not clinical validation."
+}

@@ -1,0 +1,298 @@
+{
+  "status": "completed_secondary_exploratory_probe",
+  "encoder": "Official DINOv2 ViT-B/14 frozen normalized CLS embeddings; 768 dimensions",
+  "preprocessing": "bicubic resize 256, center crop224, ImageNet normalization",
+  "selection": "C in {0.01,0.1,1,10} selected only on training-hospital image-level validation by macro-F1",
+  "known_boundary": "BMRD has no patient identifiers; test hospitals have already been opened by the CNN comparison. This is a secondary exploratory comparison, not independent confirmation.",
+  "elapsed_seconds": 94.9,
+  "tasks": {
+    "dr": {
+      "status": "exploratory_secondary_comparison_test_previously_opened_by_CNN",
+      "train_site": "Shiromoni BNSB Hospital",
+      "validation_site": "Shiromoni BNSB Hospital",
+      "test_site": "Khulna Laser Clinic",
+      "class_names": [
+        "DR_Level_1",
+        "DR_Level_2",
+        "DR_Level_3",
+        "DR_Level_4"
+      ],
+      "n_train": 328,
+      "n_validation": 83,
+      "n_test": 291,
+      "selected_C_validation_macro_f1": 0.01,
+      "validation_macro_f1": 0.7266148883795943,
+      "validation_candidates": [
+        {
+          "C": 0.01,
+          "macro_f1": 0.7266148883795943
+        },
+        {
+          "C": 0.1,
+          "macro_f1": 0.7059943977591037
+        },
+        {
+          "C": 1.0,
+          "macro_f1": 0.7046346469622331
+        },
+        {
+          "C": 10.0,
+          "macro_f1": 0.708744932438498
+        }
+      ],
+      "test_metrics_secondary": {
+        "n_images": 291,
+        "accuracy": 0.6701030927835051,
+        "balanced_accuracy": 0.6730037409700722,
+        "macro_f1": 0.5788171114325373,
+        "macro_auroc_ovr": 0.8708503627080195,
+        "confusion_matrix_rows_true_columns_pred": [
+          [
+            56,
+            1,
+            0,
+            0
+          ],
+          [
+            20,
+            110,
+            30,
+            10
+          ],
+          [
+            4,
+            3,
+            18,
+            23
+          ],
+          [
+            0,
+            0,
+            5,
+            11
+          ]
+        ],
+        "classes": {
+          "DR_Level_1": {
+            "support": 57,
+            "sensitivity": 0.9824561403508771,
+            "specificity": 0.8974358974358975,
+            "false_negatives": 1,
+            "false_positives": 24,
+            "auroc_ovr": 0.970310391363023
+          },
+          "DR_Level_2": {
+            "support": 170,
+            "sensitivity": 0.6470588235294118,
+            "specificity": 0.9669421487603306,
+            "false_negatives": 60,
+            "false_positives": 4,
+            "auroc_ovr": 0.9016042780748663
+          },
+          "DR_Level_3": {
+            "support": 48,
+            "sensitivity": 0.375,
+            "specificity": 0.8559670781893004,
+            "false_negatives": 30,
+            "false_positives": 35,
+            "auroc_ovr": 0.7035322359396433
+          },
+          "DR_Level_4": {
+            "support": 16,
+            "sensitivity": 0.6875,
+            "specificity": 0.88,
+            "false_negatives": 5,
+            "false_positives": 33,
+            "auroc_ovr": 0.9079545454545455
+          }
+        }
+      }
+    },
+    "amd": {
+      "status": "exploratory_secondary_comparison_test_previously_opened_by_CNN",
+      "train_site": "Shiromoni BNSB Hospital",
+      "validation_site": "Shiromoni BNSB Hospital",
+      "test_site": "Khulna Laser Clinic",
+      "class_names": [
+        "AMD_dry",
+        "AMD_none",
+        "AMD_wet"
+      ],
+      "n_train": 46,
+      "n_validation": 12,
+      "n_test": 43,
+      "selected_C_validation_macro_f1": 10.0,
+      "validation_macro_f1": 0.6888888888888888,
+      "validation_candidates": [
+        {
+          "C": 0.01,
+          "macro_f1": 0.6888888888888888
+        },
+        {
+          "C": 0.1,
+          "macro_f1": 0.6888888888888888
+        },
+        {
+          "C": 1.0,
+          "macro_f1": 0.6888888888888888
+        },
+        {
+          "C": 10.0,
+          "macro_f1": 0.6888888888888888
+        }
+      ],
+      "test_metrics_secondary": {
+        "n_images": 43,
+        "accuracy": 0.3488372093023256,
+        "balanced_accuracy": 0.4436026936026936,
+        "macro_f1": 0.3665497076023391,
+        "macro_auroc_ovr": 0.6683618054585795,
+        "confusion_matrix_rows_true_columns_pred": [
+          [
+            7,
+            0,
+            2
+          ],
+          [
+            19,
+            3,
+            0
+          ],
+          [
+            7,
+            0,
+            5
+          ]
+        ],
+        "classes": {
+          "AMD_dry": {
+            "support": 9,
+            "sensitivity": 0.7777777777777778,
+            "specificity": 0.23529411764705882,
+            "false_negatives": 2,
+            "false_positives": 26,
+            "auroc_ovr": 0.4444444444444444
+          },
+          "AMD_none": {
+            "support": 22,
+            "sensitivity": 0.13636363636363635,
+            "specificity": 1.0,
+            "false_negatives": 19,
+            "false_positives": 0,
+            "auroc_ovr": 0.6493506493506493
+          },
+          "AMD_wet": {
+            "support": 12,
+            "sensitivity": 0.4166666666666667,
+            "specificity": 0.9354838709677419,
+            "false_negatives": 7,
+            "false_positives": 2,
+            "auroc_ovr": 0.911290322580645
+          }
+        }
+      }
+    },
+    "glaucoma": {
+      "status": "exploratory_secondary_comparison_test_previously_opened_by_CNN",
+      "train_site": "Khulna Laser Clinic",
+      "validation_site": "Khulna Laser Clinic",
+      "test_site": "Anwar khan Modern Medical",
+      "class_names": [
+        "Glaucoma_Level_1",
+        "Glaucoma_Level_2",
+        "Glaucoma_Level_3",
+        "Glaucoma_Level_4"
+      ],
+      "n_train": 560,
+      "n_validation": 141,
+      "n_test": 43,
+      "selected_C_validation_macro_f1": 0.01,
+      "validation_macro_f1": 0.733579290863043,
+      "validation_candidates": [
+        {
+          "C": 0.01,
+          "macro_f1": 0.733579290863043
+        },
+        {
+          "C": 0.1,
+          "macro_f1": 0.7034944549068842
+        },
+        {
+          "C": 1.0,
+          "macro_f1": 0.6650053475935829
+        },
+        {
+          "C": 10.0,
+          "macro_f1": 0.6740962566844919
+        }
+      ],
+      "test_metrics_secondary": {
+        "n_images": 43,
+        "accuracy": 0.5813953488372093,
+        "balanced_accuracy": 0.5376602564102564,
+        "macro_f1": 0.4916666666666667,
+        "macro_auroc_ovr": 0.7976852175381588,
+        "confusion_matrix_rows_true_columns_pred": [
+          [
+            4,
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            1,
+            0
+          ],
+          [
+            0,
+            3,
+            1,
+            4
+          ],
+          [
+            0,
+            6,
+            2,
+            18
+          ]
+        ],
+        "classes": {
+          "Glaucoma_Level_1": {
+            "support": 6,
+            "sensitivity": 0.6666666666666666,
+            "specificity": 1.0,
+            "false_negatives": 2,
+            "false_positives": 0,
+            "auroc_ovr": 0.9819819819819819
+          },
+          "Glaucoma_Level_2": {
+            "support": 3,
+            "sensitivity": 0.6666666666666666,
+            "specificity": 0.725,
+            "false_negatives": 1,
+            "false_positives": 11,
+            "auroc_ovr": 0.825
+          },
+          "Glaucoma_Level_3": {
+            "support": 8,
+            "sensitivity": 0.125,
+            "specificity": 0.9142857142857143,
+            "false_negatives": 7,
+            "false_positives": 3,
+            "auroc_ovr": 0.5964285714285714
+          },
+          "Glaucoma_Level_4": {
+            "support": 26,
+            "sensitivity": 0.6923076923076923,
+            "specificity": 0.7647058823529411,
+            "false_negatives": 8,
+            "false_positives": 4,
+            "auroc_ovr": 0.7873303167420815
+          }
+        }
+      }
+    }
+  }
+}

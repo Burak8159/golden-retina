@@ -1,0 +1,128 @@
+{
+  "status": "complete",
+  "dataset": "ACRIMA v1 · official Figshare CC BY 4.0",
+  "task": "Glaucoma versus normal fundus image classification",
+  "data_audit": {
+    "files_seen": 705,
+    "decode_valid": 705,
+    "decode_failures": 0,
+    "exact_duplicate_rows_removed": 0,
+    "eligible_unique_images": 705,
+    "glaucoma_images": 396,
+    "normal_images": 309,
+    "patient_ids_available": false,
+    "splits": {
+      "train": {
+        "images": 423,
+        "glaucoma": 238,
+        "normal": 185
+      },
+      "validation": {
+        "images": 141,
+        "glaucoma": 80,
+        "normal": 61
+      },
+      "test": {
+        "images": 141,
+        "glaucoma": 78,
+        "normal": 63
+      }
+    },
+    "split_boundary": "Stratified exact-hash-group split only. No patient identifiers are available; same-patient leakage cannot be ruled out."
+  },
+  "candidate_validation": {
+    "convnext_tiny": {
+      "auroc": 0.9997950819672131,
+      "threshold": 0.9588471055030823,
+      "best_epoch": 8,
+      "metrics": {
+        "n_images": 141,
+        "positive_images": 80,
+        "accuracy": 0.9929078014184397,
+        "balanced_accuracy": 0.99375,
+        "sensitivity": 0.9875,
+        "specificity": 1.0,
+        "false_negatives": 1,
+        "false_positives": 0,
+        "true_positives": 79,
+        "true_negatives": 61,
+        "auroc": 0.9997950819672131,
+        "average_precision": 0.9998456790123456
+      }
+    },
+    "resnet50": {
+      "auroc": 0.998155737704918,
+      "threshold": 0.6893056035041809,
+      "best_epoch": 12,
+      "metrics": {
+        "n_images": 141,
+        "positive_images": 80,
+        "accuracy": 0.9787234042553191,
+        "balanced_accuracy": 0.9793032786885245,
+        "sensitivity": 0.975,
+        "specificity": 0.9836065573770492,
+        "false_negatives": 2,
+        "false_positives": 1,
+        "true_positives": 78,
+        "true_negatives": 60,
+        "auroc": 0.998155737704918,
+        "average_precision": 0.9986289605732334
+      }
+    },
+    "efficientnet_b0": {
+      "auroc": 0.9987704918032787,
+      "threshold": 0.8057851195335388,
+      "best_epoch": 12,
+      "metrics": {
+        "n_images": 141,
+        "positive_images": 80,
+        "accuracy": 0.9929078014184397,
+        "balanced_accuracy": 0.99375,
+        "sensitivity": 0.9875,
+        "specificity": 1.0,
+        "false_negatives": 1,
+        "false_positives": 0,
+        "true_positives": 79,
+        "true_negatives": 61,
+        "auroc": 0.9987704918032787,
+        "average_precision": 0.9991279069767441
+      }
+    }
+  },
+  "selected_candidate": "convnext_tiny",
+  "selected_threshold": 0.9588471055030823,
+  "test_metrics": {
+    "n_images": 141,
+    "positive_images": 78,
+    "accuracy": 1.0,
+    "balanced_accuracy": 1.0,
+    "sensitivity": 1.0,
+    "specificity": 1.0,
+    "false_negatives": 0,
+    "false_positives": 0,
+    "true_positives": 78,
+    "true_negatives": 63,
+    "auroc": 1.0,
+    "average_precision": 0.9999999999999997
+  },
+  "test_exact_hash_group_bootstrap_95ci": {
+    "accuracy": [
+      1.0,
+      1.0
+    ],
+    "sensitivity": [
+      1.0,
+      1.0
+    ],
+    "specificity": [
+      1.0,
+      1.0
+    ],
+    "auroc": [
+      0.9999999999999999,
+      1.0
+    ]
+  },
+  "patient_ids_available": false,
+  "boundary": "Exploratory image/duplicate-group holdout only; same-patient leakage cannot be ruled out. No external or clinical validation. Checkpoints, image lists, and per-image scores remain on the VM."
+}

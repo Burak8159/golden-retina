@@ -1,0 +1,589 @@
+{
+  "campaign": "Golden Retina disease-specific dataset expansion 2026-11-21",
+  "scope": "Publicly discoverable retinal/ocular datasets relevant to fundus-photo screening. Source terms and device/population fit are evaluated separately. All image archives, manifests with row-level identifiers, predictions, and checkpoints must remain on the authorized Google Cloud VM.",
+  "search_cutoff_utc": "2026-11-21T22:15:00Z",
+  "new_candidates": [
+    {
+      "name": "Hillel Yaffe Glaucoma Dataset (HYGD)",
+      "official_source": "https://physionet.org/content/hillel-yaffe-glaucoma-dataset/1.1.0/",
+      "diseases_or_targets": [
+        "glaucomatous optic neuropathy",
+        "fundus image quality"
+      ],
+      "modality": "45-degree color fundus photo",
+      "size": "747 images, 288 patients; 548 GON-positive images, 199 GON-negative images",
+      "patient_linkage": "Patient IDs in filenames and labels; patient-group split feasible",
+      "labels": "Gold-standard GON diagnosis based on full ophthalmic exam, OCT, visual field, gonioscopy and follow-up; source also provides quality scores",
+      "access_and_license": "Direct open access; Open Data Commons Attribution License v1.0",
+      "fit": "P1. Best new disease-specific cohort for a glaucoma specialist. Camera/site overlap with HYAMD must be treated as same-site domain, not independent external validation.",
+      "status": "Eligible for VM-only staging after runtime/spend guard is configured"
+    },
+    {
+      "name": "Eye Disease Image Dataset (Mendeley s9bfhswzjb)",
+      "official_source": "https://data.mendeley.com/datasets/s9bfhswzjb/1",
+      "diseases_or_targets": [
+        "DR",
+        "glaucoma",
+        "macular scar",
+        "disc edema",
+        "CSCR",
+        "retinal detachment",
+        "retinitis pigmentosa",
+        "myopia",
+        "healthy"
+      ],
+      "modality": "Color fundus photos plus 17 anterior-segment photos",
+      "size": "5,318 fundus originals plus 17 anterior-segment images; 16,242 augmented derivatives also described",
+      "patient_linkage": "Patient IDs/splits not established from the source page; original-vs-augmented parentage must be audited",
+      "labels": "Ten classes including healthy; labels described as domain-expert assisted",
+      "access_and_license": "Public Mendeley download; CC BY 4.0",
+      "fit": "P1 exploratory training only on original fundus images. Exclude anterior-segment images; never split augmented variants across partitions. Not patient-independent validation until IDs/lineage are known.",
+      "status": "Eligible for VM-only staging; schema and image provenance audit required"
+    },
+    {
+      "name": "MuReD Multi-Label Retinal Diseases (Mendeley pc4mb3h8hz v2)",
+      "official_source": "https://data.mendeley.com/datasets/pc4mb3h8hz/2",
+      "diseases_or_targets": [
+        "DR",
+        "AMD",
+        "drusen",
+        "myopia",
+        "BRVO",
+        "CRVO",
+        "CNV",
+        "retinitis",
+        "optic-disc edema",
+        "optic-disc pallor",
+        "optic-disc cupping",
+        "CSR",
+        "hypertensive retinopathy",
+        "chorioretinitis",
+        "macular hole",
+        "tessellation",
+        "laser scar",
+        "media haze",
+        "other",
+        "normal"
+      ],
+      "modality": "Color fundus photos",
+      "size": "2,208 images; 20 source labels, with a documented train/validation organization",
+      "patient_linkage": "Patient IDs not established; overlap is expected because the dataset is derived from ARIA, STARE and RFMiD",
+      "labels": "Multi-label source annotations; 19 pathology labels plus normal/other semantics require codebook review",
+      "access_and_license": "Public Mendeley download; CC BY 4.0",
+      "fit": "P1 for supervised training/label stress tests after exact and near-duplicate/source-overlap audit. Never call its validation set independent of RFMiD or ARIA/STARE.",
+      "status": "Eligible for VM-only staging; source-overlap audit required before any held-out scoring"
+    },
+    {
+      "name": "Fundus CSC segmentation dataset (Mendeley 4k64fwnp4k v5)",
+      "official_source": "https://data.mendeley.com/datasets/4k64fwnp4k/5",
+      "diseases_or_targets": [
+        "central serous chorioretinopathy (CSC/CSCR)",
+        "subretinal-fluid region segmentation"
+      ],
+      "modality": "Color fundus photos and manual segmentation masks",
+      "size": "194 CSC eyes plus 93 healthy fundus photos described on v5 page",
+      "patient_linkage": "Eye counts reported; patient IDs and source-level partitions not established",
+      "labels": "Manual SRF segmentations by ophthalmology graders; healthy controls from same center",
+      "access_and_license": "Public Mendeley download; CC BY 4.0",
+      "fit": "P1 for an exploratory CSC specialist and lesion-localization comparator. Internal split only unless independent patient/source labels are available.",
+      "status": "Eligible for VM-only staging; duplicate and patient-lineage audit required"
+    },
+    {
+      "name": "HYAMD",
+      "official_source": "https://physionet.org/content/hillel-yaffe-fundus-amd/1.0.0/",
+      "diseases_or_targets": [
+        "early AMD",
+        "intermediate-to-late AMD"
+      ],
+      "modality": "45-degree color fundus photo; labels supported by full examination and OCT",
+      "size": "1,560 images from 325 patients",
+      "patient_linkage": "Patient IDs and laterality available",
+      "labels": "Non-AMD, early AMD, intermediate/late AMD",
+      "access_and_license": "Restricted PhysioNet Health Data Use Agreement 1.5.0; registered-user approval required",
+      "fit": "Excellent scientific fit, but not available for this run without verified account grant and the user's own acceptance of its dataset-specific agreement.",
+      "status": "Access-gated; do not download or use yet"
+    },
+    {
+      "name": "RFMiD 2.0",
+      "official_source": "https://riadd.grand-challenge.org/",
+      "diseases_or_targets": [
+        "49 rare and common fundus labels"
+      ],
+      "modality": "Color fundus photos",
+      "size": "860 images; source reports 60/20/20 image split",
+      "patient_linkage": "Patient linkage not established from the published split description",
+      "labels": "49 multilabel classes",
+      "access_and_license": "Official challenge route; current direct data endpoint returned HTTP 403 from prior cloud request",
+      "fit": "Useful rare-label training candidate only if official access works. Do not bypass the challenge endpoint or use an unknown-license mirror.",
+      "status": "Official endpoint previously blocked; retry only through the documented official route"
+    },
+    {
+      "name": "PAPILA",
+      "official_source": "https://doi.org/10.6084/m9.figshare.14798004.v1",
+      "diseases_or_targets": [
+        "glaucoma",
+        "glaucoma suspect",
+        "healthy"
+      ],
+      "modality": "Disc-centered fundus photos with optic-disc/cup contours and clinical data",
+      "size": "488 eye images from 244 patients",
+      "patient_linkage": "Both eyes linked by patient ID",
+      "labels": "Healthy/suspect/glaucoma plus per-eye clinical data",
+      "access_and_license": "Figshare record is public; a secondary catalogue reports GPL-3.0-or-later, but the primary record's data-license field still needs direct verification",
+      "fit": "High-value second glaucoma cohort if primary data terms are confirmed; keep both eyes from a patient in one partition.",
+      "status": "Primary license verification required before use"
+    },
+    {
+      "name": "G1020",
+      "official_source": "https://arxiv.org/abs/2006.09158",
+      "diseases_or_targets": [
+        "glaucoma",
+        "optic-disc/cup segmentation"
+      ],
+      "modality": "45-degree fundus photos; mydriatic",
+      "size": "1,020 images from 432 patients; 296 glaucoma-positive images",
+      "patient_linkage": "Patient groups reported in source paper; verify released filename map",
+      "labels": "Clinical glaucoma labels and optic-disc/cup masks",
+      "access_and_license": "Paper calls data public for research; no standard dataset license verified and original download route is unreliable",
+      "fit": "Potential glaucoma training/transfer cohort only after official access and license clarity; third-party Kaggle bundle is not treated as rights evidence.",
+      "status": "Access/license gate"
+    },
+    {
+      "name": "REFUGE / REFUGE2",
+      "official_source": "https://refuge.grand-challenge.org/",
+      "diseases_or_targets": [
+        "glaucoma",
+        "optic-disc/cup segmentation",
+        "fovea localization"
+      ],
+      "modality": "Color fundus photos from multiple devices",
+      "size": "1,200 images in REFUGE; 2,000 in REFUGE2",
+      "patient_linkage": "Verify challenge metadata before grouping",
+      "labels": "Glaucoma and anatomical annotations",
+      "access_and_license": "Registration and challenge research/educational terms; not a general CC grant",
+      "fit": "Useful glaucoma domain stress test if account and terms are already authorized; no use of third-party mirrors with unknown license.",
+      "status": "Official registration/terms gate"
+    },
+    {
+      "name": "Tsukazaki Optos Public (TOP)",
+      "official_source": "https://bjo.bmj.com/content/bjophthalmol/early/2021/08/02/bjophthalmol-2021-319030/DC1",
+      "diseases_or_targets": [
+        "AMD",
+        "glaucoma",
+        "DR",
+        "macular hole",
+        "RD",
+        "RVO",
+        "RP",
+        "arterial occlusion"
+      ],
+      "modality": "Optos ultra-widefield scanning-laser pseudocolor",
+      "size": "13,047 images from 5,389 patients in published description",
+      "patient_linkage": "Patient, eye and diagnosis metadata reported",
+      "labels": "Multiple diagnoses; source paper details cleaning and label counts",
+      "access_and_license": "Research-use release is described; exact downloadable release and license/access procedure need owner/source verification",
+      "fit": "Large patient-linked dataset but different UWF modality from the intended standard fundus camera. Keep as a separate domain only if the actual Golden Retina acquisition supports compatible fields.",
+      "status": "Owner/source access and terms unverified; do not stage yet"
+    },
+    {
+      "name": "OCTDL",
+      "official_source": "https://arxiv.org/abs/2312.08255",
+      "diseases_or_targets": [
+        "AMD",
+        "DME",
+        "ERM",
+        "RAO",
+        "RVO",
+        "vitreomacular-interface disease"
+      ],
+      "modality": "OCT B-scans",
+      "size": "2,064 OCT images reported",
+      "patient_linkage": "Verify release schema",
+      "labels": "OCT disease groups",
+      "access_and_license": "Separate modality; do not mix into the fundus-photo classifier",
+      "fit": "Not compatible with the current fundus-only camera product. Reconsider only if the product adds OCT hardware.",
+      "status": "Excluded from current device model"
+    },
+    {
+      "name": "AMDNet23",
+      "official_source": "https://data.mendeley.com/datasets/yj35kjgrv3/1",
+      "diseases_or_targets": [
+        "AMD",
+        "diabetes",
+        "cataract",
+        "normal"
+      ],
+      "modality": "enhanced color fundus images",
+      "size": "1,994 separately posted JPEG files, ~616 MB; dataset description reports 2,000 images",
+      "patient_linkage": "Not established",
+      "labels": "Record describes four balanced classes, but the Mendeley file inventory is flat and no verified file-to-class mapping was found in the record/API",
+      "access_and_license": "Official Mendeley record lists CC BY 4.0",
+      "fit": "Potential AMD supplement only if labels can be unambiguously mapped and source lineage/duplicates can be audited; the source description says it compiles six public datasets and applies enhancement, so it is not independent data.",
+      "status": "Screened; not staged or trained because file-level labels and exact source lineage are unavailable."
+    },
+    {
+      "name": "Composite retinal fundus and OCT dataset v4 (Mendeley trghs22fpg)",
+      "official_source": "https://data.mendeley.com/datasets/trghs22fpg/4",
+      "diseases_or_targets": [
+        "AMD",
+        "central serous retinopathy",
+        "diabetic macular edema",
+        "glaucoma"
+      ],
+      "modality": "mixed fundus photography and OCT",
+      "size": "One official archive, 1,539,330,966 bytes",
+      "patient_linkage": "Must inspect source metadata; do not presume patient-level IDs",
+      "labels": "Source page describes clinical markings and diagnoses; modality/annotation mapping must be audited after extraction",
+      "access_and_license": "Official Mendeley v4 record lists CC BY 4.0",
+      "fit": "Stage to the VM for label and modality audit; keep OCT entirely separate and use fundus-only images for the existing camera model.",
+      "status": "Official archive download in progress directly to the L4; not yet counted as usable fundus images."
+    },
+    {
+      "name": "Bajwa Hospital Multi Eye Disease Dataset",
+      "official_source": "https://data.mendeley.com/datasets/rgwpd4m785/3",
+      "diseases_or_targets": [
+        "cataract",
+        "glaucoma",
+        "retinal disease (unspecified)",
+        "normal"
+      ],
+      "modality": "mixed eye modalities; the source describes fundus subsets",
+      "size": "601 images: 100 each cataract, glaucoma and unspecified retinal disease; 300 normal",
+      "patient_linkage": "No patient identity linkage reported",
+      "labels": "“Retinal disease” is a broad class, not a disease-specific label; source says modalities were fused",
+      "access_and_license": "Official Mendeley record lists CC BY 4.0",
+      "fit": "Not suitable for a disease-specific retinal specialist; potential generic ocular anomaly cohort only after modality audit.",
+      "status": "Screened and excluded from disease-specific training because the retinal label is unspecified and modality mixing is reported."
+    },
+    {
+      "name": "A Multi-Class Retinal Fundus Image Dataset for Deep Learning-Based Ocular Disease Diagnosis (Rajbari, 2026)",
+      "official_source": "https://data.mendeley.com/datasets/z227d626vm/1",
+      "diseases_or_targets": [
+        "DR severity",
+        "AMD dry/wet",
+        "glaucoma severity"
+      ],
+      "modality": "Color fundus photos",
+      "size": "Official description: 1,222 originals + 5,500 augmented derivatives; archive on the L4 contains 5,500 images (500 per each of 11 classes), not the originals.",
+      "patient_linkage": "No patient IDs or augmentation-parent map verified in the archive.",
+      "labels": "11 directory labels: four DR grades, dry AMD, wet AMD, no-AMD category, and four glaucoma grades.",
+      "access_and_license": "Official Mendeley record reports CC BY 4.0; archive downloaded and hashed on the L4 only.",
+      "fit": "Potential disease-severity training source, but only after near-duplicate/augmentation-family audit. Class-balanced derivative folders do not imply independent subjects.",
+      "status": "STAGED on L4; augmentation lineage gate active; no split/training yet"
+    },
+    {
+      "name": "Bangladesh Multi-Disease Retinal Dataset (BMRD)",
+      "official_source": "https://data.mendeley.com/datasets/959whsbc6v/1",
+      "diseases_or_targets": [
+        "DR severity",
+        "AMD severity",
+        "glaucoma severity"
+      ],
+      "modality": "Color fundus photos",
+      "size": "Official record claims 1,786; archive contains 1,821 JPEG files.",
+      "patient_linkage": "No row-level patient/eye map in archive.",
+      "labels": "Source claims severity labels, but archive contains no label CSV; only a small subset of names has disease-like prefixes, the majority are generic image names.",
+      "access_and_license": "Official Mendeley record reports CC BY 4.0; ZIP/hash verified on L4.",
+      "fit": "Potentially high value because it reports three hospitals, but unusable for supervised classification until authors provide an exact label map.",
+      "status": "STAGED on L4; excluded from training pending label mapping"
+    },
+    {
+      "name": "Diabetic Retinopathy and Retinal Diseases Fundus Image Dataset",
+      "official_source": "https://data.mendeley.com/datasets/6ry9n79gb4/1",
+      "diseases_or_targets": [
+        "DR grades",
+        "dry/wet AMD",
+        "glaucoma",
+        "hypertensive retinopathy",
+        "pathological myopia",
+        "cataract"
+      ],
+      "modality": "Color fundus photos",
+      "size": "Official description claims 22,454; API exposes 22,453 individual JPEGs, 2.88 GB.",
+      "patient_linkage": "Not verified; filenames include mixed patterns.",
+      "labels": "Only filenames with known disease prefixes are unambiguously class-coded; remaining files are numeric/unmapped.",
+      "access_and_license": "Official Mendeley record reports CC BY 4.0; not downloaded.",
+      "fit": "Possible large auxiliary training source only after exact source labels, patient grouping and overlap audit; source says it aggregates prior datasets. Cataract is not treated as a retinal disease endpoint.",
+      "status": "SCREENED; not staged because label/source lineage is incomplete"
+    },
+    {
+      "name": "FIVES: Fundus Image Dataset for AI-based Vessel Segmentation",
+      "official_source": "https://figshare.com/articles/figure/FIVES_A_Fundus_Image_Dataset_for_AI-based_Vessel_Segmentation/19688169",
+      "diseases_or_targets": [
+        "AMD",
+        "diabetic retinopathy",
+        "glaucoma",
+        "normal",
+        "retinal vessel segmentation",
+        "image quality"
+      ],
+      "modality": "50-degree color fundus photos and pixelwise vessel masks",
+      "size": "800 images from 573 patients; four image-level classes of 200 images each",
+      "patient_linkage": "Source reports 573 patients and both eyes examined, but public split and filenames do not expose a verified patient-linked partition; duplicates/paired-eye overlap require audit.",
+      "labels": "Clinically reviewed image-level disease category, vessel masks and three image quality scores. Source excludes co-morbid disease cases.",
+      "access_and_license": "Official Figshare API confirms CC BY 4.0; official archive download initiated on L4.",
+      "fit": "P1 source-level transfer test for DR, AMD, glaucoma and normal; do not train on FIVES before scoring the existing candidate. Patient-independent claims are not supported unless patient linkage is recovered.",
+      "status": "Official archive staging on L4; one-shot cross-source inference planned before any training"
+    },
+    {
+      "name": "CLARUS700 single-centre UWF multi-disease dataset",
+      "official_source": "https://doi.org/10.6084/m9.figshare.32712513.v1",
+      "dataset_descriptor": "https://www.nature.com/articles/s41597-026-08875-9",
+      "diseases_or_targets": [
+        "diabetic retinopathy",
+        "retinal vein occlusion",
+        "high myopia",
+        "other disease (heterogeneous)",
+        "normal"
+      ],
+      "modality": "Non-mydriatic approximately 133-degree ZEISS CLARUS 700 ultra-widefield fundus photos",
+      "size": "1,051 indexed images from 674 patients; five image archives (~11.9 GB) staged on L4; extracted archive contains 1,052 image files including one source image absent from the labeled index.",
+      "patient_linkage": "Official patient_id and train/validation/test CSVs; 471/101/102 patients and 732/150/163 model-eligible images; split disjointness asserted in trainer.",
+      "labels": "Four binary disease columns DR, RVO, high_myopia and other_disease; normal is separate. Other_disease is heterogeneous and can include AMD/macuar lesions but is not an AMD-specific target.",
+      "access_and_license": "Figshare public API reports CC0. All five archive MD5 values match the official API; images remain on the L4.",
+      "fit": "Best current patient-level transfer cohort. Disease outputs are source-specific; the 133-degree UWF camera is a different acquisition domain from standard 45-degree fundus.",
+      "status": "STAGED and integrity-checked on L4; four-encoder comparison scheduled on official train/validation; official patient test remains untouched."
+    },
+    {
+      "name": "OculoScope",
+      "official_source": "https://zenodo.org/records/10403889",
+      "diseases_or_targets": [
+        "38 ophthalmic diseases",
+        "67 fundus features"
+      ],
+      "modality": "Ultra-widefield fundus",
+      "size": "16,530 images; 8,405 patients; approximately 1.3 TB record data volume",
+      "patient_linkage": "Patient-level cohort described",
+      "labels": "38 diseases and 67 findings",
+      "access_and_license": "Zenodo record public; files marked restricted. Do not bypass gate.",
+      "fit": "Very high disease breadth and patient linkage, but not feasible on current VM storage and access is gated.",
+      "status": "Blocked: owner grant and storage expansion required; no download"
+    },
+    {
+      "name": "AIROGS",
+      "official_source": "https://airogs.grand-challenge.org/data-and-challenge/",
+      "diseases_or_targets": [
+        "referable glaucoma",
+        "no referable glaucoma",
+        "ungradable image"
+      ],
+      "modality": "Color fundus",
+      "size": "113,893 images; 60,357 subjects; about 500 sites",
+      "patient_linkage": "Subject-linked cohort",
+      "labels": "Expert-grader referable-glaucoma and gradability",
+      "access_and_license": "Zenodo requests manually accepted; CC BY-NC-ND. Challenge restricts added fundus data and fundus-pretrained weights for benchmark submissions.",
+      "fit": "Strong glaucoma/gradability scale, but no access grant and challenge rules conflict with this campaign's multi-source adaptation plan.",
+      "status": "Blocked: no request submitted; no download"
+    },
+    {
+      "name": "16-condition UWF cohort (2025/26 paper)",
+      "official_source": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12310693/",
+      "diseases_or_targets": [
+        "DR",
+        "AMD",
+        "RVO",
+        "retinal detachment",
+        "high myopia",
+        "uveitis",
+        "vitreous hemorrhage",
+        "peripheral retinal degeneration",
+        "retinal hole",
+        "RAO",
+        "asteroid hyalosis",
+        "choroidal atrophy",
+        "RP",
+        "ocular albinism",
+        "PHPV",
+        "normal"
+      ],
+      "modality": "Ultra-widefield fundus",
+      "size": "10,612 images; train/validation from one hospital and a second-hospital test reported",
+      "patient_linkage": "Article describes hospital-separated sets; public patient-level manifests not identified",
+      "labels": "16 categories; very rare conditions have 3-7 test images",
+      "access_and_license": "Article data statement says raw data available from authors without undue reservation; no directly downloadable archive or standalone reuse license found.",
+      "fit": "High coverage but access-by-author request and sparse rare-class supports; not instantly stageable.",
+      "status": "Author-request gated; no download"
+    },
+    {
+      "name": "Multi-disease structural segmentation release",
+      "official_source": "https://figshare.com/articles/dataset/A_multi-disease_fundus_image_segmentation_dataset_with_pixel-level_structural_annotations/32646378",
+      "diseases_or_targets": [
+        "disease-folder-specific vessel masks",
+        "artery/vein masks",
+        "optic disc/cup masks"
+      ],
+      "modality": "Color fundus plus pixel-level masks",
+      "size": "7,720 mapped image IDs; 5,772 image distribution reported; 1,948 source images explicitly not redistributed",
+      "patient_linkage": "Varies by upstream source; no unified patient manifest for all sources confirmed",
+      "labels": "26 disease-folder archives and segmentation masks; not a ready disease-classification corpus",
+      "access_and_license": "Figshare CC BY 4.0 release, but original image redistribution is limited by upstream terms; metadata only fetched on L4.",
+      "fit": "Potential segmentation/structure pretraining resource. The excluded mapping contains 965 glaucoma/REFUGE2+BEH, 259 ODIR cataract, and 168 TJDR DR rows; do not treat mappings or masks as image access.",
+      "status": "Metadata audited on L4; no image archives staged pending content/source-term verification"
+    },
+    {
+      "name": "15-condition risk-screening subset",
+      "official_source": "https://huggingface.co/andromoon17/z-retina",
+      "diseases_or_targets": [
+        "15 reported fundus pathologies including DR, glaucoma, AMD, cataract, RP and systemic retinal biomarkers"
+      ],
+      "modality": "Color fundus",
+      "size": "Paper promises 1,200-image public subset; full paper dataset is 20,351 images with mixed public and proprietary origins",
+      "patient_linkage": "Paper reports image-level split; no patient-group manifest in linked subset verified",
+      "labels": "Expert annotations claimed; disease-specific semantics and source lineage still require inspection",
+      "access_and_license": "HF API returned HTTP 401 from VM; HF CLI on VM is not logged in. No access gate bypassed.",
+      "fit": "Potential additional sample but provenance, terms, exact files, and duplication against parent sources must be verified first.",
+      "status": "Blocked: authenticated repository inaccessible from current VM session; not downloaded"
+    },
+    {
+      "name": "FairVision",
+      "official_source": "https://huggingface.co/datasets/harvardairobotics/FairVision",
+      "diseases_or_targets": [
+        "AMD",
+        "DR",
+        "glaucoma",
+        "fairness and multimodal SLO/OCT tasks"
+      ],
+      "modality": "Scanning laser ophthalmoscopy and OCT",
+      "size": "30,000 subjects; disease archives 39.8-62.6 GB each per dataset card",
+      "patient_linkage": "Subject-level",
+      "labels": "Disease labels and multimodal images",
+      "access_and_license": "CC BY-NC-ND per official dataset card; no-clinical-decision use warning; archives exceed remaining VM disk.",
+      "fit": "Not compatible with current modality and fundus product; terms/storage make it unsuitable for this sprint.",
+      "status": "Excluded from current campaign; no download"
+    },
+    {
+      "name": "AMDNet23 · Mendeley yj35kjgrv3 v1",
+      "official_source": "https://data.mendeley.com/datasets/yj35kjgrv3/1",
+      "diseases_or_targets": [
+        "AMD",
+        "diabetes/DR",
+        "cataract",
+        "normal"
+      ],
+      "modality": "Enhanced color fundus images",
+      "size": "2,000 images, balanced classes; 400 AMD images reported",
+      "patient_linkage": "No patient metadata identified",
+      "labels": "Four balanced classes; gamma/CLAHE-enhanced preprocessing",
+      "access_and_license": "Official Mendeley record reports CC BY 4.0; public API endpoints return HTTP 401 from current VM without OAuth.",
+      "fit": "Possible AMD training augmentation only after parent-source and exact/near-duplicate audit; its cited sources overlap ODIR, RFMiD, HRF, ARIA and prior pool.",
+      "status": "Listed as a new source; not staged due missing VM API authentication and unresolved parent-image overlap"
+    },
+    {
+      "name": "Inherited Retinal Diseases Image Bank",
+      "official_source": "https://github.com/riovs/ird_dataset",
+      "diseases_or_targets": [
+        "retinitis pigmentosa",
+        "Stargardt disease",
+        "healthy controls"
+      ],
+      "modality": "Paired-eye fundus images",
+      "size": "391 people: 158 RP, 62 Stargardt, 171 healthy; paired eyes described",
+      "patient_linkage": "Person-level pairing reported",
+      "labels": "Inherited retinal disease subtype labels",
+      "access_and_license": "Access by request form; noncommercial research only; redistribution prohibited without permission.",
+      "fit": "High-value addition for rare inherited retinal disease classifiers, but not instantly available.",
+      "status": "Access-request gated; no request or download"
+    },
+    {
+      "name": "RAO retinal artery occlusion fundus photography dataset v2 (Mendeley DOI 10.17632/5428684j44.2)",
+      "diseases": [
+        "retinal artery occlusion"
+      ],
+      "modality": "Color fundus photographs",
+      "size": "151 positive images; archive has no explicit control class",
+      "patient_linkage": "Not provided",
+      "labels": "All files are in RAO-labeled source folders; no explicit negative examples",
+      "access_and_license": "Official Mendeley v2 metadata: CC BY 4.0; source record says web-derived images and RFMiD/JSIEC",
+      "fit": "Possible positive-only supplement only; not a stand-alone binary classifier or independent evaluation source",
+      "status": "Staged on L4 only; archive SHA verified; 8 exact SHA matches to staged RFMiD1; no training run"
+    },
+    {
+      "name": "Multi-disease fundus structural-mask compilation (Figshare 32646378)",
+      "diseases": [
+        "multiple disease-associated fundus cohorts; structure masks only"
+      ],
+      "modality": "Fundus photographs in upstream sources plus vessel/artery-vein/optic-disc/cup masks",
+      "size": "7,720 mapped image IDs across 26 mask archives as described by source workbook",
+      "patient_linkage": "Depends on each upstream source; compiled mapping is not a verified patient key",
+      "labels": "Structural pixel masks; disease-named archives do not create 26 diagnostic targets",
+      "access_and_license": "Figshare record CC BY 4.0; its source workbook says source photos are not redistributed and must be obtained under upstream terms",
+      "fit": "Potential segmentation/annotation resource after per-source image and license matching; excluded from current disease-classifier training",
+      "status": "Metadata workbooks staged on L4 only; no image archive downloaded"
+    },
+    {
+      "name": "Inherited retinal disease image bank (RIoVS/SBMU)",
+      "diseases": [
+        "retinitis pigmentosa",
+        "Stargardt disease"
+      ],
+      "modality": "Paired-eye retinal images",
+      "size": "391 people: 158 RP, 62 Stargardt, 171 healthy per maintainer README",
+      "patient_linkage": "Paired images are reported per individual",
+      "labels": "Inherited retinal disease subtype labels",
+      "access_and_license": "Request required; non-commercial research only; no redistribution without permission",
+      "fit": "High-value rare-disease cohort if access granted",
+      "status": "Access-request gated; no files staged"
+    },
+    {
+      "name": "JustRAIGS training release",
+      "diseases": [
+        "referable glaucoma"
+      ],
+      "modality": "Color fundus photograph",
+      "size": "101,442 advertised images; 101,423 label rows; six Zenodo archives, 54.18 GB",
+      "patient_linkage": "Eye ID/Fellow Eye ID graph reconstructs 55,262 components; paper reports 55,736 patients; 8,406 rows have blank fellow link",
+      "labels": "Referable glaucoma (RG) vs no referable glaucoma (NRG), with grader-feature columns",
+      "access_and_license": "Public Zenodo, CC BY-NC-SA; research use; do not redistribute images or derivatives without license review",
+      "fit": "Large, disease-specific, clinically meaningful glaucoma-referral task with multi-site/device mix",
+      "status": "Cloud-only download running; checksum and patient-component audit pending"
+    },
+    {
+      "name": "Mendeley 13-class retinal compilation · 6ry9n79gb4.1",
+      "diseases": [
+        "normal fundus",
+        "six diabetic retinopathy grades",
+        "dry AMD",
+        "wet AMD",
+        "cataract",
+        "hypertensive retinopathy",
+        "pathological myopia",
+        "glaucoma"
+      ],
+      "modality": "Color fundus photograph",
+      "size": "Official API enumerates 22,453 files / 2.882 GB; record description says 22,454",
+      "patient_linkage": "No verified patient identifiers; some filenames encode numeric subject/eye and likely augmentation suffixes; any grouping is a filename-derived proxy only",
+      "labels": "13 folder labels; exact folder counts correspond to published paper table",
+      "access_and_license": "Mendeley record CC BY 4.0; source data are compiled from three public sources and underlying rights/provenance require caution",
+      "fit": "Potential high-coverage source for disease-specific development, but strong source and duplicate confounding risk; not an independent cohort",
+      "status": "Cloud-only download running; verify all SHA-256, exact cross-source overlap and filename clusters before any training"
+    },
+    {
+      "name": "ODIR-5K / ODIR-2019",
+      "diseases": [
+        "diabetes/DR keywords",
+        "glaucoma",
+        "cataract",
+        "AMD",
+        "hypertension",
+        "myopia",
+        "other abnormalities",
+        "normal"
+      ],
+      "modality": "Paired color fundus, patient-level keywords and age",
+      "size": "5,000 patients; left/right images",
+      "patient_linkage": "Explicit patient records and paired eyes; original labels are patient-level and include both eyes and age",
+      "labels": "Eight patient-level categories; per-eye diagnosis mapping must be validated",
+      "access_and_license": "Official challenge registration required; no standard public redistribution license stated on official page. No cloud Kaggle credential present.",
+      "fit": "High-value multi-disease source; strongest next candidate for patient-level multi-label development after account access and terms review",
+      "status": "Not staged; no credentials/terms were available on the L4, so access path was not bypassed"
+    }
+  ],
+  "rules": [
+    "Stage image files only on the authorized Google Cloud VM; never download an image archive to this Mac.",
+    "Do not accept a dataset-specific legal agreement, DUA, or access condition on the user's behalf.",
+    "Original images only where augmented variants exist; split augmentation families together.",
+    "Perform exact/near-duplicate and source-overlap checks before any held-out result is called external.",
+    "Use patient-grouped splits whenever patient identifiers exist; where they do not, report only image-level exploratory estimates.",
+    "Train disease-specific binary experts only where labels define the same condition and enough independent patient support exists; rare conditions remain exploratory or no-go."
+  ]
+}

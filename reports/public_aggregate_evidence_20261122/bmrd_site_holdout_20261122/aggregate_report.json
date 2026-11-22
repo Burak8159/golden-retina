@@ -1,0 +1,319 @@
+{
+  "dataset": "BMRD Mendeley 959whsbc6v.1",
+  "selection": "validation macro-F1; one test hospital per disease, opened once",
+  "label_scope": "folder names Level 1-4 and AMD dry/wet/no-AMD are reported as source classes; grade thresholds are not mapped to a clinical severity standard",
+  "results": {
+    "dr": {
+      "status": "complete",
+      "train_site": "Shiromoni BNSB Hospital",
+      "validation_source": "Shiromoni BNSB Hospital",
+      "test_site": "Khulna Laser Clinic",
+      "class_names": [
+        "DR_Level_1",
+        "DR_Level_2",
+        "DR_Level_3",
+        "DR_Level_4"
+      ],
+      "train_counts": {
+        "DR_Level_2": 206,
+        "DR_Level_1": 51,
+        "DR_Level_4": 31,
+        "DR_Level_3": 40
+      },
+      "validation_counts": {
+        "DR_Level_2": 52,
+        "DR_Level_1": 13,
+        "DR_Level_3": 10,
+        "DR_Level_4": 8
+      },
+      "test_counts": {
+        "DR_Level_2": 170,
+        "DR_Level_3": 48,
+        "DR_Level_1": 57,
+        "DR_Level_4": 16
+      },
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_epoch": 7,
+          "best_validation_macro_f1": 0.7511469636398249
+        },
+        {
+          "architecture": "resnet50",
+          "best_epoch": 6,
+          "best_validation_macro_f1": 0.6350996890109128
+        }
+      ],
+      "selected_model": "convnext_tiny",
+      "test_metrics_one_shot": {
+        "n_images": 291,
+        "accuracy": 0.697594501718213,
+        "balanced_accuracy": 0.6466202270381837,
+        "macro_f1": 0.5176311672994557,
+        "confusion_matrix_rows_true_columns_pred": [
+          [
+            55,
+            2,
+            0,
+            0
+          ],
+          [
+            25,
+            134,
+            5,
+            6
+          ],
+          [
+            9,
+            16,
+            1,
+            22
+          ],
+          [
+            1,
+            1,
+            1,
+            13
+          ]
+        ],
+        "classes": {
+          "DR_Level_1": {
+            "support": 57,
+            "sensitivity": 0.9649122807017544,
+            "specificity": 0.8504273504273504,
+            "false_negatives": 2,
+            "false_positives": 35,
+            "auroc_ovr": 0.9651372019793073
+          },
+          "DR_Level_2": {
+            "support": 170,
+            "sensitivity": 0.788235294117647,
+            "specificity": 0.8429752066115702,
+            "false_negatives": 36,
+            "false_positives": 19,
+            "auroc_ovr": 0.9012153621779291
+          },
+          "DR_Level_3": {
+            "support": 48,
+            "sensitivity": 0.020833333333333332,
+            "specificity": 0.9753086419753086,
+            "false_negatives": 47,
+            "false_positives": 6,
+            "auroc_ovr": 0.8689128943758573
+          },
+          "DR_Level_4": {
+            "support": 16,
+            "sensitivity": 0.8125,
+            "specificity": 0.8981818181818182,
+            "false_negatives": 3,
+            "false_positives": 28,
+            "auroc_ovr": 0.9495454545454545
+          }
+        },
+        "macro_auroc_ovr": 0.9212027282696371
+      },
+      "boundary": "hospital/source-held-out, but no patient IDs; image-level estimates. Not patient-independent or clinical validation."
+    },
+    "amd": {
+      "status": "complete",
+      "train_site": "Shiromoni BNSB Hospital",
+      "validation_source": "Shiromoni BNSB Hospital",
+      "test_site": "Khulna Laser Clinic",
+      "class_names": [
+        "AMD_dry",
+        "AMD_none",
+        "AMD_wet"
+      ],
+      "train_counts": {
+        "AMD_none": 18,
+        "AMD_dry": 15,
+        "AMD_wet": 13
+      },
+      "validation_counts": {
+        "AMD_wet": 3,
+        "AMD_none": 5,
+        "AMD_dry": 4
+      },
+      "test_counts": {
+        "AMD_wet": 12,
+        "AMD_dry": 9,
+        "AMD_none": 22
+      },
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_epoch": 4,
+          "best_validation_macro_f1": 0.7142857142857143
+        },
+        {
+          "architecture": "resnet50",
+          "best_epoch": 2,
+          "best_validation_macro_f1": 0.37606837606837606
+        }
+      ],
+      "selected_model": "convnext_tiny",
+      "test_metrics_one_shot": {
+        "n_images": 43,
+        "accuracy": 0.5348837209302325,
+        "balanced_accuracy": 0.505892255892256,
+        "macro_f1": 0.4971139971139971,
+        "confusion_matrix_rows_true_columns_pred": [
+          [
+            2,
+            1,
+            6
+          ],
+          [
+            9,
+            12,
+            1
+          ],
+          [
+            2,
+            1,
+            9
+          ]
+        ],
+        "classes": {
+          "AMD_dry": {
+            "support": 9,
+            "sensitivity": 0.2222222222222222,
+            "specificity": 0.6764705882352942,
+            "false_negatives": 7,
+            "false_positives": 11,
+            "auroc_ovr": 0.4803921568627451
+          },
+          "AMD_none": {
+            "support": 22,
+            "sensitivity": 0.5454545454545454,
+            "specificity": 0.9047619047619048,
+            "false_negatives": 10,
+            "false_positives": 2,
+            "auroc_ovr": 0.8571428571428572
+          },
+          "AMD_wet": {
+            "support": 12,
+            "sensitivity": 0.75,
+            "specificity": 0.7741935483870968,
+            "false_negatives": 3,
+            "false_positives": 7,
+            "auroc_ovr": 0.9005376344086021
+          }
+        },
+        "macro_auroc_ovr": 0.7460242161380681
+      },
+      "boundary": "hospital/source-held-out, but no patient IDs; image-level estimates. Not patient-independent or clinical validation."
+    },
+    "glaucoma": {
+      "status": "complete",
+      "train_site": "Khulna Laser Clinic",
+      "validation_source": "Khulna Laser Clinic",
+      "test_site": "Anwar khan Modern Medical",
+      "class_names": [
+        "Glaucoma_Level_1",
+        "Glaucoma_Level_2",
+        "Glaucoma_Level_3",
+        "Glaucoma_Level_4"
+      ],
+      "train_counts": {
+        "Glaucoma_Level_4": 247,
+        "Glaucoma_Level_3": 179,
+        "Glaucoma_Level_2": 104,
+        "Glaucoma_Level_1": 30
+      },
+      "validation_counts": {
+        "Glaucoma_Level_3": 45,
+        "Glaucoma_Level_2": 26,
+        "Glaucoma_Level_4": 62,
+        "Glaucoma_Level_1": 8
+      },
+      "test_counts": {
+        "Glaucoma_Level_2": 3,
+        "Glaucoma_Level_3": 8,
+        "Glaucoma_Level_1": 6,
+        "Glaucoma_Level_4": 26
+      },
+      "candidate_models": [
+        {
+          "architecture": "convnext_tiny",
+          "best_epoch": 7,
+          "best_validation_macro_f1": 0.8389972356775126
+        },
+        {
+          "architecture": "resnet50",
+          "best_epoch": 7,
+          "best_validation_macro_f1": 0.7202269065520945
+        }
+      ],
+      "selected_model": "convnext_tiny",
+      "test_metrics_one_shot": {
+        "n_images": 43,
+        "accuracy": 0.6046511627906976,
+        "balanced_accuracy": 0.4094551282051282,
+        "macro_f1": 0.4126753749395259,
+        "confusion_matrix_rows_true_columns_pred": [
+          [
+            2,
+            2,
+            0,
+            2
+          ],
+          [
+            0,
+            1,
+            1,
+            1
+          ],
+          [
+            0,
+            5,
+            1,
+            2
+          ],
+          [
+            0,
+            1,
+            3,
+            22
+          ]
+        ],
+        "classes": {
+          "Glaucoma_Level_1": {
+            "support": 6,
+            "sensitivity": 0.3333333333333333,
+            "specificity": 1.0,
+            "false_negatives": 4,
+            "false_positives": 0,
+            "auroc_ovr": 0.9549549549549549
+          },
+          "Glaucoma_Level_2": {
+            "support": 3,
+            "sensitivity": 0.3333333333333333,
+            "specificity": 0.8,
+            "false_negatives": 2,
+            "false_positives": 8,
+            "auroc_ovr": 0.5916666666666667
+          },
+          "Glaucoma_Level_3": {
+            "support": 8,
+            "sensitivity": 0.125,
+            "specificity": 0.8857142857142857,
+            "false_negatives": 7,
+            "false_positives": 4,
+            "auroc_ovr": 0.6571428571428571
+          },
+          "Glaucoma_Level_4": {
+            "support": 26,
+            "sensitivity": 0.8461538461538461,
+            "specificity": 0.7058823529411765,
+            "false_negatives": 4,
+            "false_positives": 5,
+            "auroc_ovr": 0.8823529411764706
+          }
+        },
+        "macro_auroc_ovr": 0.7715293549852373
+      },
+      "boundary": "hospital/source-held-out, but no patient IDs; image-level estimates. Not patient-independent or clinical validation."
+    }
+  }
+}

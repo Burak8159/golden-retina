@@ -1,0 +1,30 @@
+{
+  "source": "MuReD v2 Mendeley CC BY 4.0",
+  "images_extracted": 2208,
+  "train_rows": 1764,
+  "validation_rows": 444,
+  "labels": [
+    "DR",
+    "NORMAL",
+    "MH",
+    "ODC",
+    "TSLN",
+    "ARMD",
+    "DN",
+    "MYA",
+    "BRVO",
+    "ODP",
+    "CRVO",
+    "CNV",
+    "RS",
+    "ODE",
+    "LS",
+    "CSR",
+    "HTR",
+    "ASR",
+    "CRS",
+    "OTHER"
+  ],
+  "unmatched_keys": 0,
+  "patient_ids_available": false
+}

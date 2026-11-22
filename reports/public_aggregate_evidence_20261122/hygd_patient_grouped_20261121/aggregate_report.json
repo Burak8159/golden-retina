@@ -1,0 +1,117 @@
+{
+  "status": "PATIENT_GROUPED_ONE_SHOT_TEST_COMPLETE",
+  "source": "PhysioNet HYGD v1.1.0; single-source 45-degree TOPCON fundus images",
+  "task": "GON+ versus GON- image label; this is a glaucoma-associated optic neuropathy screening experiment",
+  "data_counts": {
+    "images": 747,
+    "patients": 288,
+    "duplicate_components": 283,
+    "exact_duplicate_images": 10,
+    "gon_positive_images": 548,
+    "gon_negative_images": 199,
+    "patient_mixed_label_groups": 0,
+    "splits": {
+      "train": {
+        "images": 468,
+        "patients": 181,
+        "positive_images": 335
+      },
+      "validation": {
+        "images": 119,
+        "patients": 45,
+        "positive_images": 89
+      },
+      "test": {
+        "images": 160,
+        "patients": 57,
+        "positive_images": 124
+      }
+    }
+  },
+  "split_policy": "Nested deterministic StratifiedGroupKFold by patient; exact-duplicate patient components merged; approximately 64/16/20 train/validation/test. Test held until candidate and threshold freeze.",
+  "candidate_validation": {
+    "convnext_tiny": {
+      "auroc": 1.0,
+      "threshold": 0.5614853304025801,
+      "metrics": {
+        "n_images": 119,
+        "positive_images": 89,
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0,
+        "false_negatives": 0,
+        "false_positives": 0,
+        "true_positives": 89,
+        "true_negatives": 30,
+        "auroc": 1.0,
+        "average_precision": 1.0000000000000002
+      },
+      "best_epoch": 2
+    },
+    "resnet50": {
+      "auroc": 1.0,
+      "threshold": 0.29007505954906804,
+      "metrics": {
+        "n_images": 119,
+        "positive_images": 89,
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0,
+        "false_negatives": 0,
+        "false_positives": 0,
+        "true_positives": 89,
+        "true_negatives": 30,
+        "auroc": 1.0,
+        "average_precision": 1.0
+      },
+      "best_epoch": 7
+    }
+  },
+  "selected_candidate": "convnext_tiny",
+  "test_threshold": 0.5614853304025801,
+  "held_out_patient_group_test": {
+    "n_images": 160,
+    "positive_images": 124,
+    "accuracy": 0.9,
+    "balanced_accuracy": 0.8960573476702509,
+    "sensitivity": 0.9032258064516129,
+    "specificity": 0.8888888888888888,
+    "false_negatives": 12,
+    "false_positives": 4,
+    "true_positives": 112,
+    "true_negatives": 32,
+    "auroc": 0.9454525089605735,
+    "average_precision": 0.976857752493599
+  },
+  "patient_cluster_bootstrap_95ci": {
+    "accuracy": [
+      0.8431372549019608,
+      0.9552321724709784
+    ],
+    "balanced_accuracy": [
+      0.8165039007458621,
+      0.9593118729240402
+    ],
+    "sensitivity": [
+      0.8416666666666667,
+      0.9663106556364982
+    ],
+    "specificity": [
+      0.7333333333333333,
+      1.0
+    ],
+    "auroc": [
+      0.8554365245846619,
+      0.9962966549837053
+    ]
+  },
+  "selection_boundary": "Validation selected architecture, checkpoint and threshold; held-out test opened once after freeze. Do not retune on this test.",
+  "limitations": [
+    "Single-center, single-camera cohort; no external validation.",
+    "Performance is not a clinical diagnosis or deployment clearance.",
+    "Sensitivity and specificity depend on selected threshold; report all metrics and confidence intervals.",
+    "All patient-level manifests, predictions, and checkpoints remain on the VM."
+  ]
+}

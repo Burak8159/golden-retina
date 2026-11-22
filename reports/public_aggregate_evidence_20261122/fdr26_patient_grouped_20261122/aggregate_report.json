@@ -1,0 +1,270 @@
+{
+  "status": "complete",
+  "dataset": "FDR26 Zenodo v3",
+  "selected_architecture": "convnext_tiny",
+  "selected_epoch": 8,
+  "selection": "lowest validation cross entropy among the three prespecified candidates",
+  "candidate_summaries": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 8,
+      "best_validation_loss": 0.8675408363342285
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 8,
+      "best_validation_loss": 0.9526095390319824
+    },
+    {
+      "architecture": "efficientnet_b0",
+      "best_epoch": 12,
+      "best_validation_loss": 0.9156941771507263
+    }
+  ],
+  "split_audit": {
+    "dataset": "FDR26 Zenodo v3",
+    "archive_md5_expected": "be97fb330cb06cadf3926de2ff8be7c9",
+    "metadata_rows_total": 3000,
+    "metadata_rows_with_image": 2999,
+    "missing_images": 1,
+    "cross_source_exact_overlap_rows_removed": 0,
+    "known_source_roots_scanned": {
+      "external/expanded_20261121/clarus700": 1027,
+      "external/expanded_20261121/fives_unar": 1600,
+      "external/uwf_dr_peng_20261122/unpacked": 1630,
+      "external/rfmid1_hf_ccby": 3203
+    },
+    "exact_duplicate_rows_removed": 160,
+    "conflicting_duplicate_hash_groups_removed": 62,
+    "rows_in_conflicting_hash_groups_excluded": 124,
+    "conflicting_grade_pair_counts": {
+      "DR0 - Pas de RD / DR1 - Minime": 3,
+      "DR1 - Minime / DR2 - Moderee": 34,
+      "DR0 - Pas de RD / DR2 - Moderee": 5,
+      "DR2 - Moderee / DR3 - Severe": 14,
+      "DR2 - Moderee / DR4 - Proliferante": 1,
+      "DR3 - Severe / DR4 - Proliferante": 5
+    },
+    "unique_hash_images_before_label_conflict_exclusion": 2839,
+    "unique_images_used_after_dedup_and_conflict_exclusion": 2777,
+    "patient_key": "first 8 characters of image_id; 1,918 unique keys across 3,000 metadata rows, matching published patient count; derived key, not a separately documented clinical identifier",
+    "images_by_grade": {
+      "DR0 - Pas de RD": 485,
+      "DR1 - Minime": 630,
+      "DR2 - Moderee": 515,
+      "DR3 - Severe": 592,
+      "DR4 - Proliferante": 555
+    },
+    "groups_by_grade": {
+      "DR0 - Pas de RD": 355,
+      "DR1 - Minime": 530,
+      "DR2 - Moderee": 431,
+      "DR3 - Severe": 479,
+      "DR4 - Proliferante": 446
+    },
+    "splits": {
+      "train": {
+        "images": 1776,
+        "patients": 1181,
+        "grades": {
+          "DR0 - Pas de RD": 316,
+          "DR1 - Minime": 388,
+          "DR2 - Moderee": 335,
+          "DR3 - Severe": 381,
+          "DR4 - Proliferante": 356
+        }
+      },
+      "validation": {
+        "images": 448,
+        "patients": 296,
+        "grades": {
+          "DR0 - Pas de RD": 83,
+          "DR1 - Minime": 112,
+          "DR2 - Moderee": 81,
+          "DR3 - Severe": 77,
+          "DR4 - Proliferante": 95
+        }
+      },
+      "test": {
+        "images": 553,
+        "patients": 370,
+        "grades": {
+          "DR0 - Pas de RD": 86,
+          "DR1 - Minime": 130,
+          "DR2 - Moderee": 99,
+          "DR3 - Severe": 134,
+          "DR4 - Proliferante": 104
+        }
+      }
+    },
+    "split_method": "nested deterministic StratifiedGroupKFold by derived patient key; 64/16/20 target; test untouched for candidate selection",
+    "boundary": "Single-center Moroccan source. Patient grouping is derived from anonymized image IDs and cross-checked against the source paper's patient count; same-eye/time semantics are not asserted. No independent external or clinical validation.",
+    "source_scan_note": "Exact hashes checked across extracted image files in the listed known-source roots only. Mendeley expansion files in ZIP archives were not traversed and are not covered by this cross-source scan."
+  },
+  "test_metrics": {
+    "n_images": 553,
+    "n_patient_groups": 370,
+    "accuracy": 0.6130198915009042,
+    "balanced_accuracy": 0.6157416676038683,
+    "macro_f1": 0.6081137547276892,
+    "quadratic_weighted_kappa": 0.8616976693884173,
+    "mean_absolute_grade_error": 0.43399638336347196,
+    "confusion_matrix_rows_true_DR0_to_DR4_cols_pred_DR0_to_DR4": [
+      [
+        56,
+        22,
+        8,
+        0,
+        0
+      ],
+      [
+        37,
+        69,
+        23,
+        1,
+        0
+      ],
+      [
+        7,
+        28,
+        41,
+        23,
+        0
+      ],
+      [
+        2,
+        6,
+        15,
+        84,
+        27
+      ],
+      [
+        0,
+        0,
+        0,
+        15,
+        89
+      ]
+    ],
+    "per_grade": {
+      "DR0 - Pas de RD": {
+        "support": 86,
+        "sensitivity": 0.6511627906976745,
+        "specificity": 0.9014989293361885,
+        "false_negatives": 30,
+        "false_positives": 46,
+        "one_vs_rest_auroc": 0.9060056770081172
+      },
+      "DR1 - Minime": {
+        "support": 130,
+        "sensitivity": 0.5307692307692308,
+        "specificity": 0.8676122931442081,
+        "false_negatives": 61,
+        "false_positives": 56,
+        "one_vs_rest_auroc": 0.8571194762684125
+      },
+      "DR2 - Moderee": {
+        "support": 99,
+        "sensitivity": 0.41414141414141414,
+        "specificity": 0.8986784140969163,
+        "false_negatives": 58,
+        "false_positives": 46,
+        "one_vs_rest_auroc": 0.8200952253815691
+      },
+      "DR3 - Severe": {
+        "support": 134,
+        "sensitivity": 0.6268656716417911,
+        "specificity": 0.9069212410501193,
+        "false_negatives": 50,
+        "false_positives": 39,
+        "one_vs_rest_auroc": 0.8937056958643537
+      },
+      "DR4 - Proliferante": {
+        "support": 104,
+        "sensitivity": 0.8557692307692307,
+        "specificity": 0.9398663697104677,
+        "false_negatives": 15,
+        "false_positives": 27,
+        "one_vs_rest_auroc": 0.9753083775912283
+      }
+    },
+    "grade2_or_worse_operational_proxy": {
+      "support": 337,
+      "sensitivity": 0.8724035608308606,
+      "specificity": 0.8518518518518519,
+      "false_negatives": 43,
+      "false_positives": 32,
+      "definition": "ALFEDIAM grade >= 2; dataset-specific operating analysis, not a validated referral rule"
+    },
+    "any_dr_validation_threshold_target_90pct_specificity": {
+      "n_images": 553,
+      "positive_support": 467,
+      "threshold": 0.803695797920227,
+      "sensitivity": 0.8029978586723768,
+      "specificity": 0.8953488372093024,
+      "accuracy": 0.8173598553345389,
+      "false_negatives": 92,
+      "false_positives": 9
+    },
+    "grade2plus_validation_threshold_target_90pct_specificity": {
+      "n_images": 553,
+      "positive_support": 337,
+      "threshold": 0.4734589159488678,
+      "sensitivity": 0.8813056379821959,
+      "specificity": 0.8564814814814815,
+      "accuracy": 0.8716094032549728,
+      "false_negatives": 40,
+      "false_positives": 31
+    }
+  },
+  "validation_selected_thresholds": {
+    "selection_rule": "maximize sensitivity subject to validation specificity >= 90%",
+    "any_dr_threshold_and_validation_sensitivity_specificity": {
+      "threshold": 0.803695797920227,
+      "sensitivity": 0.7917808219178082,
+      "specificity": 0.927710843373494
+    },
+    "grade2plus_threshold_and_validation_sensitivity_specificity": {
+      "threshold": 0.4734589159488678,
+      "sensitivity": 0.857707509881423,
+      "specificity": 0.9025641025641026
+    },
+    "grade2plus_definition": "ALFEDIAM grade >=2; a dataset-specific proxy, not a validated clinical referral definition"
+  },
+  "patient_cluster_bootstrap_95_ci": {
+    "accuracy": [
+      0.5668419869194147,
+      0.6573569728946824
+    ],
+    "macro_f1": [
+      0.5628440885947614,
+      0.6488486682289667
+    ],
+    "quadratic_weighted_kappa": [
+      0.8340543534033389,
+      0.8852131501244056
+    ],
+    "grade2plus_sensitivity": [
+      0.8298397717295873,
+      0.912396353916669
+    ],
+    "any_dr_sensitivity": [
+      0.7592118259993802,
+      0.8443558030311761
+    ],
+    "any_dr_specificity": [
+      0.8271604938271605,
+      0.9552321724709784
+    ],
+    "grade2plus_sensitivity_locked_threshold": [
+      0.8379202792620224,
+      0.92073973042362
+    ],
+    "grade2plus_specificity_locked_threshold": [
+      0.8018836755049455,
+      0.9059446613675453
+    ]
+  },
+  "boundary": "Single-center Moroccan source. Patient grouping is derived from anonymized image IDs and cross-checked against the source paper's patient count; same-eye/time semantics are not asserted. No independent external or clinical validation.",
+  "redistribution": "raw images, patient key, and per-image test predictions stay on the authorized VM; only safe aggregates/code may be pulled."
+}

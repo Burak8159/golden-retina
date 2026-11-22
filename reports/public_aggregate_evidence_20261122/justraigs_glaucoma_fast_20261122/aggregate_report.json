@@ -1,0 +1,123 @@
+{
+  "status": "complete",
+  "dataset": "JustRAIGS training release, deterministic capped rerun of frozen partitions",
+  "task": "referable glaucoma vs no referable glaucoma",
+  "candidate_models": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 5,
+      "validation": {
+        "n_images": 6000,
+        "positive_support": 191,
+        "accuracy": 0.9728333333333333,
+        "balanced_accuracy": 0.7530510969167721,
+        "macro_f1": 0.7672359073598911,
+        "auroc": 0.9082422202774355,
+        "auprc": 0.5454417494899362,
+        "brier_score": 0.024938084222513132,
+        "threshold": 0.5,
+        "sensitivity": 0.518324607329843,
+        "specificity": 0.9877775865037012,
+        "false_negatives": 92,
+        "false_positives": 71,
+        "confusion_matrix_rows_true_NRG_RG": [
+          [
+            5738,
+            71
+          ],
+          [
+            92,
+            99
+          ]
+        ]
+      }
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 5,
+      "validation": {
+        "n_images": 6000,
+        "positive_support": 191,
+        "accuracy": 0.967,
+        "balanced_accuracy": 0.7348481639341011,
+        "macro_f1": 0.7336647727272727,
+        "auroc": 0.8520381354442781,
+        "auprc": 0.45873068782330745,
+        "brier_score": 0.028567326367765537,
+        "threshold": 0.5,
+        "sensitivity": 0.4869109947643979,
+        "specificity": 0.9827853331038044,
+        "false_negatives": 98,
+        "false_positives": 100,
+        "confusion_matrix_rows_true_NRG_RG": [
+          [
+            5709,
+            100
+          ],
+          [
+            98,
+            93
+          ]
+        ]
+      }
+    }
+  ],
+  "selected_model": "convnext_tiny",
+  "validation_threshold_target_specificity_90": {
+    "target_specificity": 0.9,
+    "threshold": 0.000628784007858485,
+    "validation_sensitivity": 0.806282722513089,
+    "validation_specificity": 0.9080736787743157
+  },
+  "one_shot_internal_test": {
+    "n_images": 6000,
+    "positive_support": 198,
+    "accuracy": 0.8971666666666667,
+    "balanced_accuracy": 0.8809736454514118,
+    "macro_f1": 0.6503694306905563,
+    "auroc": 0.9376429757763781,
+    "auprc": 0.6232268652066837,
+    "brier_score": 0.022033651724704076,
+    "threshold": 0.000628784007858485,
+    "sensitivity": 0.8636363636363636,
+    "specificity": 0.8983109272664599,
+    "false_negatives": 27,
+    "false_positives": 590,
+    "confusion_matrix_rows_true_NRG_RG": [
+      [
+        5212,
+        590
+      ],
+      [
+        27,
+        171
+      ]
+    ]
+  },
+  "group_bootstrap_95_ci": {
+    "accuracy": [
+      0.8888888888888888,
+      0.9053582610163364
+    ],
+    "sensitivity": [
+      0.8080765279917822,
+      0.9095385232744783
+    ],
+    "specificity": [
+      0.8895787096716439,
+      0.9066766714847928
+    ],
+    "auroc": [
+      0.9142585836363195,
+      0.9582344302139014
+    ],
+    "auprc": [
+      0.5450110506386858,
+      0.7022252075700345
+    ]
+  },
+  "validation_n": 6000,
+  "test_n": 6000,
+  "cap_per_partition": 6000,
+  "boundary": "This is an internal split of the official training release. Fellow-eye components were reconstructed from available links; missing links can split true patients. It is not the official challenge test or independent clinical validation."
+}

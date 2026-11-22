@@ -1,0 +1,54 @@
+{
+  "split_counts": {
+    "train": {
+      "images": 731,
+      "patients": 467,
+      "positives": {
+        "DR": 108,
+        "RVO": 62,
+        "high_myopia": 135,
+        "other_disease": 109
+      }
+    },
+    "validation": {
+      "images": 148,
+      "patients": 99,
+      "positives": {
+        "DR": 26,
+        "RVO": 12,
+        "high_myopia": 34,
+        "other_disease": 27
+      }
+    },
+    "test": {
+      "images": 163,
+      "patients": 102,
+      "positives": {
+        "DR": 23,
+        "RVO": 11,
+        "high_myopia": 29,
+        "other_disease": 28
+      }
+    }
+  },
+  "patient_overlap": {
+    "train_validation": 0,
+    "train_test": 0,
+    "validation_test": 0
+  },
+  "exact_hash_overlap": {
+    "train_validation": 0,
+    "train_test": 0,
+    "validation_test": 0
+  },
+  "exact_duplicate_rows_excluded_by_train_validation_test_priority": [
+    {
+      "excluded_split": "validation",
+      "retained_split": "train"
+    },
+    {
+      "excluded_split": "validation",
+      "retained_split": "validation"
+    }
+  ]
+}

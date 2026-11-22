@@ -1,0 +1,95 @@
+{
+  "status": "complete",
+  "target": "AMD (dry or wet) vs source-defined AMD-none",
+  "candidate_selection": "lowest Rajbari validation BCE among trained architectures; threshold selected for maximum balanced accuracy on Rajbari validation only",
+  "selected": {
+    "architecture": "convnext_tiny",
+    "best_epoch": 8,
+    "validation_loss": 0.001291467808187008
+  },
+  "validation_threshold": 0.9092645049095154,
+  "rajbari_image_grouped_test": {
+    "n": 300,
+    "positive_support": 201,
+    "negative_support": 99,
+    "threshold": 0.9092645049095154,
+    "accuracy": 0.9966666666666667,
+    "balanced_accuracy": 0.9975124378109452,
+    "macro_f1": 0.9962405543929123,
+    "auroc": 1.0,
+    "sensitivity": 0.9950248756218906,
+    "specificity": 1.0,
+    "false_negatives": 1,
+    "false_positives": 0
+  },
+  "bmrd_cross_source_exploratory": {
+    "Khulna Laser Clinic": {
+      "n": 49,
+      "positive_support": 27,
+      "negative_support": 22,
+      "threshold": 0.9092645049095154,
+      "accuracy": 1.0,
+      "balanced_accuracy": 1.0,
+      "macro_f1": 1.0,
+      "auroc": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0
+    },
+    "Shiromoni BNSB Hospital": {
+      "n": 75,
+      "positive_support": 52,
+      "negative_support": 23,
+      "threshold": 0.9092645049095154,
+      "accuracy": 1.0,
+      "balanced_accuracy": 1.0,
+      "macro_f1": 1.0,
+      "auroc": 1.0,
+      "sensitivity": 1.0,
+      "specificity": 1.0,
+      "false_negatives": 0,
+      "false_positives": 0
+    }
+  },
+  "data_summary": {
+    "dataset": "Rajbari Retinal Disease Dataset 2026 (Mendeley z227d626vm.1)",
+    "mapping": {
+      "positive": [
+        "Dry Age-Related Macular Degeneration",
+        "Wet Age-Related Macular Degeneration"
+      ],
+      "negative": [
+        "No Age-Related Macular Degeneration (Healthy regarding AMD)"
+      ]
+    },
+    "n": 1500,
+    "conflicting_exact_hash_rows_excluded": 0,
+    "duplicate_rows": 20,
+    "patient_ids_available": false,
+    "lineage": "Archive has 5,500 images, 500 per 11 classes, while source describes 1,222 original plus 5,500 augmented; no image-parent map in staged archive. Exact-byte grouping cannot guarantee augmentation-family separation.",
+    "split_counts": {
+      "train": {
+        "n": 961,
+        "positive": 640,
+        "negative": 321,
+        "groups": 948
+      },
+      "validation": {
+        "n": 239,
+        "positive": 159,
+        "negative": 80,
+        "groups": 236
+      },
+      "test": {
+        "n": 300,
+        "positive": 201,
+        "negative": 99,
+        "groups": 296
+      }
+    },
+    "interpretation": "Exploratory image-grouped development estimate; not patient-level or clinical validation."
+  },
+  "test_boundary": "Rajbari exact-byte image groups only; no patients/augmentation lineage. BMRD is a distinct source with zero exact-byte cross-source overlap but BMRD outcomes were already viewed in earlier project runs. BMRD readings are exploratory and not confirmatory.",
+  "not_clinically_validated": true
+}

@@ -1,0 +1,14 @@
+{
+  "campaign": "Golden Retina disease-specific dataset and specialist expansion",
+  "start_utc": "2026-11-21T18:48:11Z",
+  "gpu_runtime_cap_hours": 13.0,
+  "planned_spend_ceiling_try": 1900.0,
+  "hard_spend_ceiling_try": 1980.0,
+  "full_campaign_list_price_estimate_with_stress_try": 1869.4,
+  "prior_campaign_planning_estimate_try": 1274.0,
+  "new_compute_estimate_try": 595.4,
+  "actual_billing_verified": false,
+  "gce_max_runtime_seconds": 46800,
+  "gce_termination_action": "STOP",
+  "notes": "13-hour new disease expansion campaign. Conservative compute estimate = 13 x TRY 45.80 = TRY 595.40. Combined with prior full project planning estimate TRY 1,274.00 gives TRY 1,869.40, below TRY 1,900 planned / TRY 1,980 hard ceiling. Retained disks/snapshot, tax, network and delayed charges are not verified; if an updated cost forecast crosses hard ceiling, stop GPU. One existing Golden Retina L4 only; all image data remain on that VM."
+}

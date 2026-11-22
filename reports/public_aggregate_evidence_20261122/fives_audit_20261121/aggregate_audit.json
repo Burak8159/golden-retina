@@ -1,0 +1,41 @@
+{
+  "source": "FIVES official archive",
+  "split_audit": {
+    "train": {
+      "original_images": 600,
+      "ground_truth_masks": 600,
+      "unpaired_originals": 0,
+      "unpaired_masks": 0,
+      "class_counts": {
+        "A": 150,
+        "D": 150,
+        "G": 150,
+        "N": 150
+      },
+      "image_decode_failures": 1,
+      "unique_exact_hashes": 594,
+      "within_split_exact_duplicate_groups": 5,
+      "within_split_duplicate_rows": 5
+    },
+    "test": {
+      "original_images": 200,
+      "ground_truth_masks": 200,
+      "unpaired_originals": 0,
+      "unpaired_masks": 0,
+      "class_counts": {
+        "A": 50,
+        "D": 50,
+        "G": 50,
+        "N": 50
+      },
+      "image_decode_failures": 0,
+      "unique_exact_hashes": 199,
+      "within_split_exact_duplicate_groups": 1,
+      "within_split_duplicate_rows": 1
+    }
+  },
+  "patient_ids_available": false,
+  "boundary": "Image split supplied by source; not patient-grouped. Structural audit only.",
+  "train_test_exact_image_hash_overlap": 0,
+  "structural_complete": false
+}

@@ -1,0 +1,161 @@
+{
+  "status": "complete",
+  "dataset": "PAPILA v2 · Figshare GPL-3.0+",
+  "task": "Eye-level healthy/glaucoma/suspect classification; secondary glaucoma-or-suspect screening threshold",
+  "selected_architecture": "resnet50",
+  "selected_epoch": 9,
+  "candidate_validation": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 3,
+      "best_validation_loss": 0.8145133256912231
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 9,
+      "best_validation_loss": 0.8083292841911316
+    },
+    {
+      "architecture": "efficientnet_b0",
+      "best_epoch": 12,
+      "best_validation_loss": 0.8169965744018555
+    }
+  ],
+  "split_audit": {
+    "dataset": "PAPILA v2",
+    "images_before_cross_source_filter": 488,
+    "patients_before_cross_source_filter": 244,
+    "eye_label_counts": {
+      "suspect": 68,
+      "glaucoma": 87,
+      "healthy": 333
+    },
+    "mapping": "patient_data_od/os.xlsx header row 2; ID #NNN maps to RETNNNOD/OS.jpg; diagnosis 0 healthy, 1 glaucoma, 2 suspect",
+    "issues": {},
+    "cross_source_exact_image_matches": 0,
+    "within_dataset_repeated_hash_groups": 0,
+    "within_dataset_repeated_hash_patient_groups_excluded": 0,
+    "cross_source_exact_match_patient_groups_excluded": 0,
+    "cross_source_exact_match_eye_rows_excluded": 0,
+    "images_after_cross_source_filter": 488,
+    "patients_after_cross_source_filter": 244,
+    "split": {
+      "train": {
+        "images": 294,
+        "patients": 147,
+        "eye_labels": {
+          "healthy": 202,
+          "glaucoma": 54,
+          "suspect": 38
+        }
+      },
+      "validation": {
+        "images": 98,
+        "patients": 49,
+        "eye_labels": {
+          "healthy": 65,
+          "glaucoma": 15,
+          "suspect": 18
+        }
+      },
+      "test": {
+        "images": 96,
+        "patients": 48,
+        "eye_labels": {
+          "healthy": 66,
+          "glaucoma": 18,
+          "suspect": 12
+        }
+      }
+    },
+    "split_method": "Nested stratified group split on explicit patient IDs; fixed seed 8159; 60/20/20 target.",
+    "cross_source_overlap": "Exact-hash scan must be completed and recorded before any test evaluation.",
+    "boundary": "244-patient single-center cohort. Three distinct eye labels; screening threshold groups glaucoma and suspect as positive, and is selected on validation only. Small test and no external clinical validation."
+  },
+  "validation_threshold": {
+    "target_specificity": 0.9,
+    "threshold": 0.6342935562133789,
+    "observed_validation_sensitivity": 0.36363636363636365,
+    "observed_validation_specificity": 0.9076923076923077,
+    "positive_definition": "clinical diagnosis glaucoma or suspect; suspect is separately retained in 3-class results"
+  },
+  "test_three_class_metrics": {
+    "n_eyes": 96,
+    "accuracy": 0.6979166666666666,
+    "balanced_accuracy": 0.4553872053872054,
+    "macro_f1": 0.4629014688312601,
+    "macro_ovr_auroc": 0.7868910410577077,
+    "macro_ovr_average_precision": 0.5577700614327002,
+    "confusion_matrix_rows_true_healthy_glaucoma_suspect": [
+      [
+        59,
+        6,
+        1
+      ],
+      [
+        8,
+        7,
+        3
+      ],
+      [
+        11,
+        0,
+        1
+      ]
+    ],
+    "per_class": {
+      "healthy": {
+        "support": 66,
+        "recall": 0.8939393939393939,
+        "one_vs_rest_auroc": 0.7924242424242424,
+        "one_vs_rest_average_precision": 0.8965964350729303
+      },
+      "glaucoma": {
+        "support": 18,
+        "recall": 0.3888888888888889,
+        "one_vs_rest_auroc": 0.8767806267806268,
+        "one_vs_rest_average_precision": 0.5389866504919905
+      },
+      "suspect": {
+        "support": 12,
+        "recall": 0.08333333333333333,
+        "one_vs_rest_auroc": 0.691468253968254,
+        "one_vs_rest_average_precision": 0.23772709873318015
+      }
+    }
+  },
+  "test_screen_operating_metrics": {
+    "n_eyes": 96,
+    "positive_glaucoma_or_suspect_eyes": 30,
+    "sensitivity": 0.36666666666666664,
+    "specificity": 0.9090909090909091,
+    "accuracy": 0.7395833333333334,
+    "false_negatives": 19,
+    "false_positives": 6,
+    "threshold": 0.6342935562133789
+  },
+  "test_patient_groups": 48,
+  "patient_cluster_bootstrap_95_ci": {
+    "accuracy": [
+      0.5729166666666666,
+      0.8020833333333334
+    ],
+    "macro_f1": [
+      0.3364128808164598,
+      0.586408841838742
+    ],
+    "macro_ovr_auroc": [
+      NaN,
+      NaN
+    ],
+    "glaucoma_or_suspect_sensitivity": [
+      0.14285714285714285,
+      0.6129652605459054
+    ],
+    "glaucoma_or_suspect_specificity": [
+      0.8358114490836954,
+      0.9710144927536232
+    ]
+  },
+  "boundary": "Single-center, 244-patient cohort and small held-out patient sample. Performance is exploratory and not independent external or clinical validation. Suspect is not diagnosed glaucoma; screening-positive grouping is explicitly a sensitivity-oriented proxy. Raw data, checkpoints and eye-level predictions remain on VM."
+}

@@ -13,6 +13,12 @@ STATUS = WEB / "status.json"
 
 def read_status():
     status = json.loads(STATUS.read_text(encoding="utf-8"))
+    # Keep the visible location card synced with the canonical live-work field.
+    # Older updates sometimes changed working_now without refreshing the card.
+    working = status.get("working_now") or {}
+    location = status.get("current_location") or {}
+    if working.get("updated_at", "") > location.get("updated_at", ""):
+        status["current_location"] = working
     budget = status.get("budget", {})
     started = budget.get("accrual_start_utc")
     rate = budget.get("conservative_hourly_rate_try")
@@ -22,12 +28,32 @@ def read_status():
             if start.tzinfo is None:
                 start = start.replace(tzinfo=timezone.utc)
             elapsed_hours = max(0.0, (datetime.now(timezone.utc) - start.astimezone(timezone.utc)).total_seconds() / 3600)
-            used_hours = float(budget.get("gpu_hours_base", budget.get("gpu_hours_used", 0))) + elapsed_hours
+            campaign_limit = float(budget.get("gpu_hours_total", 0))
+            used_hours = min(campaign_limit, float(budget.get("gpu_hours_base", 0)) + elapsed_hours)
             budget["gpu_hours_used"] = round(used_hours, 2)
             budget["gpu_hours_remaining"] = round(max(0.0, float(budget.get("gpu_hours_total", 8)) - used_hours), 2)
-            budget["estimated_spent_try"] = round(used_hours * float(rate), 2)
+            prior_estimate = float(budget.get("prior_estimated_spend_try", 0))
+            network_estimate = float(budget.get("campaign_network_estimate_try", 0))
+            current_campaign_hours = max(0.0, used_hours - float(budget.get("gpu_hours_base", 0)))
+            budget["estimated_spent_try"] = round(prior_estimate + current_campaign_hours * float(rate) + network_estimate, 2)
+            budget["estimated_spend_scope"] = "cumulative"
+            budget["display_label"] = (
+                f"Estimate only: prior ₺{prior_estimate:.2f} + "
+                f"{current_campaign_hours:.2f} campaign L4 hours at ₺{float(rate):.2f}/h + "
+                f"provisional ₺{network_estimate:.2f} network. "
+                f"Estimate ₺{budget['estimated_spent_try']:.2f}; invoice and retained-storage "
+                f"charges unverified. ₺{float(budget.get('protected_reserve_try', 0)):.0f} reserve protected."
+            )
         except (TypeError, ValueError):
             pass
+    # These values are rendered from the live status payload, so the dashboard
+    # cannot keep showing a stale VM task or an old spend estimate.
+    cloud = status.setdefault("cloud", {})
+    if budget.get("display_label"):
+        cloud["planning_estimate"] = budget["display_label"]
+    loc = status.get("current_location") or {}
+    if loc.get("what"):
+        cloud["gpu"] = loc["what"]
     return status
 
 

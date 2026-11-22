@@ -1,0 +1,234 @@
+{
+  "status": "complete",
+  "source": "Mendeley Eye Disease Image Dataset v1",
+  "selected_joint_initialization": "convnext_tiny",
+  "selection": "Base model selected on same frozen validation; each specialist threshold selected on its validation subset. Test partitions are not used for selection.",
+  "patient_ids_available": false,
+  "results": {
+    "Disc Edema": {
+      "architecture": "convnext_tiny",
+      "best_epoch": 4,
+      "train_n": 2800,
+      "validation": {
+        "n": 701,
+        "positive": 24,
+        "negative": 677,
+        "threshold": 0.8518295884132385,
+        "accuracy": 0.9985734664764622,
+        "balanced_accuracy": 0.999261447562777,
+        "sensitivity": 1.0,
+        "specificity": 0.9985228951255539,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "auroc": 0.9994460856720828
+      },
+      "test": {
+        "n": 875,
+        "positive": 17,
+        "negative": 858,
+        "threshold": 0.8518295884132385,
+        "accuracy": 1.0,
+        "balanced_accuracy": 1.0,
+        "sensitivity": 1.0,
+        "specificity": 1.0,
+        "false_negatives": 0,
+        "false_positives": 0,
+        "auroc": 1.0
+      },
+      "test_boundary": "Exact-hash-grouped image split only; patient IDs absent. Target condition vs source-defined healthy class, not versus all other disease."
+    },
+    "Glaucoma": {
+      "architecture": "convnext_tiny",
+      "best_epoch": 1,
+      "train_n": 2800,
+      "validation": {
+        "n": 701,
+        "positive": 138,
+        "negative": 563,
+        "threshold": 0.038610927760601044,
+        "accuracy": 0.8901569186875892,
+        "balanced_accuracy": 0.9070005405822843,
+        "sensitivity": 0.9347826086956522,
+        "specificity": 0.8792184724689165,
+        "false_negatives": 9,
+        "false_positives": 68,
+        "auroc": 0.9624166602311632
+      },
+      "test": {
+        "n": 875,
+        "positive": 184,
+        "negative": 691,
+        "threshold": 0.038610927760601044,
+        "accuracy": 0.9108571428571428,
+        "balanced_accuracy": 0.9156468256465111,
+        "sensitivity": 0.9239130434782609,
+        "specificity": 0.9073806078147613,
+        "false_negatives": 14,
+        "false_positives": 64,
+        "auroc": 0.9752642672874849
+      },
+      "test_boundary": "Exact-hash-grouped image split only; patient IDs absent. Target condition vs source-defined healthy class, not versus all other disease."
+    },
+    "Healthy": {
+      "architecture": "convnext_tiny",
+      "best_epoch": 2,
+      "train_n": 2800,
+      "validation": {
+        "n": 701,
+        "positive": 136,
+        "negative": 565,
+        "threshold": 0.014309456571936607,
+        "accuracy": 0.9215406562054208,
+        "balanced_accuracy": 0.9457444039562728,
+        "sensitivity": 0.9852941176470589,
+        "specificity": 0.9061946902654867,
+        "false_negatives": 2,
+        "false_positives": 53,
+        "auroc": 0.9786309213951068
+      },
+      "test": {
+        "n": 875,
+        "positive": 180,
+        "negative": 695,
+        "threshold": 0.014309456571936607,
+        "accuracy": 0.9131428571428571,
+        "balanced_accuracy": 0.9309152677857714,
+        "sensitivity": 0.9611111111111111,
+        "specificity": 0.9007194244604316,
+        "false_negatives": 7,
+        "false_positives": 69,
+        "auroc": 0.9793365307753796
+      },
+      "test_boundary": "Exact-hash-grouped image split only; patient IDs absent. Target condition vs source-defined healthy class, not versus all other disease."
+    },
+    "Macular Scar": {
+      "architecture": "convnext_tiny",
+      "best_epoch": 2,
+      "train_n": 2800,
+      "validation": {
+        "n": 701,
+        "positive": 62,
+        "negative": 639,
+        "threshold": 0.008627457544207573,
+        "accuracy": 0.9415121255349501,
+        "balanced_accuracy": 0.9169443182391842,
+        "sensitivity": 0.8870967741935484,
+        "specificity": 0.94679186228482,
+        "false_negatives": 7,
+        "false_positives": 34,
+        "auroc": 0.9691932959765763
+      },
+      "test": {
+        "n": 875,
+        "positive": 76,
+        "negative": 799,
+        "threshold": 0.008627457544207573,
+        "accuracy": 0.9371428571428572,
+        "balanced_accuracy": 0.8941439957842039,
+        "sensitivity": 0.8421052631578947,
+        "specificity": 0.9461827284105131,
+        "false_negatives": 12,
+        "false_positives": 43,
+        "auroc": 0.940320137013372
+      },
+      "test_boundary": "Exact-hash-grouped image split only; patient IDs absent. Target condition vs source-defined healthy class, not versus all other disease."
+    },
+    "Myopia": {
+      "architecture": "convnext_tiny",
+      "best_epoch": 3,
+      "train_n": 2800,
+      "validation": {
+        "n": 701,
+        "positive": 55,
+        "negative": 646,
+        "threshold": 0.0062170778401196,
+        "accuracy": 0.948644793152639,
+        "balanced_accuracy": 0.947185477061638,
+        "sensitivity": 0.9454545454545454,
+        "specificity": 0.9489164086687306,
+        "false_negatives": 3,
+        "false_positives": 33,
+        "auroc": 0.9685899240078806
+      },
+      "test": {
+        "n": 875,
+        "positive": 66,
+        "negative": 809,
+        "threshold": 0.0062170778401196,
+        "accuracy": 0.9577142857142857,
+        "balanced_accuracy": 0.9214705772184141,
+        "sensitivity": 0.8787878787878788,
+        "specificity": 0.9641532756489494,
+        "false_negatives": 8,
+        "false_positives": 29,
+        "auroc": 0.9774225568415927
+      },
+      "test_boundary": "Exact-hash-grouped image split only; patient IDs absent. Target condition vs source-defined healthy class, not versus all other disease."
+    },
+    "Retinal Detachment": {
+      "architecture": "convnext_tiny",
+      "best_epoch": 5,
+      "train_n": 2800,
+      "validation": {
+        "n": 701,
+        "positive": 20,
+        "negative": 681,
+        "threshold": 0.0022738955449312925,
+        "accuracy": 0.9871611982881597,
+        "balanced_accuracy": 0.9933920704845816,
+        "sensitivity": 1.0,
+        "specificity": 0.986784140969163,
+        "false_negatives": 0,
+        "false_positives": 9,
+        "auroc": 0.9988252569750367
+      },
+      "test": {
+        "n": 875,
+        "positive": 25,
+        "negative": 850,
+        "threshold": 0.0022738955449312925,
+        "accuracy": 0.9897142857142858,
+        "balanced_accuracy": 0.9947058823529411,
+        "sensitivity": 1.0,
+        "specificity": 0.9894117647058823,
+        "false_negatives": 0,
+        "false_positives": 9,
+        "auroc": 0.9992941176470589
+      },
+      "test_boundary": "Exact-hash-grouped image split only; patient IDs absent. Target condition vs source-defined healthy class, not versus all other disease."
+    },
+    "Retinitis Pigmentosa": {
+      "architecture": "convnext_tiny",
+      "best_epoch": 2,
+      "train_n": 2800,
+      "validation": {
+        "n": 701,
+        "positive": 17,
+        "negative": 684,
+        "threshold": 0.14199377596378326,
+        "accuracy": 0.9942938659058488,
+        "balanced_accuracy": 0.9970760233918128,
+        "sensitivity": 1.0,
+        "specificity": 0.9941520467836257,
+        "false_negatives": 0,
+        "false_positives": 4,
+        "auroc": 0.999484004127967
+      },
+      "test": {
+        "n": 875,
+        "positive": 22,
+        "negative": 853,
+        "threshold": 0.14199377596378326,
+        "accuracy": 0.9965714285714286,
+        "balanced_accuracy": 0.9539592880741767,
+        "sensitivity": 0.9090909090909091,
+        "specificity": 0.9988276670574443,
+        "false_negatives": 2,
+        "false_positives": 1,
+        "auroc": 0.9997335606948736
+      },
+      "test_boundary": "Exact-hash-grouped image split only; patient IDs absent. Target condition vs source-defined healthy class, not versus all other disease."
+    }
+  },
+  "boundary": "Each specialist separates one source label from all other source labels on an exact-duplicate-grouped image split only. Patient IDs are absent. The shared test was already opened for the joint model; follow-on specialist test figures are exploratory, not a fresh confirmatory test. Not externally or clinically validated."
+}

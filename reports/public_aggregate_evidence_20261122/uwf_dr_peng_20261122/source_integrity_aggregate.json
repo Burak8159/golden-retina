@@ -1,0 +1,15 @@
+{
+  "rows": 1630,
+  "indexed_pngs": 1630,
+  "files_found": 1629,
+  "missing": 1,
+  "exact_duplicate_groups": 21,
+  "exact_duplicate_rows": 32,
+  "exact_cross_split_duplicate_groups": 5,
+  "official_partition_rows": {
+    "train": 1141,
+    "val": 163,
+    "test": 326
+  },
+  "caveat": "Filename key has not been verified as patient ID; do not call this a patient-level split."
+}

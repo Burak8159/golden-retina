@@ -1,0 +1,276 @@
+{
+  "status": "complete",
+  "dataset": "CLARUS700 Figshare 2026 public release",
+  "modality": "single-centre ZEISS CLARUS 700 approximately 133-degree widefield fundus",
+  "labels": [
+    "DR",
+    "RVO",
+    "high_myopia",
+    "other_disease"
+  ],
+  "eligible_images": {
+    "train": 731,
+    "validation": 148,
+    "test": 163
+  },
+  "split_audit": {
+    "split_counts": {
+      "train": {
+        "images": 731,
+        "patients": 467,
+        "positives": {
+          "DR": 108,
+          "RVO": 62,
+          "high_myopia": 135,
+          "other_disease": 109
+        }
+      },
+      "validation": {
+        "images": 148,
+        "patients": 99,
+        "positives": {
+          "DR": 26,
+          "RVO": 12,
+          "high_myopia": 34,
+          "other_disease": 27
+        }
+      },
+      "test": {
+        "images": 163,
+        "patients": 102,
+        "positives": {
+          "DR": 23,
+          "RVO": 11,
+          "high_myopia": 29,
+          "other_disease": 28
+        }
+      }
+    },
+    "patient_overlap": {
+      "train_validation": 0,
+      "train_test": 0,
+      "validation_test": 0
+    },
+    "exact_hash_overlap": {
+      "train_validation": 0,
+      "train_test": 0,
+      "validation_test": 0
+    },
+    "exact_duplicate_rows_excluded_by_train_validation_test_priority": [
+      {
+        "excluded_split": "validation",
+        "retained_split": "train"
+      },
+      {
+        "excluded_split": "validation",
+        "retained_split": "validation"
+      }
+    ]
+  },
+  "candidate_selection": "highest validation macro-average-precision; ties by validation macro-AUROC; official test not used for candidate selection, epoch selection or thresholds",
+  "candidates": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 12,
+      "validation_macro_average_precision": 0.8892287118282332,
+      "validation_macro_auroc": 0.9568343253184235
+    },
+    {
+      "architecture": "convnext_mendeley",
+      "best_epoch": 7,
+      "validation_macro_average_precision": 0.8956960738429551,
+      "validation_macro_auroc": 0.9642236520422325
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 9,
+      "validation_macro_average_precision": 0.8395033916806788,
+      "validation_macro_auroc": 0.9224300845544999
+    },
+    {
+      "architecture": "efficientnet_b0",
+      "best_epoch": 12,
+      "validation_macro_average_precision": 0.8361308159839548,
+      "validation_macro_auroc": 0.9265028105385178
+    }
+  ],
+  "selected_model": "convnext_mendeley",
+  "selected_epoch": 7,
+  "validation_metrics": {
+    "macro_auroc": 0.9642236520422325,
+    "macro_average_precision": 0.8956960738429551,
+    "per_label": {
+      "DR": {
+        "n_positive": 26,
+        "n_negative": 122,
+        "auroc": 0.9668978562421185,
+        "average_precision": 0.8998078829733279
+      },
+      "RVO": {
+        "n_positive": 12,
+        "n_negative": 136,
+        "auroc": 0.9987745098039215,
+        "average_precision": 0.988095238095238
+      },
+      "high_myopia": {
+        "n_positive": 34,
+        "n_negative": 114,
+        "auroc": 0.9357585139318886,
+        "average_precision": 0.8452778242555126
+      },
+      "other_disease": {
+        "n_positive": 27,
+        "n_negative": 121,
+        "auroc": 0.955463728191001,
+        "average_precision": 0.8496033500477418
+      }
+    }
+  },
+  "validation_thresholds": {
+    "DR": 0.20995521545410156,
+    "RVO": 0.513950526714325,
+    "high_myopia": 0.801314651966095,
+    "other_disease": 0.3058009743690491
+  },
+  "test_metrics": {
+    "macro_auroc": 0.9502833390634801,
+    "macro_average_precision": 0.8288443200066904,
+    "per_label": {
+      "DR": {
+        "n_positive": 23,
+        "n_negative": 140,
+        "auroc": 0.9582298136645963,
+        "average_precision": 0.8703693762900923
+      },
+      "RVO": {
+        "n_positive": 11,
+        "n_negative": 152,
+        "auroc": 0.9635167464114832,
+        "average_precision": 0.7966650212336635
+      },
+      "high_myopia": {
+        "n_positive": 29,
+        "n_negative": 134,
+        "auroc": 0.9850746268656716,
+        "average_precision": 0.9307662342425572
+      },
+      "other_disease": {
+        "n_positive": 28,
+        "n_negative": 135,
+        "auroc": 0.8943121693121694,
+        "average_precision": 0.7175766482604485
+      }
+    }
+  },
+  "test_operating_points": {
+    "DR": {
+      "support": 23,
+      "negative": 140,
+      "threshold_from_validation": 0.20995521545410156,
+      "sensitivity": 0.782608695652174,
+      "specificity": 0.9214285714285714,
+      "accuracy": 0.901840490797546,
+      "false_negatives": 5,
+      "false_positives": 11
+    },
+    "RVO": {
+      "support": 11,
+      "negative": 152,
+      "threshold_from_validation": 0.513950526714325,
+      "sensitivity": 0.7272727272727273,
+      "specificity": 0.9868421052631579,
+      "accuracy": 0.9693251533742331,
+      "false_negatives": 3,
+      "false_positives": 2
+    },
+    "high_myopia": {
+      "support": 29,
+      "negative": 134,
+      "threshold_from_validation": 0.801314651966095,
+      "sensitivity": 0.9655172413793104,
+      "specificity": 0.9402985074626866,
+      "accuracy": 0.9447852760736196,
+      "false_negatives": 1,
+      "false_positives": 8
+    },
+    "other_disease": {
+      "support": 28,
+      "negative": 135,
+      "threshold_from_validation": 0.3058009743690491,
+      "sensitivity": 0.7857142857142857,
+      "specificity": 0.8592592592592593,
+      "accuracy": 0.8466257668711656,
+      "false_negatives": 6,
+      "false_positives": 19
+    }
+  },
+  "test_patient_cluster_bootstrap_95ci": {
+    "DR": {
+      "patient_cluster_bootstrap_replicates_requested": 1000,
+      "valid_auroc_replicates": 1000,
+      "auroc_95ci": [
+        0.8992186049132297,
+        0.9914535458364221
+      ],
+      "sensitivity_95ci": [
+        0.6152777777777778,
+        0.9333870967741935
+      ],
+      "specificity_95ci": [
+        0.8707261671792004,
+        0.9675922761449077
+      ]
+    },
+    "RVO": {
+      "patient_cluster_bootstrap_replicates_requested": 1000,
+      "valid_auroc_replicates": 1000,
+      "auroc_95ci": [
+        0.9190453873816136,
+        0.9978779612537574
+      ],
+      "sensitivity_95ci": [
+        0.4444444444444444,
+        1.0
+      ],
+      "specificity_95ci": [
+        0.9655172413793104,
+        1.0
+      ]
+    },
+    "high_myopia": {
+      "patient_cluster_bootstrap_replicates_requested": 1000,
+      "valid_auroc_replicates": 1000,
+      "auroc_95ci": [
+        0.9659568181446402,
+        0.9975324336460394
+      ],
+      "sensitivity_95ci": [
+        0.8666666666666667,
+        1.0
+      ],
+      "specificity_95ci": [
+        0.8959684210526316,
+        0.9776160862354892
+      ]
+    },
+    "other_disease": {
+      "patient_cluster_bootstrap_replicates_requested": 1000,
+      "valid_auroc_replicates": 1000,
+      "auroc_95ci": [
+        0.8094743785456574,
+        0.9586375960955692
+      ],
+      "sensitivity_95ci": [
+        0.6153225806451613,
+        0.9286330049261083
+      ],
+      "specificity_95ci": [
+        0.795770792639046,
+        0.9231164383561644
+      ]
+    }
+  },
+  "test_patients": 102,
+  "image_quality": "Test results exclude official model_eligible=0 rows; subgroup metrics are not used for selection.",
+  "boundary": "Official patient-disjoint test set; one site/device, small positive support especially RVO. Research development evidence, not clinical validation or universal retinal disease detection."
+}

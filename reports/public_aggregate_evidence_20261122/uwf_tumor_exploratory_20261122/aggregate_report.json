@@ -1,0 +1,189 @@
+{
+  "status": "complete",
+  "dataset": "UWF Fundus Images of Intraocular Tumors · Figshare v1",
+  "classes": [
+    "Choroidal Hemangioma (CH)",
+    "Choroidal Osteoma (CO)",
+    "Normal",
+    "Retinal Capillary Hemangioma (RCH)",
+    "Retinoblastoma (RB)",
+    "Uveal Melanoma (UM)"
+  ],
+  "eligible_unique_images": 1910,
+  "decode_failures_excluded": 106,
+  "exact_duplicate_groups": 15,
+  "exact_duplicate_rows_excluded": 15,
+  "cross_label_exact_hash_images_excluded": 0,
+  "candidate_comparison": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 9,
+      "validation_macro_average_precision": 0.9980702588657134
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 9,
+      "validation_macro_average_precision": 0.9848506998798325
+    }
+  ],
+  "selected_model": "convnext_tiny",
+  "selected_epoch": 9,
+  "validation_selection": "Highest validation macro-average-precision; exact-hash groups kept intact; test not used for selection.",
+  "test_metrics": {
+    "n_images": 382,
+    "accuracy": 0.9790575916230366,
+    "macro_auroc": 0.9974707696276998,
+    "macro_average_precision": 0.9775127404354557,
+    "class_order": [
+      "Choroidal Hemangioma (CH)",
+      "Choroidal Osteoma (CO)",
+      "Normal",
+      "Retinal Capillary Hemangioma (RCH)",
+      "Retinoblastoma (RB)",
+      "Uveal Melanoma (UM)"
+    ],
+    "confusion_matrix_rows_true_cols_pred": [
+      [
+        11,
+        0,
+        1,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        7,
+        0,
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        264,
+        0,
+        1,
+        1
+      ],
+      [
+        0,
+        0,
+        0,
+        28,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0,
+        0,
+        47,
+        0
+      ],
+      [
+        0,
+        1,
+        2,
+        1,
+        0,
+        17
+      ]
+    ],
+    "per_disease": {
+      "Choroidal Hemangioma (CH)": {
+        "support": 12,
+        "sensitivity": 0.9166666666666666,
+        "specificity": 1.0,
+        "false_negatives": 1,
+        "false_positives": 0,
+        "one_vs_rest_auroc": 0.990990990990991,
+        "one_vs_rest_average_precision": 0.935897435897436
+      },
+      "Choroidal Osteoma (CO)": {
+        "support": 8,
+        "sensitivity": 0.875,
+        "specificity": 0.9973262032085561,
+        "false_negatives": 1,
+        "false_positives": 1,
+        "one_vs_rest_auroc": 0.999331550802139,
+        "one_vs_rest_average_precision": 0.9704861111111112
+      },
+      "Normal": {
+        "support": 266,
+        "sensitivity": 0.9924812030075187,
+        "specificity": 0.9741379310344828,
+        "false_negatives": 2,
+        "false_positives": 3,
+        "one_vs_rest_auroc": 0.9977313974591652,
+        "one_vs_rest_average_precision": 0.9989629978423743
+      },
+      "Retinal Capillary Hemangioma (RCH)": {
+        "support": 28,
+        "sensitivity": 1.0,
+        "specificity": 0.9971751412429378,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "one_vs_rest_auroc": 1.0,
+        "one_vs_rest_average_precision": 1.0
+      },
+      "Retinoblastoma (RB)": {
+        "support": 47,
+        "sensitivity": 1.0,
+        "specificity": 0.9970149253731343,
+        "false_negatives": 0,
+        "false_positives": 1,
+        "one_vs_rest_auroc": 0.9999364877738964,
+        "one_vs_rest_average_precision": 0.9995567375886527
+      },
+      "Uveal Melanoma (UM)": {
+        "support": 21,
+        "sensitivity": 0.8095238095238095,
+        "specificity": 0.9944598337950139,
+        "false_negatives": 4,
+        "false_positives": 2,
+        "one_vs_rest_auroc": 0.996834190740008,
+        "one_vs_rest_average_precision": 0.9601731601731605
+      }
+    }
+  },
+  "split_counts": {
+    "train": {
+      "images": 1222,
+      "class_counts": {
+        "Choroidal Hemangioma (CH)": 45,
+        "Choroidal Osteoma (CO)": 55,
+        "Normal": 815,
+        "Retinal Capillary Hemangioma (RCH)": 103,
+        "Retinoblastoma (RB)": 156,
+        "Uveal Melanoma (UM)": 48
+      }
+    },
+    "validation": {
+      "images": 306,
+      "class_counts": {
+        "Choroidal Hemangioma (CH)": 9,
+        "Choroidal Osteoma (CO)": 13,
+        "Normal": 195,
+        "Retinal Capillary Hemangioma (RCH)": 33,
+        "Retinoblastoma (RB)": 42,
+        "Uveal Melanoma (UM)": 14
+      }
+    },
+    "test": {
+      "images": 382,
+      "class_counts": {
+        "Choroidal Hemangioma (CH)": 12,
+        "Choroidal Osteoma (CO)": 8,
+        "Normal": 266,
+        "Retinal Capillary Hemangioma (RCH)": 28,
+        "Retinoblastoma (RB)": 47,
+        "Uveal Melanoma (UM)": 21
+      }
+    }
+  },
+  "patient_ids_available": false,
+  "test_boundary": "Exploratory image/duplicate-group split only. The source contains repeat images from the same eyes/people, and no patient IDs were supplied. Patient-level leakage cannot be ruled out. UWF device/single-centre data; not clinical validation or standard-camera performance."
+}

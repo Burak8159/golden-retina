@@ -1,0 +1,140 @@
+{
+  "dataset": "Mendeley 6ry9n79gb4.1",
+  "architecture": "convnext_tiny",
+  "classes": [
+    "advanced_pdr",
+    "cataract",
+    "dry_amd",
+    "glaucoma",
+    "hypertensive_retinopathy",
+    "mild_dr",
+    "moderate_dr",
+    "normal_fundus",
+    "pathological_myopia",
+    "proliferative_dr",
+    "severe_dr",
+    "very_severe_npdr",
+    "wet_amd"
+  ],
+  "negative_scope": "all_other_labeled",
+  "max_per_split": 6000,
+  "cross_source_exact_hash_rows_excluded": 0,
+  "tasks": {
+    "amd": {
+      "status": "complete",
+      "positive_folders": [
+        "dry_amd",
+        "wet_amd"
+      ],
+      "normal_folder": "normal_fundus",
+      "positive_support_test": 374,
+      "best_epoch": 4,
+      "threshold_validation_balanced_accuracy": 0.1534222811460495,
+      "validation": {
+        "n": 3594,
+        "positive": 270,
+        "negative": 3324,
+        "threshold": 0.1534222811460495,
+        "accuracy": 0.9732888146911519,
+        "balanced_accuracy": 0.9685452600615055,
+        "macro_f1": 0.914774209357289,
+        "sensitivity": 0.9629629629629629,
+        "specificity": 0.9741275571600482,
+        "false_negatives": 10,
+        "false_positives": 86,
+        "auroc": 0.9935006908231938
+      },
+      "test": {
+        "n": 4491,
+        "positive": 374,
+        "negative": 4117,
+        "threshold": 0.1534222811460495,
+        "accuracy": 0.9710532175462036,
+        "balanced_accuracy": 0.961118240658597,
+        "macro_f1": 0.914635751131698,
+        "sensitivity": 0.9491978609625669,
+        "specificity": 0.9730386203546272,
+        "false_negatives": 19,
+        "false_positives": 111,
+        "auroc": 0.9928677103804624
+      }
+    },
+    "glaucoma": {
+      "status": "complete",
+      "positive_folders": [
+        "glaucoma"
+      ],
+      "normal_folder": "normal_fundus",
+      "positive_support_test": 402,
+      "best_epoch": 5,
+      "threshold_validation_balanced_accuracy": 0.010228808969259262,
+      "validation": {
+        "n": 3594,
+        "positive": 292,
+        "negative": 3302,
+        "threshold": 0.010228808969259262,
+        "accuracy": 0.9348914858096828,
+        "balanced_accuracy": 0.9598842129717979,
+        "macro_f1": 0.8375612673140038,
+        "sensitivity": 0.9897260273972602,
+        "specificity": 0.9300423985463355,
+        "false_negatives": 3,
+        "false_positives": 231,
+        "auroc": 0.9912438912074875
+      },
+      "test": {
+        "n": 4491,
+        "positive": 402,
+        "negative": 4089,
+        "threshold": 0.010228808969259262,
+        "accuracy": 0.9352037408149633,
+        "balanced_accuracy": 0.9487157024853721,
+        "macro_f1": 0.8452535462011141,
+        "sensitivity": 0.9651741293532339,
+        "specificity": 0.9322572756175104,
+        "false_negatives": 14,
+        "false_positives": 277,
+        "auroc": 0.9881881859959192
+      }
+    },
+    "cataract": {
+      "status": "complete",
+      "positive_folders": [
+        "cataract"
+      ],
+      "normal_folder": "normal_fundus",
+      "positive_support_test": 287,
+      "best_epoch": 2,
+      "threshold_validation_balanced_accuracy": 0.08310569077730179,
+      "validation": {
+        "n": 3594,
+        "positive": 236,
+        "negative": 3358,
+        "threshold": 0.08310569077730179,
+        "accuracy": 0.974680022259321,
+        "balanced_accuracy": 0.9746317925318743,
+        "macro_f1": 0.9105673605074341,
+        "sensitivity": 0.9745762711864406,
+        "specificity": 0.9746873138773079,
+        "false_negatives": 6,
+        "false_positives": 85,
+        "auroc": 0.9967343354094951
+      },
+      "test": {
+        "n": 4491,
+        "positive": 287,
+        "negative": 4204,
+        "threshold": 0.08310569077730179,
+        "accuracy": 0.9688265419728346,
+        "balanced_accuracy": 0.9671169319413733,
+        "macro_f1": 0.890689500739933,
+        "sensitivity": 0.9651567944250871,
+        "specificity": 0.9690770694576594,
+        "false_negatives": 10,
+        "false_positives": 130,
+        "auroc": 0.9961182646691221
+      }
+    }
+  },
+  "data_boundary": "No patient IDs or source-to-image provenance; exact-hash groups only. The archive compiles three underlying data sources and image-grouped estimates are exploratory; no independent clinical validation."
+}

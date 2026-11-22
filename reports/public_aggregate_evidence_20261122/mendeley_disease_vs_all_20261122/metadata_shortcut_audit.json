@@ -1,0 +1,48 @@
+{
+  "dataset": "Mendeley 6ry9n79gb4.1 13-folder compilation",
+  "purpose": "shortcut diagnostic using file size, dimensions, mode, and low-resolution color statistics only",
+  "n_images": 22453,
+  "n_exact_groups": 22436,
+  "cross_source_exact_hash_excluded": 0,
+  "decode_or_metadata_failures": 0,
+  "image_group_disjoint": true,
+  "folder_names": [
+    "advanced_pdr",
+    "cataract",
+    "dry_amd",
+    "glaucoma",
+    "hypertensive_retinopathy",
+    "mild_dr",
+    "moderate_dr",
+    "normal_fundus",
+    "pathological_myopia",
+    "proliferative_dr",
+    "severe_dr",
+    "very_severe_npdr",
+    "wet_amd"
+  ],
+  "tasks": {
+    "amd": {
+      "status": "complete",
+      "n_test": 4491,
+      "positive_test": 374,
+      "metadata_only_balanced_accuracy_at_0_5": 0.7852708022949061,
+      "metadata_only_auroc": 0.8286893135155006
+    },
+    "glaucoma": {
+      "status": "complete",
+      "n_test": 4491,
+      "positive_test": 402,
+      "metadata_only_balanced_accuracy_at_0_5": 0.8023327967645266,
+      "metadata_only_auroc": 0.8823411677245955
+    },
+    "cataract": {
+      "status": "complete",
+      "n_test": 4491,
+      "positive_test": 287,
+      "metadata_only_balanced_accuracy_at_0_5": 0.8608426685055215,
+      "metadata_only_auroc": 0.9438381233071539
+    }
+  },
+  "interpretation_boundary": "Metadata-only predictability is evidence of acquisition/compilation confounding. Low predictability does not rule out visual shortcuts, source leakage, patient overlap, or clinical non-generalization. No patient IDs or source-to-image map are provided."
+}

@@ -1,0 +1,174 @@
+{
+  "status": "ONE_PASS_OFFICIAL_HOSPITAL_TEST_COMPLETE",
+  "source": "RIM-ONE DL hospital-separated partition; source-defined training and held-out hospitals",
+  "task": "glaucoma label versus normal; fundus image classification",
+  "data_counts": {
+    "official_training_hospital": 311,
+    "internal_train": 248,
+    "internal_validation": 63,
+    "held_out_hospital_test": 174,
+    "train_glaucoma": 116,
+    "test_glaucoma": 56
+  },
+  "split": "Official hospital split; deterministic stratified image-level 80/20 validation from training hospitals; patient IDs absent and patient separation unverified.",
+  "duplicate_audit": "Exact duplicate SHA-256 count across hospital partitions=0; one dHash<=4 candidate examined separately, not automatically removed.",
+  "candidate_validation": {
+    "frozen_probe": {
+      "auroc": 0.866304347826087,
+      "average_precision": 0.7994809144269381
+    },
+    "fine_tuned": {
+      "auroc": 0.9467391304347825,
+      "average_precision": 0.9144057072513676
+    }
+  },
+  "selected_model": "finetuned_convnext_tiny",
+  "threshold_policy": {
+    "target_validation_sensitivity": 0.9,
+    "threshold": 0.012920473039078978,
+    "feasible": true,
+    "validation_metrics": {
+      "n": 63,
+      "positive": 23,
+      "negative": 40,
+      "threshold": 0.012920473039078978,
+      "accuracy": 0.8412698412698413,
+      "sensitivity": 0.9130434782608695,
+      "specificity": 0.8,
+      "false_negative": 2,
+      "false_positive": 8,
+      "true_positive": 21,
+      "true_negative": 32,
+      "auroc": 0.9467391304347825,
+      "average_precision": 0.9144057072513676
+    }
+  },
+  "official_test_metrics": {
+    "n": 174,
+    "positive": 56,
+    "negative": 118,
+    "threshold": 0.012920473039078978,
+    "accuracy": 0.7816091954022989,
+    "sensitivity": 0.8392857142857143,
+    "specificity": 0.7542372881355932,
+    "false_negative": 9,
+    "false_positive": 29,
+    "true_positive": 47,
+    "true_negative": 89,
+    "auroc": 0.8994400726392251,
+    "average_precision": 0.787976930306308,
+    "image_level_bootstrap_95ci_auroc": [
+      0.8494331872578728,
+      0.9418887501259288
+    ]
+  },
+  "pretrained_weights": {
+    "name": "ConvNeXt-Tiny ImageNet1K_V1"
+  },
+  "epoch_history": [
+    {
+      "epoch": 1,
+      "train_loss": 0.829845174666374,
+      "valid_loss": 0.6082519292831421,
+      "valid_auroc": 0.7478260869565218,
+      "valid_ap": 0.6596310681548643
+    },
+    {
+      "epoch": 2,
+      "train_loss": 0.6431444556482376,
+      "valid_loss": 0.5357843041419983,
+      "valid_auroc": 0.8195652173913044,
+      "valid_ap": 0.7325879959836599
+    },
+    {
+      "epoch": 3,
+      "train_loss": 0.5162411332130432,
+      "valid_loss": 0.4875028133392334,
+      "valid_auroc": 0.85,
+      "valid_ap": 0.7643028957766712
+    },
+    {
+      "epoch": 4,
+      "train_loss": 0.42122031411816996,
+      "valid_loss": 0.44122952222824097,
+      "valid_auroc": 0.8760869565217391,
+      "valid_ap": 0.8083884300931428
+    },
+    {
+      "epoch": 5,
+      "train_loss": 0.3387780684617258,
+      "valid_loss": 0.3865113854408264,
+      "valid_auroc": 0.9010869565217391,
+      "valid_ap": 0.8376575743405222
+    },
+    {
+      "epoch": 6,
+      "train_loss": 0.27110211118575067,
+      "valid_loss": 0.3960578143596649,
+      "valid_auroc": 0.9021739130434783,
+      "valid_ap": 0.8563641884155713
+    },
+    {
+      "epoch": 7,
+      "train_loss": 0.20867091080834788,
+      "valid_loss": 0.34784674644470215,
+      "valid_auroc": 0.917391304347826,
+      "valid_ap": 0.872889700671762
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.16819139221502888,
+      "valid_loss": 0.3914390504360199,
+      "valid_auroc": 0.9163043478260869,
+      "valid_ap": 0.8782004776709524
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.09492443622119966,
+      "valid_loss": 0.3315976560115814,
+      "valid_auroc": 0.9271739130434782,
+      "valid_ap": 0.8913224047377364
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.0696661059834784,
+      "valid_loss": 0.33391237258911133,
+      "valid_auroc": 0.9326086956521739,
+      "valid_ap": 0.8984252824924954
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.05243348378327585,
+      "valid_loss": 0.3707900047302246,
+      "valid_auroc": 0.9315217391304349,
+      "valid_ap": 0.9011529497664976
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.03837136981347876,
+      "valid_loss": 0.3457440137863159,
+      "valid_auroc": 0.9456521739130435,
+      "valid_ap": 0.911794062498777
+    },
+    {
+      "epoch": 13,
+      "train_loss": 0.02919070060635286,
+      "valid_loss": 0.40672674775123596,
+      "valid_auroc": 0.9347826086956521,
+      "valid_ap": 0.9036176456480602
+    },
+    {
+      "epoch": 14,
+      "train_loss": 0.03513686265796423,
+      "valid_loss": 0.4043811857700348,
+      "valid_auroc": 0.9467391304347825,
+      "valid_ap": 0.9144057072513676
+    }
+  ],
+  "limitations": [
+    "No patient identifiers; image-level split within training hospitals and patient disjointness cannot be verified.",
+    "Hospital-held-out benchmark is not independent prospective clinical validation.",
+    "Small single-source cohort; results do not establish generalized glaucoma diagnosis.",
+    "Checkpoint and row-level outputs remain private under source redistribution terms."
+  ]
+}

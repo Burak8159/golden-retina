@@ -1,0 +1,69 @@
+{
+  "dataset": "UWF Fundus Images of Intraocular Tumors",
+  "image_counts": {
+    "train": 1222,
+    "validation": 306,
+    "test": 382
+  },
+  "pHash": "64-bit DCT perceptual hash on grayscale 32x32; aggregate pair counts only",
+  "cross_partition_similarity": {
+    "train_vs_validation": {
+      "pairs_hamming_le_0": 0,
+      "same_class_pairs_hamming_le_0": 0,
+      "different_class_pairs_hamming_le_0": 0,
+      "pairs_hamming_le_2": 15,
+      "same_class_pairs_hamming_le_2": 9,
+      "different_class_pairs_hamming_le_2": 6,
+      "pairs_hamming_le_4": 131,
+      "same_class_pairs_hamming_le_4": 102,
+      "different_class_pairs_hamming_le_4": 29,
+      "pairs_hamming_le_6": 464,
+      "same_class_pairs_hamming_le_6": 331,
+      "different_class_pairs_hamming_le_6": 133,
+      "pairs_hamming_le_8": 1221,
+      "same_class_pairs_hamming_le_8": 821,
+      "different_class_pairs_hamming_le_8": 400
+    },
+    "train_vs_test": {
+      "pairs_hamming_le_0": 2,
+      "same_class_pairs_hamming_le_0": 2,
+      "different_class_pairs_hamming_le_0": 0,
+      "pairs_hamming_le_2": 21,
+      "same_class_pairs_hamming_le_2": 15,
+      "different_class_pairs_hamming_le_2": 6,
+      "pairs_hamming_le_4": 160,
+      "same_class_pairs_hamming_le_4": 112,
+      "different_class_pairs_hamming_le_4": 48,
+      "pairs_hamming_le_6": 567,
+      "same_class_pairs_hamming_le_6": 407,
+      "different_class_pairs_hamming_le_6": 160,
+      "pairs_hamming_le_8": 1486,
+      "same_class_pairs_hamming_le_8": 1080,
+      "different_class_pairs_hamming_le_8": 406
+    },
+    "validation_vs_test": {
+      "pairs_hamming_le_0": 0,
+      "same_class_pairs_hamming_le_0": 0,
+      "different_class_pairs_hamming_le_0": 0,
+      "pairs_hamming_le_2": 8,
+      "same_class_pairs_hamming_le_2": 7,
+      "different_class_pairs_hamming_le_2": 1,
+      "pairs_hamming_le_4": 45,
+      "same_class_pairs_hamming_le_4": 35,
+      "different_class_pairs_hamming_le_4": 10,
+      "pairs_hamming_le_6": 155,
+      "same_class_pairs_hamming_le_6": 108,
+      "different_class_pairs_hamming_le_6": 47,
+      "pairs_hamming_le_8": 440,
+      "same_class_pairs_hamming_le_8": 305,
+      "different_class_pairs_hamming_le_8": 135
+    }
+  },
+  "limitations": "Near perceptual similarity neither establishes patient identity nor proves leakage. The source has repeated-eye visits but no patient/eye IDs. Exact duplicate groups were already kept within partitions.",
+  "scan_summary": {
+    "eligible_unique_images": 1910,
+    "exact_duplicate_groups": 15,
+    "exact_duplicate_rows_excluded": 15,
+    "cross_label_exact_hash_images_excluded": 0
+  }
+}

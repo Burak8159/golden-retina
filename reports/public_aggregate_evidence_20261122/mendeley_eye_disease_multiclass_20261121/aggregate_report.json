@@ -1,0 +1,148 @@
+{
+  "status": "complete",
+  "selected_model": "convnext_tiny",
+  "selection_rule": "lowest validation cross-entropy; test not used for selection",
+  "candidates": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 7,
+      "best_validation_loss": 0.4181414842605591
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 8,
+      "best_validation_loss": 0.5406819581985474
+    }
+  ],
+  "test": {
+    "n_images": 875,
+    "accuracy": 0.8857142857142857,
+    "macro_f1": 0.8765439840943904,
+    "classes": {
+      "Disc Edema": {
+        "support": 17,
+        "sensitivity": 0.9411764705882353,
+        "specificity": 0.9988344988344988,
+        "accuracy": 0.9977142857142857,
+        "false_negatives": 1,
+        "false_positives": 1,
+        "auroc": 0.9997257644316468
+      },
+      "Glaucoma": {
+        "support": 184,
+        "sensitivity": 0.8532608695652174,
+        "specificity": 0.9565846599131693,
+        "accuracy": 0.9348571428571428,
+        "false_negatives": 27,
+        "false_positives": 30,
+        "auroc": 0.9715991316931982
+      },
+      "Healthy": {
+        "support": 180,
+        "sensitivity": 0.8444444444444444,
+        "specificity": 0.9683453237410072,
+        "accuracy": 0.9428571428571428,
+        "false_negatives": 28,
+        "false_positives": 22,
+        "auroc": 0.9810471622701838
+      },
+      "Macular Scar": {
+        "support": 76,
+        "sensitivity": 0.7631578947368421,
+        "specificity": 0.9899874843554443,
+        "accuracy": 0.9702857142857143,
+        "false_negatives": 18,
+        "false_positives": 8,
+        "auroc": 0.9503161847045649
+      },
+      "Myopia": {
+        "support": 66,
+        "sensitivity": 0.8939393939393939,
+        "specificity": 0.9765142150803461,
+        "accuracy": 0.9702857142857143,
+        "false_negatives": 7,
+        "false_positives": 19,
+        "auroc": 0.9835562048170207
+      },
+      "Retinal Detachment": {
+        "support": 25,
+        "sensitivity": 0.88,
+        "specificity": 0.9952941176470588,
+        "accuracy": 0.992,
+        "false_negatives": 3,
+        "false_positives": 4,
+        "auroc": 0.9992
+      },
+      "Retinitis Pigmentosa": {
+        "support": 22,
+        "sensitivity": 0.9545454545454546,
+        "specificity": 0.9988276670574443,
+        "accuracy": 0.9977142857142857,
+        "false_negatives": 1,
+        "false_positives": 1,
+        "auroc": 0.9994671213897474
+      }
+    }
+  },
+  "test_boundary": "Exact-duplicate-grouped image split only. No patient identity; source consists of two Bangladesh hospitals, and this is not patient-independent, external or clinical validation.",
+  "data_summary": {
+    "dataset": "Mendeley Eye Disease Image Dataset v1",
+    "classes": [
+      "Central Serous Chorioretinopathy [Color Fundus]",
+      "Diabetic Retinopathy",
+      "Disc Edema",
+      "Glaucoma",
+      "Healthy",
+      "Macular Scar",
+      "Myopia",
+      "Retinal Detachment",
+      "Retinitis Pigmentosa"
+    ],
+    "n_images": 4376,
+    "cross_label_exact_hash_rows_excluded": 942,
+    "duplicate_rows": 484,
+    "split_counts": {
+      "train": {
+        "n": 2800,
+        "groups": 2797,
+        "class_counts": {
+          "Disc Edema": 69,
+          "Glaucoma": 669,
+          "Healthy": 507,
+          "Macular Scar": 214,
+          "Myopia": 200,
+          "Retinal Detachment": 76,
+          "Retinitis Pigmentosa": 89
+        }
+      },
+      "validation": {
+        "n": 701,
+        "groups": 700,
+        "class_counts": {
+          "Disc Edema": 24,
+          "Glaucoma": 138,
+          "Healthy": 136,
+          "Macular Scar": 62,
+          "Myopia": 55,
+          "Retinal Detachment": 20,
+          "Retinitis Pigmentosa": 17
+        }
+      },
+      "test": {
+        "n": 875,
+        "groups": 873,
+        "class_counts": {
+          "Disc Edema": 17,
+          "Glaucoma": 184,
+          "Healthy": 180,
+          "Macular Scar": 76,
+          "Myopia": 66,
+          "Retinal Detachment": 25,
+          "Retinitis Pigmentosa": 22
+        }
+      }
+    },
+    "patient_ids_available": false,
+    "boundary": "Exact-duplicate-grouped image split only. No patient identity; source consists of two Bangladesh hospitals, and this is not patient-independent, external or clinical validation."
+  }
+}
