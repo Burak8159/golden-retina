@@ -2,8 +2,8 @@
 """Train/select multi-label fundus models on CLARUS700 patient splits.
 
 The official test partition is not used for architecture, epoch, or threshold
-selection. Only aggregate outputs are written; row identifiers and predictions
-remain in process on the authorized cloud VM.
+selection. In development-only mode, the test manifest is never read; only
+aggregate outputs are written and row identifiers/predictions remain on RTX.
 """
 from __future__ import annotations
 import argparse,csv,hashlib,json,random,time
@@ -38,7 +38,8 @@ def rows_for(root,csv_path):
   name=Path(r["image_file"]).name
   cand=imgmap.get(name,[])
   if len(cand)==0:
-   MISSING_IMAGE_ROWS.append({"split":csv_path.stem,"patient_id":r.get("patient_id"),"image_file_in_manifest":name,"image_id":r.get("image_id"),"status":"excluded: official manifest filename absent from downloaded image archives"})
+   split_name={"train_final_public":"train","val_final_public":"validation","test_final_public":"test"}.get(csv_path.stem,csv_path.stem)
+   MISSING_IMAGE_ROWS.append({"split":split_name,"patient_id":r.get("patient_id"),"image_file_in_manifest":name,"image_id":r.get("image_id"),"status":"excluded: official manifest filename absent from downloaded image archives"})
    continue
   if len(cand)!=1: raise FileNotFoundError(f"Expected one unique image for a public split row; found {len(cand)}")
   y=[int(float(r[k])) for k in LABELS]
@@ -48,16 +49,18 @@ def rows_for(root,csv_path):
 def audit_parts(parts):
  patients={k:{r["patient"] for r in v} for k,v in parts.items()}
  hashes={k:{r["sha"] for r in v} for k,v in parts.items()}
- overlaps={f"{a}_{b}":len(patients[a]&patients[b]) for a,b in (("train","validation"),("train","test"),("validation","test"))}
- hash_overlaps={f"{a}_{b}":len(hashes[a]&hashes[b]) for a,b in (("train","validation"),("train","test"),("validation","test"))}
+ pairs=[(a,b) for i,a in enumerate(parts) for b in list(parts)[i+1:]]
+ overlaps={f"{a}_{b}":len(patients[a]&patients[b]) for a,b in pairs}
+ hash_overlaps={f"{a}_{b}":len(hashes[a]&hashes[b]) for a,b in pairs}
  if any(overlaps.values()): raise RuntimeError(f"Patient overlap in official partitions: {overlaps}")
  if any(hash_overlaps.values()): raise RuntimeError(f"Exact image overlap in official partitions: {hash_overlaps}")
- return {"split_counts":{k:{"images":len(v),"patients":len(patients[k]),"positives":{lab:int(sum(r["y"][i] for r in v)) for i,lab in enumerate(LABELS)}} for k,v in parts.items()},"patient_overlap":overlaps,"exact_hash_overlap":hash_overlaps,"missing_manifest_images_excluded":list(MISSING_IMAGE_ROWS)}
+ missing_by_split={k:sum(x["split"]==k for x in MISSING_IMAGE_ROWS) for k in parts}
+ return {"split_counts":{k:{"images":len(v),"patients":len(patients[k]),"positives":{lab:int(sum(r["y"][i] for r in v)) for i,lab in enumerate(LABELS)}} for k,v in parts.items()},"patient_overlap":overlaps,"exact_hash_overlap":hash_overlaps,"missing_manifest_images_excluded_count":len(MISSING_IMAGE_ROWS),"missing_manifest_images_excluded_by_split":missing_by_split}
 
 def remove_cross_split_exact_duplicates(parts):
  """Keep first copy by train > validation > test; never expose an exact copy across splits."""
  seen={};removed=[]
- for split in ("train","validation","test"):
+ for split in parts:
   kept=[]
   for r in parts[split]:
    prior=seen.get(r["sha"])
@@ -112,11 +115,23 @@ def select_thresholds(y,p):
   thresholds[name]=max(vals)[-1]
  return thresholds
 
+def select_thresholds_for_sensitivity(y,p,target=0.95):
+ """Select the highest threshold meeting target sensitivity on calibration patients."""
+ thresholds={}
+ for j,name in enumerate(LABELS):
+  yy=y[:,j].astype(int); pos=p[yy==1,j]
+  if len(pos)==0:
+   thresholds[name]=.5; continue
+  # Moving just below the lower quantile includes enough calibration positives.
+  q=max(0.0,1.0-target)
+  thresholds[name]=float(np.nextafter(np.quantile(pos,q,method="lower"),-np.inf))
+ return thresholds
+
 def operating_metrics(y,p,thresholds):
  out={}
  for j,name in enumerate(LABELS):
   yy=y[:,j].astype(int);t=thresholds[name]; pred=p[:,j]>=t;tn,fp,fn,tp=confusion_matrix(yy,pred,labels=[0,1]).ravel()
-  out[name]={"support":int(yy.sum()),"negative":int(len(yy)-yy.sum()),"threshold_from_validation":float(t),"sensitivity":float(tp/(tp+fn)) if tp+fn else None,"specificity":float(tn/(tn+fp)) if tn+fp else None,"accuracy":float((pred==yy).mean()),"false_negatives":int(fn),"false_positives":int(fp)}
+  out[name]={"support":int(yy.sum()),"negative":int(len(yy)-yy.sum()),"threshold":float(t),"sensitivity":float(tp/(tp+fn)) if tp+fn else None,"specificity":float(tn/(tn+fp)) if tn+fp else None,"accuracy":float((pred==yy).mean()),"false_negatives":int(fn),"false_positives":int(fp)}
  return out
 
 def patient_bootstrap(y,p,rows,thresholds,n_boot=1000,seed=8159):
@@ -146,12 +161,28 @@ def evaluate(m,dl):
  return np.concatenate(ys),np.concatenate(ps)
 
 def main():
- ap=argparse.ArgumentParser();ap.add_argument("--root",type=Path,required=True);ap.add_argument("--splits",type=Path,required=True);ap.add_argument("--out",type=Path,required=True);ap.add_argument("--mendeley-checkpoint",type=Path,required=True);ap.add_argument("--epochs",type=int,default=12);ap.add_argument("--seconds-per-model",type=int,default=2400);ap.add_argument("--image-size",type=int,default=384);ap.add_argument("--batch-size",type=int,default=8);ap.add_argument("--workers",type=int,default=4);ap.add_argument("--audit-only",action="store_true");a=ap.parse_args()
- if not torch.cuda.is_available(): raise RuntimeError("CUDA L4 required")
+ global LABELS
+ ap=argparse.ArgumentParser();ap.add_argument("--root",type=Path,required=True);ap.add_argument("--splits",type=Path,required=True);ap.add_argument("--out",type=Path,required=True);ap.add_argument("--mendeley-checkpoint",type=Path);ap.add_argument("--targets",default=",".join(LABELS),help="Comma-separated CLARUS targets; use one target to train a disease-specific specialist.");ap.add_argument("--epochs",type=int,default=12);ap.add_argument("--seconds-per-model",type=int,default=2400);ap.add_argument("--image-size",type=int,default=384);ap.add_argument("--batch-size",type=int,default=8);ap.add_argument("--workers",type=int,default=4);ap.add_argument("--audit-only",action="store_true");ap.add_argument("--allow-official-test",action="store_true",help="Explicitly open the official test manifest and labels; development-only is the default.");ap.add_argument("--calibration-sensitivity",type=float,default=.95);a=ap.parse_args()
+ a.development_only=not a.allow_official_test
+ requested=tuple(x.strip() for x in a.targets.split(",") if x.strip())
+ if not requested or any(x not in LABELS for x in requested): ap.error(f"--targets must be a comma-separated subset of {LABELS}")
+ LABELS=requested
+ if not torch.cuda.is_available(): raise RuntimeError("CUDA GPU required")
  random.seed(SEED);np.random.seed(SEED);torch.manual_seed(SEED);torch.cuda.manual_seed_all(SEED)
- parts={k:rows_for(a.root,a.splits/f"{f}_final_public.csv") for k,f in (("train","train"),("validation","val"),("test","test"))}
+ split_files=(("train","train"),("validation","val"))
+ if not a.development_only: split_files += (("test","test"),)
+ parts={k:rows_for(a.root,a.splits/f"{f}_final_public.csv") for k,f in split_files}
+ if a.development_only:
+  # Calibration is drawn only from official training patients; the sealed test
+  # manifest and its labels are never read in this mode.
+  patients=sorted({r["patient"] for r in parts["train"]})
+  rng=np.random.default_rng(SEED);rng.shuffle(patients)
+  n_cal=max(1,round(.20*len(patients)));cal_patients=set(patients[:n_cal])
+  calibration=[r for r in parts["train"] if r["patient"] in cal_patients]
+  train=[r for r in parts["train"] if r["patient"] not in cal_patients]
+  parts["train"]=train;parts["calibration"]=calibration
  exact_duplicate_exclusions=remove_cross_split_exact_duplicates(parts)
- audit=audit_parts(parts);audit["exact_duplicate_rows_excluded_by_train_validation_test_priority"]=exact_duplicate_exclusions;a.out.mkdir(parents=True,exist_ok=True)
+ audit=audit_parts(parts);audit["exact_duplicate_rows_excluded_count"]=len(exact_duplicate_exclusions);audit["exact_duplicate_rows_excluded_by_split"]={k:sum(x["excluded_split"]==k for x in exact_duplicate_exclusions) for k in parts};a.out.mkdir(parents=True,exist_ok=True)
  if a.audit_only:
   (a.out/"official_split_audit_aggregate.json").write_text(json.dumps(audit,indent=2)+"\n")
   print(json.dumps({"status":"audit_complete","split_audit":audit}),flush=True);return
@@ -159,8 +190,11 @@ def main():
  if np.any(counts<5): raise RuntimeError(f"insufficient train support for configured labels: {counts.tolist()}")
  pw=torch.tensor(np.sqrt(neg/np.maximum(counts,1)).clip(1,8),device="cuda",dtype=torch.float32)
  loaders={k:DataLoader(Img(v,k=="train",a.image_size),batch_size=a.batch_size*(2 if k!="train" else 1),shuffle=k=="train",num_workers=a.workers,pin_memory=True) for k,v in parts.items()}
- candidate_results=[]; started=time.time(); specifications=["convnext_tiny","convnext_mendeley","resnet50","efficientnet_b0"]
- base=torch.load(a.mendeley_checkpoint,map_location="cpu",weights_only=False); base_state=base["state_dict"]
+ candidate_results=[]; started=time.time(); specifications=["convnext_tiny","resnet50","efficientnet_b0"]
+ base_state=None
+ if a.mendeley_checkpoint:
+  base=torch.load(a.mendeley_checkpoint,map_location="cpu",weights_only=False); base_state=base["state_dict"]
+  specifications.insert(1,"convnext_mendeley")
  for arch in specifications:
   model=make(arch,len(LABELS))
   if arch=="convnext_mendeley":
@@ -186,7 +220,12 @@ def main():
   del model;torch.cuda.empty_cache()
  chosen=max(candidate_results,key=lambda x:(x["validation_macro_average_precision"],x["validation_macro_auroc"]))
  ck=torch.load(chosen["checkpoint"],map_location="cpu",weights_only=False); model=make(chosen["architecture"],len(LABELS));model.load_state_dict(ck["state_dict"]);model.cuda()
- vy,vp=evaluate(model,loaders["validation"]);thresholds=select_thresholds(vy,vp);ty,tp=evaluate(model,loaders["test"])
- report={"status":"complete","dataset":"CLARUS700 Figshare 2026 public release","modality":"single-centre ZEISS CLARUS 700 approximately 133-degree widefield fundus","labels":list(LABELS),"eligible_images":{"train":len(parts["train"]),"validation":len(parts["validation"]),"test":len(parts["test"])},"split_audit":audit,"candidate_selection":"highest validation macro-average-precision; ties by validation macro-AUROC; official test not used for candidate selection, epoch selection or thresholds","candidates":[{k:v for k,v in c.items() if k!="checkpoint"} for c in candidate_results],"selected_model":chosen["architecture"],"selected_epoch":chosen["best_epoch"],"validation_metrics":score(vy,vp),"validation_thresholds":thresholds,"test_metrics":score(ty,tp),"test_operating_points":operating_metrics(ty,tp,thresholds),"test_patient_cluster_bootstrap_95ci":patient_bootstrap(ty,tp,parts["test"],thresholds),"test_patients":len({r["patient"] for r in parts["test"]}),"image_quality":"Test results exclude official model_eligible=0 rows; subgroup metrics are not used for selection.","boundary":"Official patient-disjoint test set; one site/device, small positive support especially RVO. Research development evidence, not clinical validation or universal retinal disease detection."}
- (a.out/"aggregate_report.json").write_text(json.dumps(report,indent=2)+"\n");print(json.dumps({"final":{k:report[k] for k in ("selected_model","selected_epoch","test_metrics","test_operating_points","test_patients")}}),flush=True)
+ vy,vp=evaluate(model,loaders["validation"])
+ if a.development_only:
+  cy,cp=evaluate(model,loaders["calibration"]);thresholds=select_thresholds_for_sensitivity(cy,cp,a.calibration_sensitivity)
+  report={"status":"complete","dataset":"CLARUS700 Figshare 2026 public release","modality":"single-centre ZEISS CLARUS 700 approximately 133-degree widefield fundus","labels":list(LABELS),"eligible_images":{k:len(v) for k,v in parts.items()},"split_audit":audit,"candidate_selection":"highest validation macro-average-precision; ties by validation macro-AUROC; internal validation used for candidate/epoch selection; calibration subset is patient-disjoint within official training patients","selected_model":chosen["architecture"],"selected_epoch":chosen["best_epoch"],"candidates":[{k:v for k,v in c.items() if k!="checkpoint"} for c in candidate_results],"calibration_metrics":score(cy,cp),"calibration_sensitivity_target":a.calibration_sensitivity,"calibration_thresholds":thresholds,"validation_metrics":score(vy,vp),"validation_operating_points":operating_metrics(vy,vp,thresholds),"validation_patient_cluster_bootstrap_95ci":patient_bootstrap(vy,vp,parts["validation"],thresholds),"test_accessed":False,"sealed_test_labels_parsed":False,"boundary":"Development-only: calibration patients were held out from official training patients, while the official validation partition selected candidates and epochs and is therefore selection-exposed. The official test manifest and labels were not read. Single-site/device; no clinical validation."}
+ else:
+  thresholds=select_thresholds(vy,vp);ty,tp=evaluate(model,loaders["test"])
+  report={"status":"complete","dataset":"CLARUS700 Figshare 2026 public release","modality":"single-centre ZEISS CLARUS 700 approximately 133-degree widefield fundus","labels":list(LABELS),"eligible_images":{"train":len(parts["train"]),"validation":len(parts["validation"]),"test":len(parts["test"])},"split_audit":audit,"candidate_selection":"highest validation macro-average-precision; ties by validation macro-AUROC; official test not used for candidate selection, epoch selection or thresholds","candidates":[{k:v for k,v in c.items() if k!="checkpoint"} for c in candidate_results],"selected_model":chosen["architecture"],"selected_epoch":chosen["best_epoch"],"validation_metrics":score(vy,vp),"validation_thresholds":thresholds,"test_metrics":score(ty,tp),"test_operating_points":operating_metrics(ty,tp,thresholds),"test_patient_cluster_bootstrap_95ci":patient_bootstrap(ty,tp,parts["test"],thresholds),"test_patients":len({r["patient"] for r in parts["test"]}),"image_quality":"Test results exclude official model_eligible=0 rows; subgroup metrics are not used for selection.","boundary":"Official patient-disjoint test set; one site/device, small positive support especially RVO. Research development evidence, not clinical validation or universal retinal disease detection."}
+ (a.out/"aggregate_report.json").write_text(json.dumps(report,indent=2)+"\n");print(json.dumps({"final":{k:report.get(k) for k in ("selected_model","selected_epoch","validation_metrics","validation_operating_points","test_accessed")}}),flush=True)
 if __name__=="__main__":main()

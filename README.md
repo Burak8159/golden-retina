@@ -20,29 +20,30 @@ future, clinician-led screening workflow.
 
 ## What Works Today
 
-- A local browser interface accepts a fundus image and returns separate
-  research-model outputs for the conditions represented in the RFMiD label set.
-- A JSON API exposes the same inference workflow for software integration.
-- A separate diabetic-retinopathy workflow supports paired-image case review,
-  image-quality handling, and an auditable case report.
-- The software records model and input provenance where supported by each
-  workflow, and the research station processes uploaded images in memory rather
-  than saving them.
+- The local browser research station runs an RFMiD multi-label model when its
+  private checkpoint is present and returns separate dataset-defined scores.
+- The iOS and Android apps include an on-device model lab that can run installed
+  ONNX disease/finding models on a selected fundus image. Model updates come
+  from a versioned registry; inference stays on the phone.
+- The guided goggles flow is simulated. It does not capture or analyze an eye
+  image, connect to goggles, or provide clinical results.
 
-The multi-disease RFMiD prototype uses a fine-tuned ConvNeXt-Tiny model. Its
-held-out RFMiD image-split results included a macro AUROC of 0.894 across 36
-label heads with both classes represented in that split. For the dataset's
-overall `Disease_Risk` label, accuracy was 92.7%, sensitivity 92.9%, and
-specificity 91.8% at the development threshold. These are retrospective
-dataset-split measurements, not evidence of performance in a clinic or on new
-populations. The split's patient-level independence has not been verified.
+The available RFMiD measurements are image-split development results. They do
+not establish patient-independent or clinical performance; patient linkage is
+unverified and the project previously examined this test partition. Mobile
+outputs are raw research scores, not calibrated disease risks or diagnoses.
+See [mobile model artifacts](docs/mobile_model_artifacts.md) and the
+[current restart plan](docs/product_restart_20261126.md).
+The latest disease-specific development metrics and dispositions are in the
+[27 November closeout](docs/disease_development_closeout_20261127.md).
 
 ## Mobile concept apps
 
-Native iOS and Android app concepts demonstrate a guided, fully simulated
-goggles-and-eye-scan journey. They do not capture images, use Bluetooth, call a
-screening model, or produce clinical results. The goggles route remains locked
-until hardware and its connection protocol exist. See the [iOS project](ios/GoldenRetina/README.md)
+The apps separate a simulated guided scan from local image analysis in the
+research model lab. A user can select an image for each named eye and run
+installed models on-device. Model-registry updates do not upload images. The
+physical goggles/Bluetooth path remains locked until hardware, firmware and a
+validated capture protocol exist. See the [iOS project](ios/GoldenRetina/README.md)
 and [Android project](android/README.md).
 
 ## Try the Local Research Interface

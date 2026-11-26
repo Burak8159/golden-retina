@@ -23,11 +23,11 @@ accepts only bounded JSON project-state objects and is reachable only through
 the loopback-bound server. Keep private paths, credentials, row-level data,
 and restricted dataset information out of this file.
 
-The current operating rule is that the Mac runs the local Qwen interface and
-project dashboard; the always-on ThinkPad orchestrates work, and the RTX 3050
-laptop is the default training worker. Cloud L4 training is off unless the
-owner explicitly changes that direction. Keep raw or restricted medical images
-and patient-level records out of GitHub.
+The current operating rule is: use Codex on the Mac for assistant work; use the
+RTX 3050 laptop as the only future GPU training worker, reached directly from
+the Mac with SSH over Tailscale. Google Cloud L4 training is off. This tracker
+is a project/device monitor only. Raw or restricted medical images and
+patient-level records stay out of GitHub.
 
 The dashboard separates historical evidence from current work. It does not
 turn existing model artifacts, prior split metrics, or dataset registry entries
@@ -36,39 +36,25 @@ from historical usage. The authenticated report through Nov 20 showed TRY 0 net 
 
 ## Home-compute controls
 
-The top of the dashboard monitors the three-machine setup: this Mac and its
-local Ollama runtime, the ThinkPad orchestrator, and the RTX 3050 training
-worker. The in-page chat sends requests to the Mac-local Ollama `/api/chat`
-endpoint and renders its newline-delimited token stream; chat history is kept
-only in that browser page's memory. **Open exact CLI in Terminal** separately
-launches the installed `ollama run <model>` command in the native Terminal app.
-Both use the same local Ollama service, but their conversation histories are
-separate. No prompt or response is sent to a cloud model. Ollama listens at
-`127.0.0.1:11434`.
-After five idle minutes Ollama can unload the model. The stop action unloads active models, targets only the
-verified Ollama listener on port 11434, checks its executable and owner, and
-confirms whether the server is offline. Model unload uses Ollama's documented
-empty `/api/generate` request with `keep_alive: 0`. A dashboard process started inside a
-restricted runner may be allowed to unload models through Ollama's local API
-but denied permission to signal the server process. In that case the UI reports
-the partial result and provides a verified PID-specific `kill -TERM` command.
-Relaunching the dashboard from a normal Terminal session should allow the
-button to stop the runtime directly.
+The device cards show the Mac/Codex workstation and RTX 3050. The RTX SSH target
+is saved only to the git-ignored `devices.local.json`, together with an optional
+SSH identity-file path and known-host alias. The private key itself is never
+copied or uploaded, and passwords are never saved. “Refresh devices” bypasses
+the short status cache and performs a fresh SSH probe; the tracker reads
+`nvidia-smi` telemetry when configured. While the tracker is running, it keeps
+a persistent SSH master open, sends a harmless `hostname` heartbeat every 15
+minutes, and uses SSH transport keepalives every 60 seconds. It retries the
+connection every minute after a detected drop. Stopping the tracker closes its
+managed SSH master. It does not submit or control training jobs. A host key must
+be verified before it is accepted. The RTX is shown as online only after an SSH
+probe succeeds.
 
-ThinkPad and RTX SSH targets are entered in the UI and saved only to the
-git-ignored `devices.local.json`. SSH uses the Mac's existing OpenSSH keys and
-agent with batch mode; it never saves a password. RTX status is probed through
-the ThinkPad by default and reads `nvidia-smi` telemetry. A host key must first
-be accepted interactively in Terminal. If Tailscale is unavailable on the Mac,
-remote state is shown as unreachable rather than assumed online. The current
-dashboard performs connection/GPU probes; a ThinkPad job-orchestration agent
-is a separate integration and is not represented as installed until it is.
-The complete architecture and current recovery state are documented in
+The local tracker binds only to `127.0.0.1`; it is not exposed to the LAN or
+tailnet. Existing L4 hours and spend are historical accounting only; the
+tracker does not count RTX training time until that run is explicitly recorded.
+
+The complete machine-role and reconnection notes are documented in
 [`docs/home_compute_dashboard_handoff.md`](../../docs/home_compute_dashboard_handoff.md).
-
-The local tracker binds only to `127.0.0.1`. It is not exposed to the LAN or
-tailnet. The Mac can still use local Qwen while traveling; ThinkPad/RTX controls
-require a working Tailscale route from the Mac.
 
 ## mBRSET access boundary
 

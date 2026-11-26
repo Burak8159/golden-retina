@@ -1,0 +1,30 @@
+{
+  "status": "smoke_pass",
+  "runtime": "RTX 3050 Ti laptop, loopback-only Uvicorn process",
+  "health": {
+    "status": "ok",
+    "model_count": 2,
+    "clinical_use": false
+  },
+  "models": [
+    {
+      "disease": "Retinal vein occlusion (RVO)",
+      "model_version": "clarus700-rvo-convnext-tiny-dev-20261127-e5",
+      "checkpoint_sha256": "2c5d81f70f5ed78b999b54abd8600a44c72742b746396682ca7073b74118d898"
+    },
+    {
+      "disease": "Glaucoma",
+      "model_version": "rimone-glaucoma-mobilenet-v3-small-dev-20261127-e6",
+      "checkpoint_sha256": "baeaecffa25295e6f7cd3a0414a25df17e837bb9900d6303091e863041c6c073"
+    }
+  ],
+  "inference": {
+    "http_status": 200,
+    "score_count": 2,
+    "raw_scores_only": true,
+    "unauthenticated_model_card_status": 401,
+    "image_persisted": false,
+    "image_left_rtx": false
+  },
+  "credential_handling": "Ephemeral smoke token generated and held in RTX process environment; not printed or persisted."
+}

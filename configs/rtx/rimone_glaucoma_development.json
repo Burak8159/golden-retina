@@ -1,0 +1,48 @@
+{
+  "campaign": "rimone_glaucoma_development",
+  "dataset": "RIM-ONE DL official hospital-partition training folders only",
+  "target": "source-labeled glaucoma versus normal fundus images",
+  "prediction_unit": "image; SHA-identical image files are kept in one split group",
+  "device": "RTX 3050 Ti Laptop GPU (4 GiB)",
+  "input_size": 224,
+  "batch_size": 2,
+  "workers": 2,
+  "max_epochs": 12,
+  "seconds_per_candidate_max": 300,
+  "candidate_architectures": [
+    "resnet18",
+    "mobilenet_v3_small",
+    "efficientnet_b0"
+  ],
+  "initialization": "random; no external image pretraining",
+  "split": {
+    "method": "StratifiedGroupKFold on exact-image SHA-256 groups",
+    "folds": 5,
+    "fit_folds": 3,
+    "calibration_fold": 0,
+    "validation_fold": 1,
+    "patient_ids_available": false,
+    "patient_independence_claim": false
+  },
+  "official_test": {
+    "access": "prohibited in this resumed development campaign; previously exposed",
+    "manifest_or_image_payloads_read": false,
+    "labels_parsed": false,
+    "predictions_generated": false
+  },
+  "source_terms": {
+    "use": "research and education only",
+    "redistribution": "prohibited",
+    "external_dataset_mixing": "prohibited by source README"
+  },
+  "artifacts": {
+    "images_and_rows": "RTX only",
+    "checkpoint": "RTX only",
+    "pull_allowlist": [
+      "aggregate metrics",
+      "source/config/code hashes",
+      "permitted source code"
+    ]
+  },
+  "interpretation": "Internal source-only development. Not patient-independent, externally validated, clinically validated, or a clinical diagnosis."
+}

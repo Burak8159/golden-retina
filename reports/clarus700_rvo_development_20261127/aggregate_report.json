@@ -1,0 +1,154 @@
+{
+  "status": "complete",
+  "dataset": "CLARUS700 Figshare 2026 public release",
+  "modality": "single-centre ZEISS CLARUS 700 approximately 133-degree widefield fundus",
+  "labels": [
+    "RVO"
+  ],
+  "training_config": {
+    "trainer": "src/golden_retina/train_clarus700_patient_multilabel.py",
+    "epochs_max": 10,
+    "seconds_per_candidate_max": 600,
+    "image_size": 224,
+    "batch_size": 2,
+    "workers": 2,
+    "calibration_sensitivity_target": 0.95,
+    "targets": ["RVO"]
+  },
+  "eligible_images": {
+    "train": 585,
+    "validation": 148,
+    "calibration": 146
+  },
+  "split_audit": {
+    "split_counts": {
+      "train": {
+        "images": 585,
+        "patients": 374,
+        "positives": {
+          "RVO": 41
+        }
+      },
+      "validation": {
+        "images": 148,
+        "patients": 99,
+        "positives": {
+          "RVO": 12
+        }
+      },
+      "calibration": {
+        "images": 146,
+        "patients": 93,
+        "positives": {
+          "RVO": 21
+        }
+      }
+    },
+    "patient_overlap": {
+      "train_validation": 0,
+      "train_calibration": 0,
+      "validation_calibration": 0
+    },
+    "exact_hash_overlap": {
+      "train_validation": 0,
+      "train_calibration": 0,
+      "validation_calibration": 0
+    },
+    "missing_manifest_images_excluded_count": 1,
+    "missing_manifest_images_excluded_by_split": {
+      "train": 1,
+      "validation": 0,
+      "calibration": 0
+    },
+    "exact_duplicate_rows_excluded_count": 2,
+    "exact_duplicate_rows_excluded_by_split": {
+      "train": 0,
+      "validation": 2,
+      "calibration": 0
+    }
+  },
+  "candidate_selection": "highest validation macro-average-precision; ties by validation macro-AUROC; internal validation used for candidate/epoch selection; calibration subset is patient-disjoint within official training patients",
+  "selected_model": "convnext_tiny",
+  "selected_epoch": 5,
+  "candidates": [
+    {
+      "architecture": "convnext_tiny",
+      "best_epoch": 5,
+      "validation_macro_average_precision": 0.9285284607865255,
+      "validation_macro_auroc": 0.9868259803921569
+    },
+    {
+      "architecture": "resnet50",
+      "best_epoch": 5,
+      "validation_macro_average_precision": 0.5827907816390071,
+      "validation_macro_auroc": 0.8535539215686274
+    },
+    {
+      "architecture": "efficientnet_b0",
+      "best_epoch": 5,
+      "validation_macro_average_precision": 0.5299713276117238,
+      "validation_macro_auroc": 0.8161764705882353
+    }
+  ],
+  "calibration_metrics": {
+    "macro_auroc": 0.9173333333333333,
+    "macro_average_precision": 0.8008051440311142,
+    "per_label": {
+      "RVO": {
+        "n_positive": 21,
+        "n_negative": 125,
+        "auroc": 0.9173333333333333,
+        "average_precision": 0.8008051440311142
+      }
+    }
+  },
+  "calibration_sensitivity_target": 0.95,
+  "calibration_thresholds": {
+    "RVO": 5.144220631336793e-05
+  },
+  "validation_metrics": {
+    "macro_auroc": 0.9868259803921569,
+    "macro_average_precision": 0.9285284607865255,
+    "per_label": {
+      "RVO": {
+        "n_positive": 12,
+        "n_negative": 136,
+        "auroc": 0.9868259803921569,
+        "average_precision": 0.9285284607865255
+      }
+    }
+  },
+  "validation_operating_points": {
+    "RVO": {
+      "support": 12,
+      "negative": 136,
+      "threshold": 5.144220631336793e-05,
+      "sensitivity": 1.0,
+      "specificity": 0.5882352941176471,
+      "accuracy": 0.6216216216216216,
+      "false_negatives": 0,
+      "false_positives": 56
+    }
+  },
+  "validation_patient_cluster_bootstrap_95ci": {
+    "RVO": {
+      "patient_cluster_bootstrap_replicates_requested": 1000,
+      "valid_auroc_replicates": 1000,
+      "auroc_95ci": [
+        0.9590490424571616,
+        1.0
+      ],
+      "sensitivity_95ci": [
+        1.0,
+        1.0
+      ],
+      "specificity_95ci": [
+        0.5,
+        0.6829589216944801
+      ]
+    }
+  },
+  "test_accessed": false,
+  "sealed_test_labels_parsed": false,
+  "boundary": "Development-only: calibration patients were held out from official training patients, while the official validation partition selected candidates and epochs and is therefore selection-exposed. The official test manifest and labels were not read. Single-site/device; no clinical validation."
+}

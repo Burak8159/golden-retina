@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "models": [
+    {
+      "enabled": false,
+      "disease": "retinal_vein_occlusion",
+      "source_label": "RVO",
+      "training_source": "fill from aggregate run report",
+      "evidence_boundary": "development only; official test excluded",
+      "model_version": "fill-from-verified-RTX-run",
+      "checkpoint_path": "RTX-only private path",
+      "checkpoint_sha256": "fill-from-verified-RTX-run",
+      "architecture": "fill-from-selected-RTX-run",
+      "labels": ["RVO"],
+      "image_size": 224,
+      "preprocessing": "resize_square"
+    },
+    {
+      "enabled": false,
+      "disease": "glaucoma",
+      "source_label": "RIM-ONE DL source glaucoma label",
+      "training_source": "RIM-ONE DL hospital-partition training images only",
+      "evidence_boundary": "internal SHA-grouped development; no patient IDs; official test excluded",
+      "model_version": "fill-from-verified-RTX-run",
+      "checkpoint_path": "RTX-only private path",
+      "checkpoint_sha256": "fill-from-verified-RTX-run",
+      "architecture": "fill-from-selected-RTX-run",
+      "labels": ["glaucoma"],
+      "image_size": 224,
+      "preprocessing": "resize_center_crop"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "split_counts": {
+    "train": {
+      "images": 585,
+      "patients": 374,
+      "positives": {
+        "RVO": 41
+      }
+    },
+    "validation": {
+      "images": 148,
+      "patients": 99,
+      "positives": {
+        "RVO": 12
+      }
+    },
+    "calibration": {
+      "images": 146,
+      "patients": 93,
+      "positives": {
+        "RVO": 21
+      }
+    }
+  },
+  "patient_overlap": {
+    "train_validation": 0,
+    "train_calibration": 0,
+    "validation_calibration": 0
+  },
+  "exact_hash_overlap": {
+    "train_validation": 0,
+    "train_calibration": 0,
+    "validation_calibration": 0
+  },
+  "missing_manifest_images_excluded_count": 1,
+  "missing_manifest_images_excluded_by_split": {
+    "train": 1,
+    "validation": 0,
+    "calibration": 0
+  },
+  "exact_duplicate_rows_excluded_count": 2,
+  "exact_duplicate_rows_excluded_by_split": {
+    "train": 0,
+    "validation": 2,
+    "calibration": 0
+  }
+}

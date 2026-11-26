@@ -1,0 +1,31 @@
+{
+  "campaign": "clarus700_rvo_development",
+  "dataset": "CLARUS700 Figshare public release",
+  "target": ["RVO"],
+  "prediction_unit": "image, uncertainty summarized by patient-cluster bootstrap where available",
+  "device": "RTX 3050 Ti Laptop GPU (4 GiB)",
+  "input_size": 224,
+  "batch_size": 2,
+  "workers": 2,
+  "epochs_max": 10,
+  "seconds_per_candidate_max": 600,
+  "candidate_architectures": ["convnext_tiny", "resnet50", "efficientnet_b0"],
+  "candidate_selection": "highest validation average precision; validation is selection-exposed and is not treated as an independent estimate",
+  "calibration": {
+    "source": "patient-disjoint 20% subset sampled deterministically from official training patients",
+    "target_sensitivity": 0.95,
+    "thresholds_used_on_validation": true
+  },
+  "official_test": {
+    "access": "prohibited in this resumed development run; test was evaluated in an earlier campaign",
+    "manifest_must_be_read": false,
+    "labels_must_be_parsed": false,
+    "predictions_must_be_generated": false
+  },
+  "artifacts": {
+    "raw_images": "RTX only",
+    "patient_rows_and_predictions": "RTX only",
+    "pull_allowlist": ["aggregate metrics", "model/config hashes", "permitted source code"]
+  },
+  "interpretation": "Single-center 133-degree ultra-widefield development data; not clinical validation, not standard-camera transfer, not an autonomous diagnosis. RVO is a broad label in this source and does not resolve BRVO versus CRVO."
+}

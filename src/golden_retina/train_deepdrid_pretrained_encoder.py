@@ -4,6 +4,7 @@ import argparse
 import csv
 import json
 import random
+import sys
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -16,7 +17,11 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from torch.utils.data import DataLoader, Dataset
 
-from .common import read_yaml_like, write_json
+try:
+    from .common import read_yaml_like, write_json
+except ImportError:  # Also support direct execution from an isolated RTX copy.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from golden_retina.common import read_yaml_like, write_json
 
 
 VIEW_SETS = ("macula", "optic_disc", "macula+optic_disc")
@@ -73,10 +78,16 @@ def device_for(name: str) -> torch.device:
     return torch.device(name)
 
 
-def read_manifest(path: Path) -> list[dict[str, Any]]:
+def read_manifest(
+    path: Path, allowed_patients: set[str] | None = None
+) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     with path.open("r", encoding="utf-8", newline="") as f:
         for row in csv.DictReader(f):
+            # Filter on split membership before parsing labels so development
+            # runs never load sealed-test grades into memory.
+            if allowed_patients is not None and row["patient_id"] not in allowed_patients:
+                continue
             row["grade"] = int(row["grade"])
             row["referable_dr"] = int(row["referable_dr"])
             rows.append(row)
@@ -265,13 +276,16 @@ def main() -> None:
     output = Path(args.output or cfg["evaluation"]["prediction_input"].replace(".csv", "_pretrained.csv"))
     seed = int(cfg["splits"]["seed"])
 
-    rows = read_manifest(manifest_path)
     splits = read_splits(split_path)
     memberships = [patients for patients in splits.values()]
     if any(a & b for i, a in enumerate(memberships) for b in memberships[i + 1:]):
         raise ValueError("Patient splits overlap")
+    allowed_patients = None
     if not args.include_test:
-        rows = [row for row in rows if row["patient_id"] not in splits["sealed_test"]]
+        allowed_patients = (
+            splits["train"] | splits["calibration"] | splits["validation"]
+        )
+    rows = read_manifest(manifest_path, allowed_patients=allowed_patients)
     features = extract_features(
         rows,
         Path(args.feature_cache),

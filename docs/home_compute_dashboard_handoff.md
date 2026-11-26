@@ -2,83 +2,42 @@
 
 Updated 2026-11-26.
 
-## Intended machine roles
+## Current machine roles
 
-- **MacBook:** portable workstation; runs the local Qwen model through Ollama
-  (MLX runtime) and hosts the loopback-only project dashboard. Its in-page chat
-  streams directly from Ollama's local `/api/chat` endpoint. The separate
-  native-Terminal control launches the real `ollama run <model>` CLI. Both use
-  the same local runtime but keep separate conversation contexts. Ollama
-  listens at `127.0.0.1:11434`.
-- **ThinkPad:** always-on home orchestrator. It should coordinate project jobs
-  and provide the SSH hop to the GPU laptop. A job-orchestration agent has not
-  yet been implemented or verified.
-- **RTX 3050 laptop:** dedicated home GPU worker for training. The ThinkPad
-  reaches it over SSH; the traveling Mac reaches the ThinkPad over Tailscale.
-  RTX training is the intended default; cloud L4 training is off unless the
-  owner explicitly changes that instruction.
+- **MacBook:** Codex workstation and loopback-only Golden Retina dashboard.
+- **RTX 3050 laptop:** the only planned GPU training worker. It replaces Google
+  Cloud L4 for future training. Connect directly from the Mac over SSH/Tailscale.
+  No training is running until an actual remote process is started and its
+  state is observed.
 
-The dashboard's device cards and SSH fields are implemented. They probe reachability
-and, for the RTX, `nvidia-smi` telemetry. They do not yet submit or control remote
-training jobs. Device names, IP addresses, and SSH targets belong in the ignored
-`tools/progress_tracker/devices.local.json`, never in Git.
+## SSH and Tailscale path
 
-## Local AI stop behavior
+The dashboard supports a direct SSH/Tailscale route from the Mac to the RTX.
+The target is stored only in the ignored
+`tools/progress_tracker/devices.local.json`; passwords are never stored. Use
+OpenSSH keys/agent and accept the host key interactively in Terminal before the
+dashboard probes the machine. The RTX is marked online only after an SSH probe
+succeeds. GPU telemetry is read with `nvidia-smi` when available.
 
-The dashboard stop action is deliberately narrow:
+While the tracker server is running, it holds an SSH control master and sends a
+harmless `hostname` heartbeat every 15 minutes. SSH protocol keepalives run
+every 60 seconds, with a one-minute reconnect retry after a detected drop. The
+tracker closes its managed SSH master when the server exits. This keepalive
+does not start or manage training.
 
-1. Ask Ollama to unload each currently loaded model using an empty
-   `/api/generate` request with `keep_alive: 0`.
-2. Verify the listener on local port `11434`, its executable name, and its UID.
-3. Send `SIGTERM` only to the verified Ollama listener.
-4. If it does not exit, re-check the same listener identity before considering
-   `SIGKILL`, then verify whether the service is offline.
+The UI currently provides reachability and GPU telemetry only. It does not
+launch, schedule, or manage remote training jobs. Google Cloud L4 is off; old L4
+runtime and cost figures shown in the tracker are historical campaign records,
+not current RTX time or future training estimates.
 
-During the 2026-11-26 troubleshooting, Ollama was confirmed by `lsof` as the
-Homebrew binary at version `0.40.18`, listening on `127.0.0.1:11434` under the
-current user's UID. The dashboard's process environment returned macOS
-`Operation not permitted` when it tried to signal that process. Ollama's model
-unload API remains a separate operation and can release model memory even when
-the dashboard cannot terminate the server.
+## Resume checklist
 
-The UI now reports model unload and runtime termination separately. On a denied
-signal it provides a shell command that rechecks the exact port listener, PID,
-current UID, and `ollama` executable before sending `SIGTERM`. If the button
-should terminate Ollama directly, launch the dashboard from an ordinary macOS
-Terminal session (outside a restricted app command runner) and retry. Do not
-add `sudo`, broad `pkill`, or process-name wildcards.
+1. Confirm Tailscale is connected on the Mac if using tailnet addresses.
+2. Configure the RTX SSH target in the tracker.
+3. Accept its host key from Terminal, then save and check the target.
+4. Confirm SSH status and RTX `nvidia-smi` telemetry before treating the machine
+   as ready for GPU work.
+5. Keep dataset files, patient-level records, and model checkpoints out of GitHub
+   unless a source-specific rights review explicitly permits publication.
 
-## Connection state and resume checklist
-
-Remote ThinkPad/RTX telemetry is not established until Tailscale is working on
-the Mac, both SSH targets are configured locally, the host keys are accepted,
-and the dashboard shows successful SSH probes. A previously observed Tailscale
-command wrapper pointed to a missing app executable, and neither remote target
-was configured in the dashboard at that time. Recheck the live machine before
-relying on those observations.
-
-1. Start `tools/progress_tracker/server.py` from a normal Terminal on the Mac.
-2. Verify Ollama state; keep Qwen unloaded unless the user wants to chat.
-3. Restore Tailscale on the Mac and confirm the ThinkPad is reachable.
-4. Save the ThinkPad SSH target in the dashboard, accept its host key in
-   Terminal, and verify the online state.
-5. Save the RTX target as reachable through the ThinkPad, accept its host key,
-   and verify both SSH and GPU telemetry.
-6. Only then implement/enable job orchestration on the ThinkPad. Keep the Mac
-   as the local LLM and user interface, and the RTX as the training worker.
-
-The tracker binds only to loopback. No passwords, model prompts, local device
-targets, or machine-specific addresses should be committed. Current project
-progress and actual device status remain separate facts; refresh each from the
-running machines before a new training round.
-
-## Local model interaction
-
-In-page chat validates the model against Ollama's installed list, streams
-newline-delimited responses from the local API, and holds conversation history
-only in browser memory. Stop response cancels the open stream. The “Open exact
-CLI in Terminal” button validates the selected model and asks macOS Terminal to
-run the fixed `ollama run <model>` command; it accepts no shell command from the
-browser. If macOS denies Terminal automation, the UI displays the exact command
-to run manually. Chat history is intentionally not synchronized between these
-two interfaces.
+The tracker binds only to `127.0.0.1`; it is not exposed to the LAN or tailnet.

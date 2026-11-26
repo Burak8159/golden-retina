@@ -1,0 +1,1026 @@
+{
+  "status": "complete",
+  "dataset": "DeepDRiD v1.1",
+  "task": "referable DR (grade >=2) patient-grouped internal development",
+  "candidate_metrics": {
+    "resnet50": {
+      "macula": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.8611632270168855,
+              "average_precision": 0.8561702332688881,
+              "threshold": 0.00437827,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.4878048780487805,
+              "accuracy": 0.725,
+              "false_negatives": 1,
+              "false_positives": 21,
+              "refer_rate": 0.7375
+            },
+            "validation": {
+              "n_eyes": 80,
+              "positive_eyes": 34,
+              "negative_eyes": 46,
+              "n_patients": 40,
+              "auroc": 0.8407928388746804,
+              "average_precision": 0.8083299101032199,
+              "threshold": 0.00437827,
+              "sensitivity": 0.9411764705882353,
+              "specificity": 0.5,
+              "accuracy": 0.6875,
+              "false_negatives": 2,
+              "false_positives": 23,
+              "refer_rate": 0.6875
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.726024659932335,
+                0.9330555555555555
+              ],
+              "average_precision": [
+                0.612690039523223,
+                0.9290811685676306
+              ],
+              "sensitivity": [
+                0.8518518518518519,
+                1.0
+              ],
+              "specificity": [
+                0.32141172506738547,
+                0.6842481203007517
+              ],
+              "accuracy": [
+                0.55,
+                0.8003124999999983
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.8611632270168855,
+              "average_precision": 0.8561702332688881,
+              "threshold": 0.0041623,
+              "sensitivity": 1.0,
+              "specificity": 0.4878048780487805,
+              "accuracy": 0.7375,
+              "false_negatives": 0,
+              "false_positives": 21,
+              "refer_rate": 0.75
+            },
+            "validation": {
+              "n_eyes": 80,
+              "positive_eyes": 34,
+              "negative_eyes": 46,
+              "n_patients": 40,
+              "auroc": 0.8407928388746804,
+              "average_precision": 0.8083299101032199,
+              "threshold": 0.0041623,
+              "sensitivity": 0.9411764705882353,
+              "specificity": 0.5,
+              "accuracy": 0.6875,
+              "false_negatives": 2,
+              "false_positives": 23,
+              "refer_rate": 0.6875
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.7177933621933623,
+                0.9341996263700725
+              ],
+              "average_precision": [
+                0.6152876423781664,
+                0.9345170264834707
+              ],
+              "sensitivity": [
+                0.8529411764705882,
+                1.0
+              ],
+              "specificity": [
+                0.3191489361702128,
+                0.6668269230769222
+              ],
+              "accuracy": [
+                0.5625,
+                0.8125
+              ]
+            }
+          }
+        }
+      },
+      "optic_disc": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.8805503439649781,
+              "average_precision": 0.888254752803515,
+              "threshold": 0.00604583,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.4146341463414634,
+              "accuracy": 0.6875,
+              "false_negatives": 1,
+              "false_positives": 24,
+              "refer_rate": 0.775
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.873641304347826,
+              "average_precision": 0.8474865716880339,
+              "threshold": 0.00604583,
+              "sensitivity": 0.9375,
+              "specificity": 0.391304347826087,
+              "accuracy": 0.6153846153846154,
+              "false_negatives": 2,
+              "false_positives": 28,
+              "refer_rate": 0.7435897435897436
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.7680460858585859,
+                0.9481536835748793
+              ],
+              "average_precision": [
+                0.6915430117046775,
+                0.9444755434362929
+              ],
+              "sensitivity": [
+                0.8275487256371814,
+                1.0
+              ],
+              "specificity": [
+                0.21620296767355593,
+                0.562528409090909
+              ],
+              "accuracy": [
+                0.48685897435897435,
+                0.7435897435897436
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.8805503439649781,
+              "average_precision": 0.888254752803515,
+              "threshold": 0.00298759,
+              "sensitivity": 1.0,
+              "specificity": 0.2926829268292683,
+              "accuracy": 0.6375,
+              "false_negatives": 0,
+              "false_positives": 29,
+              "refer_rate": 0.85
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.873641304347826,
+              "average_precision": 0.8474865716880339,
+              "threshold": 0.00298759,
+              "sensitivity": 0.96875,
+              "specificity": 0.34782608695652173,
+              "accuracy": 0.6025641025641025,
+              "false_negatives": 1,
+              "false_positives": 30,
+              "refer_rate": 0.782051282051282
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.7712421897361222,
+                0.9515069833012764
+              ],
+              "average_precision": [
+                0.6911840351422998,
+                0.9478861553563639
+              ],
+              "sensitivity": [
+                0.8918168168168168,
+                1.0
+              ],
+              "specificity": [
+                0.19148936170212766,
+                0.5122107567229518
+              ],
+              "accuracy": [
+                0.46153846153846156,
+                0.7307692307692307
+              ]
+            }
+          }
+        }
+      },
+      "macula+optic_disc": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.8717948717948718,
+              "average_precision": 0.8820825458366972,
+              "threshold": 0.00107275,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.3902439024390244,
+              "accuracy": 0.675,
+              "false_negatives": 1,
+              "false_positives": 25,
+              "refer_rate": 0.7875
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.8953804347826086,
+              "average_precision": 0.8730066610488538,
+              "threshold": 0.00107275,
+              "sensitivity": 1.0,
+              "specificity": 0.3695652173913043,
+              "accuracy": 0.6282051282051282,
+              "false_negatives": 0,
+              "false_positives": 29,
+              "refer_rate": 0.782051282051282
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8079039384528515,
+                0.9601343724988999
+              ],
+              "average_precision": [
+                0.7192950872570422,
+                0.9582369592586831
+              ],
+              "sensitivity": [
+                1.0,
+                1.0
+              ],
+              "specificity": [
+                0.1999107142857143,
+                0.5652378999179654
+              ],
+              "accuracy": [
+                0.48717948717948717,
+                0.7692307692307693
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.8717948717948718,
+              "average_precision": 0.8820825458366972,
+              "threshold": 0.00070764,
+              "sensitivity": 1.0,
+              "specificity": 0.3170731707317073,
+              "accuracy": 0.65,
+              "false_negatives": 0,
+              "false_positives": 28,
+              "refer_rate": 0.8375
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.8953804347826086,
+              "average_precision": 0.8730066610488538,
+              "threshold": 0.00070764,
+              "sensitivity": 1.0,
+              "specificity": 0.34782608695652173,
+              "accuracy": 0.6153846153846154,
+              "false_negatives": 0,
+              "false_positives": 30,
+              "refer_rate": 0.7948717948717948
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.806689677843524,
+                0.9602014087440678
+              ],
+              "average_precision": [
+                0.7302249682815025,
+                0.9559501468643121
+              ],
+              "sensitivity": [
+                1.0,
+                1.0
+              ],
+              "specificity": [
+                0.17073170731707318,
+                0.5365853658536586
+              ],
+              "accuracy": [
+                0.47435897435897434,
+                0.7564102564102564
+              ]
+            }
+          }
+        }
+      }
+    },
+    "convnext": {
+      "macula": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9480925578486554,
+              "average_precision": 0.9392314771520646,
+              "threshold": 0.03961879,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.7560975609756098,
+              "accuracy": 0.8625,
+              "false_negatives": 1,
+              "false_positives": 10,
+              "refer_rate": 0.6
+            },
+            "validation": {
+              "n_eyes": 80,
+              "positive_eyes": 34,
+              "negative_eyes": 46,
+              "n_patients": 40,
+              "auroc": 0.9072890025575446,
+              "average_precision": 0.8807436235593478,
+              "threshold": 0.03961879,
+              "sensitivity": 0.9411764705882353,
+              "specificity": 0.717391304347826,
+              "accuracy": 0.8125,
+              "false_negatives": 2,
+              "false_positives": 13,
+              "refer_rate": 0.5625
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8183705627705629,
+                0.971342297564187
+              ],
+              "average_precision": [
+                0.7405953781858777,
+                0.9694748467027895
+              ],
+              "sensitivity": [
+                0.8484848484848485,
+                1.0
+              ],
+              "specificity": [
+                0.5405405405405406,
+                0.8775510204081632
+              ],
+              "accuracy": [
+                0.7,
+                0.9125
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9480925578486554,
+              "average_precision": 0.9392314771520646,
+              "threshold": 0.02115343,
+              "sensitivity": 1.0,
+              "specificity": 0.7073170731707317,
+              "accuracy": 0.85,
+              "false_negatives": 0,
+              "false_positives": 12,
+              "refer_rate": 0.6375
+            },
+            "validation": {
+              "n_eyes": 80,
+              "positive_eyes": 34,
+              "negative_eyes": 46,
+              "n_patients": 40,
+              "auroc": 0.9072890025575446,
+              "average_precision": 0.8807436235593478,
+              "threshold": 0.02115343,
+              "sensitivity": 0.9705882352941176,
+              "specificity": 0.6304347826086957,
+              "accuracy": 0.775,
+              "false_negatives": 1,
+              "false_positives": 17,
+              "refer_rate": 0.625
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.820397072136459,
+                0.9725001598465473
+              ],
+              "average_precision": [
+                0.7473543494549211,
+                0.9709203975613147
+              ],
+              "sensitivity": [
+                0.9032258064516129,
+                1.0
+              ],
+              "specificity": [
+                0.44,
+                0.8000980392156858
+              ],
+              "accuracy": [
+                0.65,
+                0.875
+              ]
+            }
+          }
+        }
+      },
+      "optic_disc": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9193245778611632,
+              "average_precision": 0.921756054536448,
+              "threshold": 0.00442577,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.4146341463414634,
+              "accuracy": 0.6875,
+              "false_negatives": 1,
+              "false_positives": 24,
+              "refer_rate": 0.775
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.907608695652174,
+              "average_precision": 0.8889152969036029,
+              "threshold": 0.00442577,
+              "sensitivity": 1.0,
+              "specificity": 0.41304347826086957,
+              "accuracy": 0.6538461538461539,
+              "false_negatives": 0,
+              "false_positives": 27,
+              "refer_rate": 0.7564102564102564
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8328794298302034,
+                0.9675925925925926
+              ],
+              "average_precision": [
+                0.7671388838262704,
+                0.9662465101359328
+              ],
+              "sensitivity": [
+                1.0,
+                1.0
+              ],
+              "specificity": [
+                0.24239811912225706,
+                0.5882352941176471
+              ],
+              "accuracy": [
+                0.5256410256410257,
+                0.782051282051282
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9193245778611632,
+              "average_precision": 0.921756054536448,
+              "threshold": 0.00212993,
+              "sensitivity": 1.0,
+              "specificity": 0.36585365853658536,
+              "accuracy": 0.675,
+              "false_negatives": 0,
+              "false_positives": 26,
+              "refer_rate": 0.8125
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.907608695652174,
+              "average_precision": 0.8889152969036029,
+              "threshold": 0.00212993,
+              "sensitivity": 1.0,
+              "specificity": 0.3695652173913043,
+              "accuracy": 0.6282051282051282,
+              "false_negatives": 0,
+              "false_positives": 29,
+              "refer_rate": 0.782051282051282
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8345854218228961,
+                0.9658143939393938
+              ],
+              "average_precision": [
+                0.7570496222530501,
+                0.9672100273928608
+              ],
+              "sensitivity": [
+                1.0,
+                1.0
+              ],
+              "specificity": [
+                0.2092168262653899,
+                0.5384999999999998
+              ],
+              "accuracy": [
+                0.5,
+                0.7564102564102564
+              ]
+            }
+          }
+        }
+      },
+      "macula+optic_disc": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9537210756722951,
+              "average_precision": 0.9614787874139451,
+              "threshold": 0.03259166,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.7073170731707317,
+              "accuracy": 0.8375,
+              "false_negatives": 1,
+              "false_positives": 12,
+              "refer_rate": 0.625
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.9110054347826086,
+              "average_precision": 0.8842595401130813,
+              "threshold": 0.03259166,
+              "sensitivity": 0.9375,
+              "specificity": 0.6086956521739131,
+              "accuracy": 0.7435897435897436,
+              "false_negatives": 2,
+              "false_positives": 18,
+              "refer_rate": 0.6153846153846154
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8219169319859727,
+                0.974185321773637
+              ],
+              "average_precision": [
+                0.736210615064222,
+                0.9718799598433
+              ],
+              "sensitivity": [
+                0.8333333333333334,
+                1.0
+              ],
+              "specificity": [
+                0.42857142857142855,
+                0.7777777777777778
+              ],
+              "accuracy": [
+                0.6282051282051282,
+                0.8589743589743589
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9537210756722951,
+              "average_precision": 0.9614787874139451,
+              "threshold": 0.00011361,
+              "sensitivity": 1.0,
+              "specificity": 0.2682926829268293,
+              "accuracy": 0.625,
+              "false_negatives": 0,
+              "false_positives": 30,
+              "refer_rate": 0.8625
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.9110054347826086,
+              "average_precision": 0.8842595401130813,
+              "threshold": 0.00011361,
+              "sensitivity": 1.0,
+              "specificity": 0.30434782608695654,
+              "accuracy": 0.5897435897435898,
+              "false_negatives": 0,
+              "false_positives": 32,
+              "refer_rate": 0.8205128205128205
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8243396132376396,
+                0.9772727272727273
+              ],
+              "average_precision": [
+                0.733405426023494,
+                0.9744348696811377
+              ],
+              "sensitivity": [
+                1.0,
+                1.0
+              ],
+              "specificity": [
+                0.14704088952654232,
+                0.4666666666666667
+              ],
+              "accuracy": [
+                0.46121794871794874,
+                0.717948717948718
+              ]
+            }
+          }
+        }
+      }
+    },
+    "dinov2": {
+      "macula": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.943089430894309,
+              "average_precision": 0.9452911070329807,
+              "threshold": 0.01398579,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.6097560975609756,
+              "accuracy": 0.7875,
+              "false_negatives": 1,
+              "false_positives": 16,
+              "refer_rate": 0.675
+            },
+            "validation": {
+              "n_eyes": 80,
+              "positive_eyes": 34,
+              "negative_eyes": 46,
+              "n_patients": 40,
+              "auroc": 0.8960997442455243,
+              "average_precision": 0.8641684880339647,
+              "threshold": 0.01398579,
+              "sensitivity": 0.9705882352941176,
+              "specificity": 0.5652173913043478,
+              "accuracy": 0.7375,
+              "false_negatives": 1,
+              "false_positives": 20,
+              "refer_rate": 0.6625
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8098677322000493,
+                0.963144231544165
+              ],
+              "average_precision": [
+                0.6999878856151941,
+                0.9654818684529979
+              ],
+              "sensitivity": [
+                0.9032258064516129,
+                1.0
+              ],
+              "specificity": [
+                0.38636363636363635,
+                0.7446912807676261
+              ],
+              "accuracy": [
+                0.6125,
+                0.85
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.943089430894309,
+              "average_precision": 0.9452911070329807,
+              "threshold": 0.01365376,
+              "sensitivity": 1.0,
+              "specificity": 0.6097560975609756,
+              "accuracy": 0.8,
+              "false_negatives": 0,
+              "false_positives": 16,
+              "refer_rate": 0.6875
+            },
+            "validation": {
+              "n_eyes": 80,
+              "positive_eyes": 34,
+              "negative_eyes": 46,
+              "n_patients": 40,
+              "auroc": 0.8960997442455243,
+              "average_precision": 0.8641684880339647,
+              "threshold": 0.01365376,
+              "sensitivity": 0.9705882352941176,
+              "specificity": 0.5652173913043478,
+              "accuracy": 0.7375,
+              "false_negatives": 1,
+              "false_positives": 20,
+              "refer_rate": 0.6625
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8081804324990866,
+                0.9609982763498645
+              ],
+              "average_precision": [
+                0.7014172126872578,
+                0.9630563291690241
+              ],
+              "sensitivity": [
+                0.9,
+                1.0
+              ],
+              "specificity": [
+                0.3823179271708683,
+                0.7391304347826086
+              ],
+              "accuracy": [
+                0.6125,
+                0.85
+              ]
+            }
+          }
+        }
+      },
+      "optic_disc": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9355847404627893,
+              "average_precision": 0.9389865936507039,
+              "threshold": 0.39378521,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.7317073170731707,
+              "accuracy": 0.85,
+              "false_negatives": 1,
+              "false_positives": 11,
+              "refer_rate": 0.6125
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.8607336956521738,
+              "average_precision": 0.8311502640968443,
+              "threshold": 0.39378521,
+              "sensitivity": 0.71875,
+              "specificity": 0.782608695652174,
+              "accuracy": 0.7564102564102564,
+              "false_negatives": 9,
+              "false_positives": 10,
+              "refer_rate": 0.4230769230769231
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.7468562030075188,
+                0.9484154900807269
+              ],
+              "average_precision": [
+                0.649083294632458,
+                0.9463850862173823
+              ],
+              "sensitivity": [
+                0.5172413793103449,
+                0.8928761398176291
+              ],
+              "specificity": [
+                0.64,
+                0.9090909090909091
+              ],
+              "accuracy": [
+                0.6410256410256411,
+                0.8589743589743589
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9355847404627893,
+              "average_precision": 0.9389865936507039,
+              "threshold": 0.01551902,
+              "sensitivity": 1.0,
+              "specificity": 0.4146341463414634,
+              "accuracy": 0.7,
+              "false_negatives": 0,
+              "false_positives": 24,
+              "refer_rate": 0.7875
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.8607336956521738,
+              "average_precision": 0.8311502640968443,
+              "threshold": 0.01551902,
+              "sensitivity": 0.96875,
+              "specificity": 0.45652173913043476,
+              "accuracy": 0.6666666666666666,
+              "false_negatives": 1,
+              "false_positives": 25,
+              "refer_rate": 0.717948717948718
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.7533857851492154,
+                0.9424645321091399
+              ],
+              "average_precision": [
+                0.6553865635771049,
+                0.9364167525807351
+              ],
+              "sensitivity": [
+                0.8888888888888888,
+                1.0
+              ],
+              "specificity": [
+                0.2711375488917862,
+                0.6379402054292003
+              ],
+              "accuracy": [
+                0.5256410256410257,
+                0.7948717948717948
+              ]
+            }
+          }
+        }
+      },
+      "macula+optic_disc": {
+        "operating_points": {
+          "calibration_sensitivity_95%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9668542839274546,
+              "average_precision": 0.9691824010967949,
+              "threshold": 0.07357004,
+              "sensitivity": 0.9743589743589743,
+              "specificity": 0.7317073170731707,
+              "accuracy": 0.85,
+              "false_negatives": 1,
+              "false_positives": 11,
+              "refer_rate": 0.6125
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.9123641304347826,
+              "average_precision": 0.8783270845480782,
+              "threshold": 0.07357004,
+              "sensitivity": 0.9375,
+              "specificity": 0.6956521739130435,
+              "accuracy": 0.7948717948717948,
+              "false_negatives": 2,
+              "false_positives": 14,
+              "refer_rate": 0.5641025641025641
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8271421957671958,
+                0.972391585023164
+              ],
+              "average_precision": [
+                0.7102210726799911,
+                0.9708710319987749
+              ],
+              "sensitivity": [
+                0.8214285714285714,
+                1.0
+              ],
+              "specificity": [
+                0.5217391304347826,
+                0.8627450980392157
+              ],
+              "accuracy": [
+                0.6794871794871795,
+                0.8974358974358975
+              ]
+            }
+          },
+          "calibration_sensitivity_100%": {
+            "calibration": {
+              "n_eyes": 80,
+              "positive_eyes": 39,
+              "negative_eyes": 41,
+              "n_patients": 40,
+              "auroc": 0.9668542839274546,
+              "average_precision": 0.9691824010967949,
+              "threshold": 0.02477174,
+              "sensitivity": 1.0,
+              "specificity": 0.6341463414634146,
+              "accuracy": 0.8125,
+              "false_negatives": 0,
+              "false_positives": 15,
+              "refer_rate": 0.675
+            },
+            "validation": {
+              "n_eyes": 78,
+              "positive_eyes": 32,
+              "negative_eyes": 46,
+              "n_patients": 39,
+              "auroc": 0.9123641304347826,
+              "average_precision": 0.8783270845480782,
+              "threshold": 0.02477174,
+              "sensitivity": 0.9375,
+              "specificity": 0.6521739130434783,
+              "accuracy": 0.7692307692307693,
+              "false_negatives": 2,
+              "false_positives": 16,
+              "refer_rate": 0.5897435897435898
+            },
+            "validation_patient_cluster_bootstrap_95ci": {
+              "auroc": [
+                0.8294095756581401,
+                0.9725533220435081
+              ],
+              "average_precision": [
+                0.7101745135521558,
+                0.9707944327774561
+              ],
+              "sensitivity": [
+                0.8275862068965517,
+                1.0
+              ],
+              "specificity": [
+                0.46938775510204084,
+                0.8261664899257684
+              ],
+              "accuracy": [
+                0.6410256410256411,
+                0.8846153846153846
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "threshold_policy": "Highest score threshold meeting each prespecified calibration sensitivity target (95% and 100% by default); calibration patients are disjoint from train and validation.",
+  "validation_unit": "eyes, with confidence intervals from patient-cluster bootstrap",
+  "test_accessed": false,
+  "sealed_test_labels_parsed": false,
+  "boundary": "No sealed test labels or images are included. Results are internal development estimates on a previously used dataset; they are not external or clinical validation. DeepDRiD view suffix mapping remains inferred from a visual audit, not an official field-level map."
+}
