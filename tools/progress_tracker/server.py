@@ -7,6 +7,7 @@ import os
 import tempfile
 import re
 import signal
+import shlex
 import shutil
 import subprocess
 import time
@@ -99,6 +100,39 @@ def llm_state():
         }
     except (OSError, ValueError, urllib.error.URLError) as exc:
         return {"online": False, "runtime": "Ollama", "installed": [], "loaded": [], "loaded_bytes": 0, "error": str(exc)[:220]}
+
+
+def launch_ollama_terminal(model):
+    state = llm_state()
+    if not state.get("online"):
+        raise RuntimeError("The local Ollama service is not available.")
+    if model not in state.get("installed", []):
+        raise ValueError("Choose an installed local model.")
+    if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", model):
+        raise ValueError("The installed model name contains unsupported characters.")
+    ollama = shutil.which("ollama") or "/opt/homebrew/bin/ollama"
+    if not Path(ollama).is_file():
+        raise RuntimeError("The Ollama CLI was not found. Install or restore the `ollama` command first.")
+    command = f"{shlex.quote(ollama)} run {shlex.quote(model)}"
+    applescript_command = 'tell application "Terminal" to activate\n' + (
+        'tell application "Terminal" to do script "' +
+        command.replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ") + '"'
+    )
+    try:
+        result = subprocess.run(
+            ["/usr/bin/osascript", "-e", applescript_command],
+            capture_output=True, text=True, timeout=12, check=False,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError("Terminal did not respond in time. Open Terminal and run the command shown below.") from exc
+    except OSError as exc:
+        raise RuntimeError(f"Could not open a native Terminal session: {exc}") from exc
+    if result.returncode:
+        detail = (result.stderr or result.stdout or "Terminal automation was denied").strip().splitlines()[-1]
+        raise RuntimeError(
+            f"macOS did not let the dashboard control Terminal ({detail}). Open Terminal and run: {command}"
+        )
+    return {"ok": True, "command": command, "message": f"Opened the native Ollama CLI in Terminal: {command}"}
 
 
 def safe_ssh_target(value):
@@ -427,26 +461,8 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("Expected a JSON object")
                 if self.path == "/api/control/devices":
                     response = {"ok": True, "config": write_device_config(payload)}
-                elif self.path == "/api/control/llm/chat":
-                    state = llm_state()
-                    model = str(payload.get("model", ""))
-                    messages = payload.get("messages")
-                    if not state["online"]:
-                        raise RuntimeError("The Mac’s local Ollama service is not available.")
-                    if model not in state["installed"]:
-                        raise ValueError("Choose an installed local model.")
-                    if not isinstance(messages, list) or not 1 <= len(messages) <= 30:
-                        raise ValueError("Send between 1 and 30 chat messages.")
-                    safe_messages = []
-                    for item in messages:
-                        if not isinstance(item, dict) or item.get("role") not in ("user", "assistant"):
-                            raise ValueError("Only user and assistant messages are accepted.")
-                        content = str(item.get("content", ""))
-                        if not content or len(content) > 12000:
-                            raise ValueError("Each message must contain 1–12,000 characters.")
-                        safe_messages.append({"role": item["role"], "content": content})
-                    response = ollama_request("/api/chat", {"model": model, "messages": safe_messages, "stream": False, "keep_alive": "5m"}, timeout=240)
-                    response = {"ok": True, "model": model, "content": response.get("message", {}).get("content", "")}
+                elif self.path == "/api/control/llm/terminal":
+                    response = launch_ollama_terminal(str(payload.get("model", "")))
                 elif self.path == "/api/control/llm/stop":
                     response = force_quit_ollama()
                 else:

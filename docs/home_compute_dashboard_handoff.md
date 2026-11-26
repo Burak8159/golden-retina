@@ -5,9 +5,11 @@ Updated 2026-11-26.
 ## Intended machine roles
 
 - **MacBook:** portable workstation; runs the local Qwen model through Ollama
-  (MLX runtime) and hosts the loopback-only project dashboard. Chat messages are
-  sent to `127.0.0.1:11434` and kept in browser memory; there is no cloud chat
-  service in this design.
+  (MLX runtime) and hosts the loopback-only project dashboard. The dashboard
+  opens native Terminal and launches the installed `ollama run <model>` CLI.
+  Model prompts, streamed answers, conversation context, and terminal commands
+  are handled by that real process; the dashboard does not proxy or reconstruct
+  chat. The Ollama service listens locally at `127.0.0.1:11434`.
 - **ThinkPad:** always-on home orchestrator. It should coordinate project jobs
   and provide the SSH hop to the GPU laptop. A job-orchestration agent has not
   yet been implemented or verified.
@@ -68,3 +70,12 @@ The tracker binds only to loopback. No passwords, model prompts, local device
 targets, or machine-specific addresses should be committed. Current project
 progress and actual device status remain separate facts; refresh each from the
 running machines before a new training round.
+
+## Native Ollama terminal behavior
+
+The “Open Ollama in Terminal” button validates the selected model against the
+locally installed Ollama model list, builds the fixed `ollama run <model>`
+command, and asks macOS Terminal to run it. It does not accept shell commands
+from the browser. If macOS denies Terminal automation, the UI displays the
+exact command to type into Terminal manually. The browser chat proxy was removed
+so terminal sessions retain the actual Ollama CLI behavior and state.

@@ -38,9 +38,11 @@ from historical usage. The authenticated report through Nov 20 showed TRY 0 net 
 
 The top of the dashboard monitors the three-machine setup: this Mac and its
 local Ollama runtime, the ThinkPad orchestrator, and the RTX 3050 training
-worker. The local Qwen chat calls Ollama at `127.0.0.1:11434`; chat stays on
-the Mac and is kept in browser memory only. After five idle minutes Ollama can
-unload the model. The stop action unloads active models, targets only the
+worker. The dashboard's **Open Ollama in Terminal** action opens the native
+Terminal app and runs the installed `ollama run <model>` CLI directly; prompts,
+streaming, context, and terminal commands are handled by the real CLI, not a
+browser-side chat imitation. The local runtime listens at `127.0.0.1:11434`.
+After five idle minutes Ollama can unload the model. The stop action unloads active models, targets only the
 verified Ollama listener on port 11434, checks its executable and owner, and
 confirms whether the server is offline. A dashboard process started inside a
 restricted runner may be allowed to unload models through Ollama's local API
