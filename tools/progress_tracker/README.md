@@ -38,13 +38,17 @@ from historical usage. The authenticated report through Nov 20 showed TRY 0 net 
 
 The top of the dashboard monitors the three-machine setup: this Mac and its
 local Ollama runtime, the ThinkPad orchestrator, and the RTX 3050 training
-worker. The dashboard's **Open Ollama in Terminal** action opens the native
-Terminal app and runs the installed `ollama run <model>` CLI directly; prompts,
-streaming, context, and terminal commands are handled by the real CLI, not a
-browser-side chat imitation. The local runtime listens at `127.0.0.1:11434`.
+worker. The in-page chat sends requests to the Mac-local Ollama `/api/chat`
+endpoint and renders its newline-delimited token stream; chat history is kept
+only in that browser page's memory. **Open exact CLI in Terminal** separately
+launches the installed `ollama run <model>` command in the native Terminal app.
+Both use the same local Ollama service, but their conversation histories are
+separate. No prompt or response is sent to a cloud model. Ollama listens at
+`127.0.0.1:11434`.
 After five idle minutes Ollama can unload the model. The stop action unloads active models, targets only the
 verified Ollama listener on port 11434, checks its executable and owner, and
-confirms whether the server is offline. A dashboard process started inside a
+confirms whether the server is offline. Model unload uses Ollama's documented
+empty `/api/generate` request with `keep_alive: 0`. A dashboard process started inside a
 restricted runner may be allowed to unload models through Ollama's local API
 but denied permission to signal the server process. In that case the UI reports
 the partial result and provides a verified PID-specific `kill -TERM` command.

@@ -5,11 +5,11 @@ Updated 2026-11-26.
 ## Intended machine roles
 
 - **MacBook:** portable workstation; runs the local Qwen model through Ollama
-  (MLX runtime) and hosts the loopback-only project dashboard. The dashboard
-  opens native Terminal and launches the installed `ollama run <model>` CLI.
-  Model prompts, streamed answers, conversation context, and terminal commands
-  are handled by that real process; the dashboard does not proxy or reconstruct
-  chat. The Ollama service listens locally at `127.0.0.1:11434`.
+  (MLX runtime) and hosts the loopback-only project dashboard. Its in-page chat
+  streams directly from Ollama's local `/api/chat` endpoint. The separate
+  native-Terminal control launches the real `ollama run <model>` CLI. Both use
+  the same local runtime but keep separate conversation contexts. Ollama
+  listens at `127.0.0.1:11434`.
 - **ThinkPad:** always-on home orchestrator. It should coordinate project jobs
   and provide the SSH hop to the GPU laptop. A job-orchestration agent has not
   yet been implemented or verified.
@@ -27,7 +27,8 @@ training jobs. Device names, IP addresses, and SSH targets belong in the ignored
 
 The dashboard stop action is deliberately narrow:
 
-1. Ask Ollama to unload each currently loaded model.
+1. Ask Ollama to unload each currently loaded model using an empty
+   `/api/generate` request with `keep_alive: 0`.
 2. Verify the listener on local port `11434`, its executable name, and its UID.
 3. Send `SIGTERM` only to the verified Ollama listener.
 4. If it does not exit, re-check the same listener identity before considering
@@ -71,11 +72,13 @@ targets, or machine-specific addresses should be committed. Current project
 progress and actual device status remain separate facts; refresh each from the
 running machines before a new training round.
 
-## Native Ollama terminal behavior
+## Local model interaction
 
-The “Open Ollama in Terminal” button validates the selected model against the
-locally installed Ollama model list, builds the fixed `ollama run <model>`
-command, and asks macOS Terminal to run it. It does not accept shell commands
-from the browser. If macOS denies Terminal automation, the UI displays the
-exact command to type into Terminal manually. The browser chat proxy was removed
-so terminal sessions retain the actual Ollama CLI behavior and state.
+In-page chat validates the model against Ollama's installed list, streams
+newline-delimited responses from the local API, and holds conversation history
+only in browser memory. Stop response cancels the open stream. The “Open exact
+CLI in Terminal” button validates the selected model and asks macOS Terminal to
+run the fixed `ollama run <model>` command; it accepts no shell command from the
+browser. If macOS denies Terminal automation, the UI displays the exact command
+to run manually. Chat history is intentionally not synchronized between these
+two interfaces.

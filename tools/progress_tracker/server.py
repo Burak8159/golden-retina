@@ -102,6 +102,16 @@ def llm_state():
         return {"online": False, "runtime": "Ollama", "installed": [], "loaded": [], "loaded_bytes": 0, "error": str(exc)[:220]}
 
 
+def unload_ollama_model(model):
+    # Ollama unloads a runner with an empty generate prompt and keep_alive=0.
+    # There is no /api/stop endpoint in the local REST API.
+    return ollama_request(
+        "/api/generate",
+        {"model": model, "prompt": "", "stream": False, "keep_alive": 0},
+        timeout=45,
+    )
+
+
 def launch_ollama_terminal(model):
     state = llm_state()
     if not state.get("online"):
@@ -237,7 +247,7 @@ def force_quit_ollama():
         initial_state = llm_state()
         for model in initial_state.get("loaded", []):
             try:
-                ollama_request("/api/stop", {"model": model}, timeout=8)
+                unload_ollama_model(model)
                 unloaded.append(model)
             except (OSError, ValueError, urllib.error.URLError) as exc:
                 unload_errors.append(f"{model}: {str(exc)[:120]}")
@@ -245,11 +255,14 @@ def force_quit_ollama():
         initial_state = {"online": False, "loaded": []}
     lsof = shutil.which("lsof") or "/usr/sbin/lsof"
     if not Path(lsof).exists():
+        state_after = llm_state()
+        model_unloaded = state_after.get("online") and not state_after.get("loaded")
         return {
             "ok": False,
-            "model_unloaded": False,
+            "model_unloaded": bool(model_unloaded),
             "runtime_stopped": False,
-            "message": "Cannot verify that the Ollama process is safe to stop because macOS lsof is unavailable.",
+            "message": ("The model is unloaded, but the server cannot be safely stopped because macOS lsof is unavailable." if model_unloaded else "Cannot verify that the Ollama process is safe to stop because macOS lsof is unavailable."),
+            "detail": "; ".join(unload_errors)[:300] if unload_errors else None,
         }
     result = subprocess.run([lsof, "-nP", "-iTCP:11434", "-sTCP:LISTEN", "-Fpcu"], capture_output=True, text=True, timeout=5, check=False)
     if result.returncode not in (0, 1):
@@ -387,6 +400,8 @@ def force_quit_ollama():
 
 
 class Handler(BaseHTTPRequestHandler):
+    protocol_version = "HTTP/1.1"
+
     def is_local_dashboard_request(self):
         peer = self.client_address[0].split("%", 1)[0]
         if peer.startswith("::ffff:"):
@@ -461,6 +476,9 @@ class Handler(BaseHTTPRequestHandler):
                     raise ValueError("Expected a JSON object")
                 if self.path == "/api/control/devices":
                     response = {"ok": True, "config": write_device_config(payload)}
+                elif self.path == "/api/control/llm/chat":
+                    self.stream_local_chat(payload)
+                    return
                 elif self.path == "/api/control/llm/terminal":
                     response = launch_ollama_terminal(str(payload.get("model", "")))
                 elif self.path == "/api/control/llm/stop":
@@ -483,6 +501,66 @@ class Handler(BaseHTTPRequestHandler):
                 self.send_header("Content-Length", str(len(body)))
                 self.end_headers()
                 self.wfile.write(body)
+
+    def stream_local_chat(self, payload):
+        state = llm_state()
+        model = str(payload.get("model", ""))
+        messages = payload.get("messages")
+        if not state.get("online"):
+            raise RuntimeError("The local Ollama service is not available.")
+        if model not in state.get("installed", []):
+            raise ValueError("Choose an installed local model.")
+        if not isinstance(messages, list) or not 1 <= len(messages) <= 40:
+            raise ValueError("Send between 1 and 40 local conversation messages.")
+        safe_messages = []
+        for item in messages:
+            if not isinstance(item, dict) or item.get("role") not in ("user", "assistant"):
+                raise ValueError("Only user and assistant messages are accepted.")
+            content = str(item.get("content", ""))
+            if not content or len(content) > 20_000:
+                raise ValueError("Each conversation message must contain 1–20,000 characters.")
+            safe_messages.append({"role": item["role"], "content": content})
+        body = json.dumps({"model": model, "messages": safe_messages, "stream": True, "keep_alive": "5m"}).encode("utf-8")
+        request = urllib.request.Request(
+            f"{OLLAMA_URL}/api/chat", data=body,
+            headers={"Content-Type": "application/json"},
+        )
+        try:
+            upstream = urllib.request.urlopen(request, timeout=900)
+        except urllib.error.HTTPError as exc:
+            detail = exc.read(1000).decode("utf-8", "replace")
+            raise RuntimeError(f"Local Ollama rejected the request: {detail[:500]}") from exc
+        self.send_response(200)
+        self.send_header("Content-Type", "application/x-ndjson; charset=utf-8")
+        self.send_header("Transfer-Encoding", "chunked")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.end_headers()
+        try:
+            for line in upstream:
+                if not line:
+                    continue
+                self.wfile.write(f"{len(line):X}\r\n".encode("ascii"))
+                self.wfile.write(line)
+                self.wfile.write(b"\r\n")
+                self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            # A user pressing Stop/closing the page closes Ollama's stream too.
+            return
+        except (OSError, urllib.error.URLError) as exc:
+            error_line = json.dumps({"error": f"Local Ollama stream interrupted: {str(exc)[:240]}"}).encode("utf-8") + b"\n"
+            try:
+                self.wfile.write(f"{len(error_line):X}\r\n".encode("ascii") + error_line + b"\r\n")
+                self.wfile.flush()
+            except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+                return
+        finally:
+            upstream.close()
+        try:
+            self.wfile.write(b"0\r\n\r\n")
+            self.wfile.flush()
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            pass
             return
         if self.path != "/api/status":
             self.send_error(404)
