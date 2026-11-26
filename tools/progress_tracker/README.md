@@ -40,8 +40,14 @@ The top of the dashboard monitors the three-machine setup: this Mac and its
 local Ollama runtime, the ThinkPad orchestrator, and the RTX 3050 training
 worker. The local Qwen chat calls Ollama at `127.0.0.1:11434`; chat stays on
 the Mac and is kept in browser memory only. After five idle minutes Ollama can
-unload the model. The explicit Force quit action targets only the Ollama
-process listening on port 11434, and verifies its executable and owner first.
+unload the model. The stop action unloads active models, targets only the
+verified Ollama listener on port 11434, checks its executable and owner, and
+confirms whether the server is offline. A dashboard process started inside a
+restricted runner may be allowed to unload models through Ollama's local API
+but denied permission to signal the server process. In that case the UI reports
+the partial result and provides a verified PID-specific `kill -TERM` command.
+Relaunching the dashboard from a normal Terminal session should allow the
+button to stop the runtime directly.
 
 ThinkPad and RTX SSH targets are entered in the UI and saved only to the
 git-ignored `devices.local.json`. SSH uses the Mac's existing OpenSSH keys and
@@ -51,6 +57,8 @@ be accepted interactively in Terminal. If Tailscale is unavailable on the Mac,
 remote state is shown as unreachable rather than assumed online. The current
 dashboard performs connection/GPU probes; a ThinkPad job-orchestration agent
 is a separate integration and is not represented as installed until it is.
+The complete architecture and current recovery state are documented in
+[`docs/home_compute_dashboard_handoff.md`](../../docs/home_compute_dashboard_handoff.md).
 
 The local tracker binds only to `127.0.0.1`. It is not exposed to the LAN or
 tailnet. The Mac can still use local Qwen while traveling; ThinkPad/RTX controls

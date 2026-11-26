@@ -198,17 +198,36 @@ def device_state():
 
 def force_quit_ollama():
     unloaded = []
+    unload_errors = []
     try:
-        for model in llm_state().get("loaded", []):
-            ollama_request("/api/stop", {"model": model}, timeout=8)
-            unloaded.append(model)
+        initial_state = llm_state()
+        for model in initial_state.get("loaded", []):
+            try:
+                ollama_request("/api/stop", {"model": model}, timeout=8)
+                unloaded.append(model)
+            except (OSError, ValueError, urllib.error.URLError) as exc:
+                unload_errors.append(f"{model}: {str(exc)[:120]}")
     except (OSError, ValueError, urllib.error.URLError):
-        # Continue to the verified listener check; no unrelated process is targeted.
-        pass
+        initial_state = {"online": False, "loaded": []}
     lsof = shutil.which("lsof") or "/usr/sbin/lsof"
     if not Path(lsof).exists():
-        return {"ok": False, "message": "Cannot safely identify the Ollama process: lsof is unavailable."}
+        return {
+            "ok": False,
+            "model_unloaded": False,
+            "runtime_stopped": False,
+            "message": "Cannot verify that the Ollama process is safe to stop because macOS lsof is unavailable.",
+        }
     result = subprocess.run([lsof, "-nP", "-iTCP:11434", "-sTCP:LISTEN", "-Fpcu"], capture_output=True, text=True, timeout=5, check=False)
+    if result.returncode not in (0, 1):
+        state_after = llm_state()
+        unloaded_ok = state_after.get("online") and not state_after.get("loaded")
+        return {
+            "ok": False,
+            "model_unloaded": bool(unloaded_ok),
+            "runtime_stopped": False,
+            "message": "The model was unloaded, but macOS did not allow the dashboard to inspect the Ollama process." if unloaded_ok else "macOS did not allow the dashboard to inspect the Ollama process.",
+            "detail": (result.stderr or "Process inspection failed").strip()[:180],
+        }
     found = []
     pid = command = uid = None
     for line in result.stdout.splitlines():
@@ -226,11 +245,45 @@ def force_quit_ollama():
     if pid and command and uid == os.getuid() and Path(command).name.lower() == "ollama":
         found.append(int(pid))
     if not found:
+        state_after = llm_state()
         note = f" Unloaded: {', '.join(unloaded)}." if unloaded else ""
-        return {"ok": True, "message": "No Ollama server listening on port 11434; nothing was terminated." + note}
+        if state_after.get("online"):
+            return {
+                "ok": True,
+                "model_unloaded": not bool(state_after.get("loaded")),
+                "runtime_stopped": False,
+                "message": "No Ollama server process could be verified as safe to terminate. The local model is unloaded." + note if not state_after.get("loaded") else "Ollama is still responding, and no verified listener process was found.",
+            }
+        return {"ok": True, "model_unloaded": not bool(initial_state.get("loaded")), "runtime_stopped": True, "message": "Ollama is already stopped; nothing needed to be terminated." + note}
     try:
         for process_id in found:
-            os.kill(process_id, signal.SIGTERM)
+            try:
+                os.kill(process_id, signal.SIGTERM)
+            except PermissionError as exc:
+                state_after = llm_state()
+                model_unloaded = state_after.get("online") and not state_after.get("loaded")
+                message = (
+                    "The model was unloaded and its model memory should be released, but macOS blocked the dashboard from force-quitting Ollama. "
+                    "This dashboard process is running with restricted process-control permission. Relaunch the tracker from your normal Terminal and retry to stop the Ollama server too."
+                    if model_unloaded else
+                    "macOS blocked the dashboard from stopping Ollama. Relaunch the tracker from your normal Terminal and retry."
+                )
+                return {
+                    "ok": False,
+                    "partial": bool(model_unloaded),
+                    "model_unloaded": bool(model_unloaded),
+                    "runtime_stopped": False,
+                    "permission_denied": True,
+                    "pid": process_id,
+                    "manual_command": (
+                        f"pid={process_id}; [ \"$(lsof -nP -iTCP:11434 -sTCP:LISTEN -t 2>/dev/null)\" = \"$pid\" ] "
+                        f"&& [ \"$(ps -p \"$pid\" -o uid= | tr -d ' ')\" = \"{os.getuid()}\" ] "
+                        "&& [ \"$(ps -p \"$pid\" -o comm= | sed 's#.*/##')\" = ollama ] "
+                        "&& kill -TERM \"$pid\" || echo 'Ollama listener changed; no process was stopped.'"
+                    ),
+                    "message": message,
+                    "detail": str(exc),
+                }
         deadline = time.monotonic() + 4
         while time.monotonic() < deadline:
             alive = []
@@ -262,11 +315,39 @@ def force_quit_ollama():
                     except ValueError:
                         row["uid"] = None
             if listener:
-                os.kill(listener, signal.SIGKILL)
+                try:
+                    os.kill(listener, signal.SIGKILL)
+                except PermissionError as exc:
+                    return {
+                        "ok": False,
+                        "partial": True,
+                        "model_unloaded": True,
+                        "runtime_stopped": False,
+                        "permission_denied": True,
+                        "pid": listener,
+                        "manual_command": (
+                            f"pid={listener}; [ \"$(lsof -nP -iTCP:11434 -sTCP:LISTEN -t 2>/dev/null)\" = \"$pid\" ] "
+                            f"&& [ \"$(ps -p \"$pid\" -o uid= | tr -d ' ')\" = \"{os.getuid()}\" ] "
+                            "&& [ \"$(ps -p \"$pid\" -o comm= | sed 's#.*/##')\" = ollama ] "
+                            "&& kill -KILL \"$pid\" || echo 'Ollama listener changed; no process was stopped.'"
+                        ),
+                        "message": "The model was unloaded, but macOS blocked the final force-quit signal. Relaunch the tracker from your normal Terminal and retry.",
+                        "detail": str(exc),
+                    }
             else:
-                return {"ok": False, "message": "Ollama did not exit cleanly; its listener changed or could not be verified, so no force-kill was attempted."}
+                state_after = llm_state()
+                if state_after.get("online"):
+                    return {"ok": False, "model_unloaded": not bool(state_after.get("loaded")), "runtime_stopped": False, "message": "Ollama restarted or remained online after the stop request. Its model is unloaded; check its login service if you also want the server kept off."}
+                return {"ok": True, "model_unloaded": not bool(initial_state.get("loaded")), "runtime_stopped": True, "message": "Ollama stopped."}
+        # Confirm the listener actually disappeared instead of reporting a signal as success.
+        time.sleep(.2)
+        verify = subprocess.run([lsof, "-nP", "-iTCP:11434", "-sTCP:LISTEN", "-Fpcu"], capture_output=True, text=True, timeout=5, check=False)
+        if verify.returncode == 0 and any(line.startswith("p") for line in verify.stdout.splitlines()):
+            state_after = llm_state()
+            if state_after.get("online"):
+                return {"ok": False, "model_unloaded": not bool(state_after.get("loaded")), "runtime_stopped": False, "message": "Ollama restarted or remained online after the stop request. Its model is unloaded; check its login service if you also want the server kept off."}
         note = f" Active model unloaded: {', '.join(unloaded)}." if unloaded else ""
-        return {"ok": True, "message": "Ollama server on port 11434 was stopped; its model runner should release Mac resources." + note}
+        return {"ok": True, "model_unloaded": True, "runtime_stopped": True, "message": "Ollama server on port 11434 was stopped and verified offline." + note}
     except (OSError, subprocess.SubprocessError) as exc:
         return {"ok": False, "message": f"Could not stop the verified Ollama process: {exc}"}
 
