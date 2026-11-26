@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-27",
+  "status": "campaign_closed",
+  "tracker": {
+    "total_items": 100,
+    "completed": 79,
+    "terminated_historical": 21,
+    "in_progress": 0,
+    "planned": 0,
+    "blocked": 0,
+    "interpretation": "All tracker items have a terminal disposition. This is not a claim that all 100 were executed: 21 historical items are explicitly terminated."
+  },
+  "disease_results": {
+    "retinal_vein_occlusion": {
+      "dataset": "CLARUS700 PICTURE-5 release",
+      "model": "ConvNeXt-Tiny, epoch 5",
+      "validation_images": 148,
+      "validation_patients": 99,
+      "positive_images": 12,
+      "sensitivity": 1.0,
+      "specificity": 0.5882352941176471,
+      "accuracy": 0.6216216216216216,
+      "false_negatives": 0,
+      "false_positives": 56,
+      "specificity_patient_bootstrap_95ci": [0.5, 0.6829589216944801],
+      "status": "development-only; validation selected model and epoch; official test untouched; single-centre/device; no clinical validation"
+    },
+    "glaucoma": {
+      "dataset": "RIM-ONE DL official hospital training partition only",
+      "model": "MobileNetV3-Small, epoch 6, random initialization",
+      "validation_images": 62,
+      "positive_images": 23,
+      "sensitivity": 0.9565217391304348,
+      "specificity": 0.15384615384615385,
+      "accuracy": 0.45161290322580644,
+      "false_negatives": 1,
+      "false_positives": 33,
+      "status": "development-only; no patient IDs; official test untouched; no clinical validation; not suitable for deployment"
+    }
+  },
+  "api_smoke": {
+    "status": "passed",
+    "scope": "loopback-only RTX smoke; authenticated inference returned raw scores for both specialists; unauthenticated model-card rejected; no image persisted or transferred",
+    "clinical_use": false
+  },
+  "publication": {
+    "repository": "https://github.com/Burak8159/golden-retina",
+    "branch": "main",
+    "commit": "ebdb41e432b869a07b1a526dbf7cc219f19d091a",
+    "remote_verified": true,
+    "included": "source, documentation, configs, and aggregate-only reports",
+    "excluded": "raw images, patient-level rows/manifests, per-image predictions, model checkpoints, and credentials"
+  },
+  "compute_closeout": {
+    "rtx": "Last successful post-smoke query observed 9 MiB GPU memory use, 0% utilization, no training/API process and no listener on the smoke port. A later SSH attempt found the host down; final state cannot be freshly rechecked while unreachable.",
+    "google_cloud": "Read-only checks found both visible projects billing-disabled with zero linked billing projects. Compute inventory API was disabled and no cloud resource changes were made; old disks/snapshots were not freshly inventoried."
+  },
+  "remaining_boundaries": [
+    "Neither specialist is clinically validated or suitable for autonomous diagnosis.",
+    "Mobile work is deferred to a separate program.",
+    "mBRSET is a separate future follow-up after the user's arrival/access notice; it is not part of this closeout.",
+    "The local tracker state file is intentionally git-ignored; this aggregate closeout report is published instead."
+  ]
+}
