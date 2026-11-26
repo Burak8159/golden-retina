@@ -23,6 +23,7 @@ results/expert_sweep/**/*.log
 results/expert_sweep/launcher.pid
 results/dr_dinov2_validation_recovery/
 tools/progress_tracker/status.json
+tools/progress_tracker/devices.local.json
 
 # Restricted or bulky datasets
 external/

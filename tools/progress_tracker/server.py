@@ -5,10 +5,21 @@ from pathlib import Path
 import json
 import os
 import tempfile
+import re
+import signal
+import shutil
+import subprocess
+import time
+import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 
 WEB = Path(__file__).resolve().parent
 STATUS = WEB / "status.json"
+DEVICE_CONFIG = WEB / "devices.local.json"
+OLLAMA_URL = os.environ.get("OLLAMA_HOST", "http://127.0.0.1:11434").rstrip("/")
+TRACKER_PORT = int(os.environ.get("GOLDEN_RETINA_TRACKER_PORT", "8768"))
+_DEVICE_CACHE = {"at": 0.0, "value": None}
 
 
 def read_status():
@@ -46,14 +57,11 @@ def read_status():
             )
         except (TypeError, ValueError):
             pass
-    # These values are rendered from the live status payload, so the dashboard
-    # cannot keep showing a stale VM task or an old spend estimate.
+    # Keep the cloud campaign status separate from local/remote device state.
+    # Its GPU line is a cloud-resource fact, not the current work-location text.
     cloud = status.setdefault("cloud", {})
     if budget.get("display_label"):
         cloud["planning_estimate"] = budget["display_label"]
-    loc = status.get("current_location") or {}
-    if loc.get("what"):
-        cloud["gpu"] = loc["what"]
     return status
 
 
@@ -67,8 +75,238 @@ def write_status(status):
     temporary.replace(STATUS)
 
 
+def ollama_request(path, payload=None, timeout=180):
+    data = None if payload is None else json.dumps(payload).encode("utf-8")
+    request = urllib.request.Request(
+        f"{OLLAMA_URL}{path}", data=data,
+        headers={"Content-Type": "application/json"} if data is not None else {},
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+def llm_state():
+    try:
+        installed = ollama_request("/api/tags", timeout=3).get("models", [])
+        loaded = ollama_request("/api/ps", timeout=3).get("models", [])
+        return {
+            "online": True,
+            "runtime": "Ollama / MLX",
+            "installed": [m.get("name") for m in installed if m.get("name")],
+            "loaded": [m.get("name") for m in loaded if m.get("name")],
+            "loaded_bytes": sum(int(m.get("size", 0) or 0) for m in loaded),
+            "error": None,
+        }
+    except (OSError, ValueError, urllib.error.URLError) as exc:
+        return {"online": False, "runtime": "Ollama", "installed": [], "loaded": [], "loaded_bytes": 0, "error": str(exc)[:220]}
+
+
+def safe_ssh_target(value):
+    value = str(value or "").strip()
+    if not value:
+        return ""
+    if value.startswith("-") or not re.fullmatch(r"[A-Za-z0-9_.@:-]{1,180}", value):
+        raise ValueError("Use a hostname or user@hostname; do not enter a command or password.")
+    return value
+
+
+def read_device_config():
+    try:
+        data = json.loads(DEVICE_CONFIG.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            return data
+    except (OSError, json.JSONDecodeError):
+        pass
+    return {"thinkpad_target": "", "rtx_target": "", "rtx_via_thinkpad": True}
+
+
+def write_device_config(payload):
+    config = {
+        "thinkpad_target": safe_ssh_target(payload.get("thinkpad_target")),
+        "rtx_target": safe_ssh_target(payload.get("rtx_target")),
+        "rtx_via_thinkpad": bool(payload.get("rtx_via_thinkpad", True)),
+    }
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=WEB, prefix=".devices-", suffix=".tmp", delete=False) as stream:
+        json.dump(config, stream, indent=2)
+        stream.write("\n")
+        temporary = Path(stream.name)
+    temporary.replace(DEVICE_CONFIG)
+    _DEVICE_CACHE.update(at=0.0, value=None)
+    return config
+
+
+def ssh_probe(target, jump=None, gpu=False):
+    if not target:
+        return {"state": "not_configured", "detail": "Add this machine’s SSH target in Device connections."}
+    if not shutil.which("ssh"):
+        return {"state": "unavailable", "detail": "OpenSSH client is missing on the Mac."}
+    command = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=4", "-o", "ConnectionAttempts=1"]
+    if jump:
+        command += ["-J", jump]
+    remote_command = "hostname && nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader" if gpu else "hostname"
+    command += [target, remote_command]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=7, check=False)
+        if result.returncode:
+            if gpu:
+                fallback = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=4", "-o", "ConnectionAttempts=1"]
+                if jump:
+                    fallback += ["-J", jump]
+                fallback += [target, "hostname"]
+                online = subprocess.run(fallback, capture_output=True, text=True, timeout=7, check=False)
+                if online.returncode == 0:
+                    hostname = online.stdout.strip().splitlines()[0] if online.stdout.strip() else target
+                    return {"state": "online", "detail": f"SSH reachable · {hostname} · nvidia-smi telemetry unavailable"}
+            msg = (result.stderr or "SSH probe failed").strip().splitlines()[-1]
+            return {"state": "offline", "detail": msg[:180]}
+        hostname = result.stdout.strip().splitlines()[0] if result.stdout.strip() else target
+        if gpu:
+            lines = result.stdout.strip().splitlines()
+            detail = f"SSH reachable · {hostname} · GPU " + (lines[1][:160] if len(lines) > 1 else "telemetry unavailable")
+        else:
+            detail = f"SSH reachable · {hostname}"
+        return {"state": "online", "detail": detail}
+    except subprocess.TimeoutExpired:
+        return {"state": "offline", "detail": "SSH probe timed out."}
+    except OSError as exc:
+        return {"state": "unavailable", "detail": str(exc)[:180]}
+
+
+def device_state():
+    if _DEVICE_CACHE["value"] is not None and time.monotonic() - _DEVICE_CACHE["at"] < 15:
+        return _DEVICE_CACHE["value"]
+    config = read_device_config()
+    thinkpad = config.get("thinkpad_target", "")
+    tailscale = "not installed"
+    tailscale_bin = shutil.which("tailscale")
+    if tailscale_bin:
+        try:
+            result = subprocess.run([tailscale_bin, "status"], capture_output=True, text=True, timeout=3, check=False)
+            tailscale = "connected" if result.returncode == 0 else "unavailable"
+        except (OSError, subprocess.SubprocessError):
+            tailscale = "unavailable"
+    value = {
+        "mac": {"state": "online", "detail": "This Mac · local dashboard"},
+        "thinkpad": ssh_probe(thinkpad),
+        "rtx": ssh_probe(config.get("rtx_target", ""), jump=thinkpad if config.get("rtx_via_thinkpad", True) else None, gpu=True),
+        "config": config,
+        "tailscale": tailscale,
+    }
+    _DEVICE_CACHE.update(at=time.monotonic(), value=value)
+    return value
+
+
+def force_quit_ollama():
+    unloaded = []
+    try:
+        for model in llm_state().get("loaded", []):
+            ollama_request("/api/stop", {"model": model}, timeout=8)
+            unloaded.append(model)
+    except (OSError, ValueError, urllib.error.URLError):
+        # Continue to the verified listener check; no unrelated process is targeted.
+        pass
+    lsof = shutil.which("lsof") or "/usr/sbin/lsof"
+    if not Path(lsof).exists():
+        return {"ok": False, "message": "Cannot safely identify the Ollama process: lsof is unavailable."}
+    result = subprocess.run([lsof, "-nP", "-iTCP:11434", "-sTCP:LISTEN", "-Fpcu"], capture_output=True, text=True, timeout=5, check=False)
+    found = []
+    pid = command = uid = None
+    for line in result.stdout.splitlines():
+        if line.startswith("p"):
+            if pid and command and uid == os.getuid() and Path(command).name.lower() == "ollama":
+                found.append(int(pid))
+            pid, command, uid = line[1:], None, None
+        elif line.startswith("c"):
+            command = line[1:]
+        elif line.startswith("u"):
+            try:
+                uid = int(line[1:])
+            except ValueError:
+                uid = None
+    if pid and command and uid == os.getuid() and Path(command).name.lower() == "ollama":
+        found.append(int(pid))
+    if not found:
+        note = f" Unloaded: {', '.join(unloaded)}." if unloaded else ""
+        return {"ok": True, "message": "No Ollama server listening on port 11434; nothing was terminated." + note}
+    try:
+        for process_id in found:
+            os.kill(process_id, signal.SIGTERM)
+        deadline = time.monotonic() + 4
+        while time.monotonic() < deadline:
+            alive = []
+            for process_id in found:
+                try:
+                    os.kill(process_id, 0)
+                    alive.append(process_id)
+                except ProcessLookupError:
+                    pass
+            if not alive:
+                break
+            time.sleep(.15)
+        else:
+            # Recheck the exact listener PID, executable and owner before force-killing.
+            remaining = subprocess.run([lsof, "-nP", "-iTCP:11434", "-sTCP:LISTEN", "-Fpcu"], capture_output=True, text=True, timeout=5, check=False).stdout
+            listener = None
+            row = {}
+            for line in remaining.splitlines() + ["END"]:
+                if line == "END" or line.startswith("p"):
+                    if row.get("pid") and row.get("command") and row.get("uid") == os.getuid():
+                        if Path(row["command"]).name.lower() == "ollama" and int(row["pid"]) in found:
+                            listener = int(row["pid"])
+                    row = {"pid": line[1:]} if line.startswith("p") else {}
+                elif line.startswith("c"):
+                    row["command"] = line[1:]
+                elif line.startswith("u"):
+                    try:
+                        row["uid"] = int(line[1:])
+                    except ValueError:
+                        row["uid"] = None
+            if listener:
+                os.kill(listener, signal.SIGKILL)
+            else:
+                return {"ok": False, "message": "Ollama did not exit cleanly; its listener changed or could not be verified, so no force-kill was attempted."}
+        note = f" Active model unloaded: {', '.join(unloaded)}." if unloaded else ""
+        return {"ok": True, "message": "Ollama server on port 11434 was stopped; its model runner should release Mac resources." + note}
+    except (OSError, subprocess.SubprocessError) as exc:
+        return {"ok": False, "message": f"Could not stop the verified Ollama process: {exc}"}
+
+
 class Handler(BaseHTTPRequestHandler):
+    def is_local_dashboard_request(self):
+        peer = self.client_address[0].split("%", 1)[0]
+        if peer.startswith("::ffff:"):
+            peer = peer[7:]
+        if peer not in ("127.0.0.1", "::1"):
+            return False
+        allowed_hosts = {f"127.0.0.1:{TRACKER_PORT}", f"localhost:{TRACKER_PORT}", "127.0.0.1", "localhost"}
+        if self.headers.get("Host", "").lower() not in allowed_hosts:
+            return False
+        origin = self.headers.get("Origin")
+        allowed_origins = {f"http://127.0.0.1:{TRACKER_PORT}", f"http://localhost:{TRACKER_PORT}"}
+        return not origin or origin in allowed_origins
+
     def do_GET(self):
+        if not self.is_local_dashboard_request():
+            self.send_error(403, "Local dashboard requests only")
+            return
+        if self.path == "/api/control/llm":
+            body = json.dumps(llm_state(), ensure_ascii=False).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if self.path == "/api/control/devices":
+            body = json.dumps(device_state(), ensure_ascii=False).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if self.path == "/api/status":
             try:
                 body = json.dumps(read_status(), ensure_ascii=False).encode("utf-8")
@@ -94,6 +332,61 @@ class Handler(BaseHTTPRequestHandler):
         self.send_error(404)
 
     def do_POST(self):
+        if not self.is_local_dashboard_request():
+            self.send_error(403, "Local dashboard requests only")
+            return
+        if self.path.startswith("/api/control/"):
+            try:
+                length = int(self.headers.get("Content-Length", "0"))
+                if not 1 <= length <= 100_000:
+                    self.send_error(413, "Invalid control payload size")
+                    return
+                payload = json.loads(self.rfile.read(length).decode("utf-8"))
+                if not isinstance(payload, dict):
+                    raise ValueError("Expected a JSON object")
+                if self.path == "/api/control/devices":
+                    response = {"ok": True, "config": write_device_config(payload)}
+                elif self.path == "/api/control/llm/chat":
+                    state = llm_state()
+                    model = str(payload.get("model", ""))
+                    messages = payload.get("messages")
+                    if not state["online"]:
+                        raise RuntimeError("The Mac’s local Ollama service is not available.")
+                    if model not in state["installed"]:
+                        raise ValueError("Choose an installed local model.")
+                    if not isinstance(messages, list) or not 1 <= len(messages) <= 30:
+                        raise ValueError("Send between 1 and 30 chat messages.")
+                    safe_messages = []
+                    for item in messages:
+                        if not isinstance(item, dict) or item.get("role") not in ("user", "assistant"):
+                            raise ValueError("Only user and assistant messages are accepted.")
+                        content = str(item.get("content", ""))
+                        if not content or len(content) > 12000:
+                            raise ValueError("Each message must contain 1–12,000 characters.")
+                        safe_messages.append({"role": item["role"], "content": content})
+                    response = ollama_request("/api/chat", {"model": model, "messages": safe_messages, "stream": False, "keep_alive": "5m"}, timeout=240)
+                    response = {"ok": True, "model": model, "content": response.get("message", {}).get("content", "")}
+                elif self.path == "/api/control/llm/stop":
+                    response = force_quit_ollama()
+                else:
+                    self.send_error(404)
+                    return
+                body = json.dumps(response, ensure_ascii=False).encode("utf-8")
+                self.send_response(200 if response.get("ok") else 409)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            except (ValueError, RuntimeError, OSError, urllib.error.URLError, subprocess.SubprocessError) as exc:
+                body = json.dumps({"ok": False, "error": str(exc)[:300]}, ensure_ascii=False).encode("utf-8")
+                self.send_response(400)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            return
         if self.path != "/api/status":
             self.send_error(404)
             return
@@ -119,6 +412,6 @@ class Handler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    address = ("127.0.0.1", int(os.environ.get("GOLDEN_RETINA_TRACKER_PORT", "8768")))
+    address = ("127.0.0.1", TRACKER_PORT)
     print(f"Golden Retina tracker: http://{address[0]}:{address[1]}/", flush=True)
     ThreadingHTTPServer(address, Handler).serve_forever()

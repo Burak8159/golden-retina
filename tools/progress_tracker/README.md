@@ -23,17 +23,38 @@ accepts only bounded JSON project-state objects and is reachable only through
 the loopback-bound server. Keep private paths, credentials, row-level data,
 and restricted dataset information out of this file.
 
-The current operating rule is that this Mac is for source, metadata, and
-documentation checks only. Dataset downloads, extraction, and training must
-happen on the authorized VM after cloud and cost preflight pass. The last
-roadmap phases explicitly retrieve and verify VM outputs, publish only
-permitted material to GitHub, and then shut down and audit the VM. Raw or
-restricted medical images and row-level records are not GitHub deliverables.
+The current operating rule is that the Mac runs the local Qwen interface and
+project dashboard; the always-on ThinkPad orchestrates work, and the RTX 3050
+laptop is the default training worker. Cloud L4 training is off unless the
+owner explicitly changes that direction. Keep raw or restricted medical images
+and patient-level records out of GitHub.
 
 The dashboard separates historical evidence from current work. It does not
 turn existing model artifacts, prior split metrics, or dataset registry entries
 into newly verified results. Current campaign GPU-hours are tracked separately
 from historical usage. The authenticated report through Nov 20 showed TRY 0 net after savings; same-day charges may lag, so campaign spend remains unverified until refreshed. Future cost estimates assume list price, not continuing credits.
+
+## Home-compute controls
+
+The top of the dashboard monitors the three-machine setup: this Mac and its
+local Ollama runtime, the ThinkPad orchestrator, and the RTX 3050 training
+worker. The local Qwen chat calls Ollama at `127.0.0.1:11434`; chat stays on
+the Mac and is kept in browser memory only. After five idle minutes Ollama can
+unload the model. The explicit Force quit action targets only the Ollama
+process listening on port 11434, and verifies its executable and owner first.
+
+ThinkPad and RTX SSH targets are entered in the UI and saved only to the
+git-ignored `devices.local.json`. SSH uses the Mac's existing OpenSSH keys and
+agent with batch mode; it never saves a password. RTX status is probed through
+the ThinkPad by default and reads `nvidia-smi` telemetry. A host key must first
+be accepted interactively in Terminal. If Tailscale is unavailable on the Mac,
+remote state is shown as unreachable rather than assumed online. The current
+dashboard performs connection/GPU probes; a ThinkPad job-orchestration agent
+is a separate integration and is not represented as installed until it is.
+
+The local tracker binds only to `127.0.0.1`. It is not exposed to the LAN or
+tailnet. The Mac can still use local Qwen while traveling; ThinkPad/RTX controls
+require a working Tailscale route from the Mac.
 
 ## mBRSET access boundary
 
